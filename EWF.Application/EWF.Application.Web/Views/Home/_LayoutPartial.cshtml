@@ -1,0 +1,122 @@
+﻿@using EWF.Entity;
+@{
+    Layout = null;
+    var smonth = System.DateTime.Now.ToString("yyyy-01");
+    var emonth = System.DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+    var year = System.DateTime.Now.AddYears(-1).ToString("yyyy");
+    //var syslogo = "/images/logosys-Y.png";
+    //var sysbg = "/images/bg.png";    
+    SYS_Config sconfig = (SYS_Config)ViewBag.SConfig;
+    var sysbg = '#'+sconfig.SYSCOL;
+    var syslogo = sconfig.SYSLOGO;
+    var sysname = sconfig.SYSNAME;
+}
+
+<html>
+<head>
+    @section CSS {
+        <style type="text/css">
+            .head-left {
+                height: 100%;
+                padding-top: 5px;
+            }
+
+                .head-left a {
+                    margin-top: 5px;
+                    float: left;
+                }
+
+            #sysname {
+                font-size: 19px;
+                margin-top: 17px;
+                margin-left: 12px;
+            }
+        </style>
+    }
+</head>
+<body>
+    @*<div region="north" class="head-north" split="false" border="false">"*@
+    @*<div region="north" id="sysbg" name="sysbg" class="head-north" style=" background-image:url(@sysbg)" split="false" border="false">*@
+    <div region="north" id="sysbg" name="sysbg" class="head-north" style=" background-color:@sysbg" split="false" border="false">
+
+        <span class="head-left" style="height: 100%; padding-top: 5px;">
+            @*<a href="/" target="_parent"><img src="~/images/bo_logo.png" title="系统首页" /></a>*@
+            <a href="/" target="_parent" style="margin-top: 5px;float: left;"><img id="syslogo" name="syslogo" src="@syslogo" title="系统首页" style="margin-top:0;" /></a>
+            <label id="sysname" style=" color:white;font-size: 19px; margin-top: 17px; margin-left: 12px;display: inline-block;" name="sysname">@sysname</label>
+        </span>
+        <ul class="nav"></ul>
+        <div class="head-right">
+            <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mm_user',iconCls:'icon-user'" style="font-size:14px;">当前用户:@ViewBag.UserName</a>
+            <div id="mm_user" style="width:150px;">
+                @*<div data-options="iconCls:'icon-rainbow'" class="myconfig">个人设置</div>
+                    <div class="menu-sep"></div>*@
+                <div data-options="iconCls:'icon-edit'" class="changepwd">修改密码</div>
+                <div data-options="iconCls:'icon-user_go'" class="loginOut">安全退出</div>
+            </div>
+            <div class="user" style="padding-right:10px;">
+                @*<span></span>*@
+                <i>超警提醒：</i>
+                <a href="javascript:;" onclick="msgMore();"><b id="msgNum">0</b></a>
+                <audio id="audio" hidden="true"></audio>
+            </div>
+        </div>
+    </div>
+    <div id="leftContent" class="nav-left" data-options="region:'west',iconCls:'icon-application_view_tile',split:true,title:'', collapsible:true" style="background-color:#fff;overflow:hidden;">
+
+
+
+    </div>
+    <div data-options="region:'center',split:false,title:'',border:false" style="overflow:hidden;">
+        @*<p class="bo_position bohide">
+                <span style="display:inline-block; background:url(Content/images/curloc.png) no-repeat;padding-left:26px;background-position:5px;">当前位置：</span><span id="menu_loc"><a>首页</a></span>
+            </p>*@
+        <iframe id="mainMap" name="mainMap" src="/Home/MapsIndex" width='100%' height='100%' frameborder='0' style="display:none;"></iframe>
+        <iframe id="mainF" name="mainF" width='100%' height='100%' src="/Home/SysIndex" frameborder='0' scrolling="no"></iframe>
+    </div>
+
+    <div data-options="region:'south',border:false" style="padding:3px;text-align:center; font-size:12px; border-top: 1px solid #d8d8d8;"> 技术支持：亿水泰科（北京）信息技术有限公司</div>
+
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+
+
+    <script type="text/javascript">
+        var strFullPath = window.document.location.href;
+        var strPath = window.document.location.pathname;
+        var pos = strFullPath.indexOf(strPath);
+        var prePath = strFullPath.substring(0, pos);
+
+        $(document).ready(function () {
+
+            InitDta();
+        })
+        function getRootPath() {
+            var strFullPath = window.document.location.href;
+
+            return strFullPath;
+        }
+        function InitDta() {
+
+            com.ajax({
+                type: 'get',
+                url: '/SysManage/SysConfig/GetSysConfigData',
+                data: { 'stcd': "1" },
+                success: function (d) {
+
+                    if (d.total > 0) {
+                        document.getElementById('sysname').innerHTML = d.rows[0].SYSNAME;
+                        document.getElementById("syslogo").src = prePath + d.rows[0].SYSLOGO;
+                        var div = document.getElementById('sysbg');
+                        var bgsrc = prePath + d.rows[0].SYSBGPIC;
+                        if (d.rows[0].SYSCOL != null) {
+                            div.style.backgroundColor = "#" + d.rows[0].SYSCOL;
+                        } else {
+                            div.style.backgroundImage = "url('" + bgsrc + "')";
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+/*  登录一                         开始*/
+html,body{
+  width: 100%;
+  height: 100%;	
+}
+.fl_container{
+    width: 100%;
+    height: 100%;
+    background: url(../images/j_bg.jpg) 0 0 no-repeat;
+    background-size: cover;
+    text-align: center;
+}
+.fl_timg{
+    width: 28.5%;
+    margin-top: 9%;
+    margin-bottom: 3%;
+}
+.fl_main{
+    width: 30%;
+    margin: 0 auto;
+    background-color: white;
+    box-shadow: 10px 10px 10px #5facfc;
+    border-radius: 5px;
+}
+.fl_form1{
+    width: 82%;
+    margin: 0 auto;
+    padding: 11% 0% 7% 0%;
+}
+.fl_form1 .input-group-addon{
+       padding: 5px 12px;
+    }
+.j_lcon{
+	background: white;
+}
+.j_rinput1{
+	background: white;
+	border-left: 0;
+}
+.fl_check1{
+	width: 100%;
+    text-align: left;
+}
+.fl_check1>label{
+	color: #14a4eb;
+}
+.j_btncon{
+	width: 100%;
+	text-align: center;
+}
+.bs-example .j_btncon>button{
+	width: 30%;
+	background-color: #2394f2;
+    border-color: #2394f2;
+    color: white;
+}
+.j_btncon>button:hover,.j_btncon>button:visited,.j_btncon>button:active{
+	background-color: #2394f2;
+    border-color: #2394f2;
+    color: white;
+}
+.j_btncon>button:nth-child(1){
+	background-color: #76c0fd;
+	border-color: #76c0fd;
+	color: white;
+}
+.j_btncon>button:nth-child(1):active:hover{
+	background-color: #76c0fd;
+	border-color: #76c0fd;
+	color: white;
+}
+/* 登录一                         结束*/

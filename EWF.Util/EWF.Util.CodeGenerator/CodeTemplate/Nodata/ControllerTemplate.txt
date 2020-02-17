@@ -1,0 +1,32 @@
+﻿/**
+*┌──────────────────────────────────────────────────────────────┐
+*│　描    述：{Comment} Controller类代码生成                                                
+*│　作    者：{Author}                                            
+*│　版    本：1.0    模板代码自动生成                                                
+*│　创建时间：{GeneratorTime}                             
+*└──────────────────────────────────────────────────────────────┘
+*┌──────────────────────────────────────────────────────────────┐
+*│　命名空间： {ControllerNamespace}                                  
+*│　类    名： {Name}Controller                                      
+*└──────────────────────────────────────────────────────────────┘
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using EWF.ViewModels;
+using EWF.IServices;
+
+namespace {ControllerNamespace}
+{
+    public class {Name}Controller: Controller
+    {
+		private I{Name}Service service;
+        public {Name}Controller(I{Name}Service _service)
+        {
+            service = _service;
+        }
+
+    }
+}

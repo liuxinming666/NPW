@@ -1,0 +1,92 @@
+2019-08-08 10:25:54,084 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/  
+2019-08-08 10:25:54,351 [10] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-08-08 10:25:54,362 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Login", controller = "Access"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller EWF.Application.Web.Controllers.AccessController (EWF.Application.Web).
+2019-08-08 10:25:55,648 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) - Validation state: Valid
+2019-08-08 10:25:55,865 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 215.9196ms.
+2019-08-08 10:25:56,070 [10] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view Login.
+2019-08-08 10:25:57,032 [10] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view Login executed in 1159.3816ms.
+2019-08-08 10:25:57,068 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) in 2705.6509ms
+2019-08-08 10:25:57,075 [10] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-08-08 10:25:57,107 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 3026.7278ms 200 text/html; charset=utf-8
+2019-08-08 10:25:57,124 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/jcj_login.css  
+2019-08-08 10:25:57,124 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/bootstrap/css/bootstrap.min.css  
+2019-08-08 10:25:58,711 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/jcj_login.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\jcj_login.css'
+2019-08-08 10:25:58,711 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1587.4314ms 200 text/css
+2019-08-08 10:25:58,997 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css  
+2019-08-08 10:25:58,998 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery/dist/jquery.js  
+2019-08-08 10:25:59,001 [10] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/bootstrap/css/bootstrap.min.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\bootstrap\css\bootstrap.min.css'
+2019-08-08 10:25:59,002 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1878.2609ms 200 text/css
+2019-08-08 10:25:59,010 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/bootstrap/js/bootstrap.min.js  
+2019-08-08 10:25:59,103 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/bootstrap/js/bootstrap.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\bootstrap\js\bootstrap.min.js'
+2019-08-08 10:25:59,103 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 93.1704ms 200 application/javascript
+2019-08-08 10:25:59,262 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/core/common.js  
+2019-08-08 10:25:59,277 [7] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\bootstrap\easyui_bo.css'
+2019-08-08 10:25:59,324 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 326.9381ms 200 text/css
+2019-08-08 10:25:59,334 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/jquery.easyui.min.js  
+2019-08-08 10:25:59,361 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/core/common.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\core\common.js'
+2019-08-08 10:25:59,361 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 98.9199ms 200 application/javascript
+2019-08-08 10:25:59,370 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/j_llogo.png  
+2019-08-08 10:25:59,378 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery/dist/jquery.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery\dist\jquery.js'
+2019-08-08 10:25:59,378 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 379.8128ms 200 application/javascript
+2019-08-08 10:25:59,399 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/j_name.png  
+2019-08-08 10:25:59,593 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/j_llogo.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\j_llogo.png'
+2019-08-08 10:25:59,593 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 223.4628ms 200 image/png
+2019-08-08 10:25:59,600 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/j_key.png  
+2019-08-08 10:25:59,614 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/j_name.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\j_name.png'
+2019-08-08 10:25:59,614 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 215.2584ms 200 image/png
+2019-08-08 10:25:59,706 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/jquery.easyui.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\jquery.easyui.min.js'
+2019-08-08 10:25:59,706 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 371.7107ms 200 application/javascript
+2019-08-08 10:25:59,706 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/j_key.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\j_key.png'
+2019-08-08 10:25:59,706 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 105.792ms 200 image/png
+2019-08-08 10:25:59,779 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/j_bg.jpg  
+2019-08-08 10:26:00,058 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/j_bg.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\j_bg.jpg'
+2019-08-08 10:26:00,058 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 278.6993ms 200 image/jpeg
+2019-08-08 10:26:00,631 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/zgsw.ico  
+2019-08-08 10:26:00,672 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/zgsw.ico'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\zgsw.ico'
+2019-08-08 10:26:00,672 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 40.5684ms 200 image/x-icon

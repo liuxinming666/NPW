@@ -1,0 +1,302 @@
+﻿@using EWF.Entity;
+@{
+    Layout = null;
+    SYS_Config sconfig = (SYS_Config)ViewBag.SConfig;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8" />
+    <title>@sconfig.SYSNAME</title>
+    <link rel="icon" type="images/ico" href="/zgsw.ico">
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/iconextension.css" />
+    <!--加载图标库CSS-->
+    <link rel="stylesheet" type="text/css" href="~/css/icon/icon.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/Site.css" />
+    <style type="text/css">
+        .panel-body {
+            font-size: 14px;
+        }
+
+        .panel-header {
+            background: #9be2fd;
+            filter: "";
+        }
+
+        .panel-title {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            color: #251C1F;
+        }
+
+        .sms-warning, .sms-warning:hover {
+            color: #FFFFFF;
+            background: #F89406;
+            z-index: 2;
+        }
+
+        .sms-primary, .sms-primary:hover {
+            color: #FFFFFF;
+            background: #3968C6;
+            z-index: 2;
+        }
+
+        #popMessage {
+            width: 100%;
+            height: 100%;
+            margin-bottom: -20px;
+        }
+
+            #popMessage .messager-icon {
+                color: #FFAA06;
+                float: left;
+                margin-top: 10%;
+                margin-left: 15px;
+                margin-right: 20px;
+            }
+
+        #popIntro {
+            line-height: 150%;
+            color: #666;
+            min-height: 60px;
+        }
+
+        #setting {
+            text-align: left;
+            line-height: 24px;
+            margin: 8px 0 0 0;
+            float: left;
+        }
+
+        #popMore {
+            text-align: right;
+            line-height: 24px;
+            /*margin: 8px 0 0 0;*/
+        }
+    </style>
+
+</head>
+<body id="page_container" class="easyui-layout" data-options="fit:true">
+    <noscript>
+        <div class="noscript">
+            <img src="/images/noscript.gif" alt="抱歉，请开启脚本支持！" />
+        </div>
+    </noscript>
+    <!--布局内容-->
+    <partial name="_LayoutPartial" />
+
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/lib/layer3.0/layer.js"></script>
+    <script type="text/javascript" src="~/lib/Assets/js/common.js"></script>
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript" src="~/js/core/common.js"></script>
+    <script type="text/javascript">
+        var pp_lgtd =@(sconfig.LGLT.Length>20? sconfig.LGLT.Split(',')[0]:"0"), pp_lttd =@(sconfig.LGLT.Length>20? sconfig.LGLT.Split(',')[1]:"0"), pp_height =@(sconfig.LGLT.Length>20? sconfig.LGLT.Split(',')[2]:"0");
+        var pp_sysName = window.document.title;
+        $(document).ready(function () {
+            
+            $(".loginOut").click(function () {
+                $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function (r) {
+                    if (r) window.location.href = '/Access/SignOut';
+                });
+            });
+            $(".changepwd").click(function () {
+                _customopen("修改用户密码", "/Home/ModyUserPwd?userId=@ViewBag.UserName", 600, 600);
+            });
+
+            //URL_WEBAPI_ROOT
+            com.ajax({
+                type: 'get',
+                url:  '/Home/GetTopMenu',
+                data: "",
+                success: function (d) {
+                    //console.log(d);
+                    var topMenuContainer = $(".nav");
+                    topMenuContainer.html("");
+                    var lihtml = "";
+                    var cssSelected = 'class="selected"';
+                    $(d).each(function (index, item) {
+                        if (index == 0) {
+                            cssSelected = 'class="selected"';
+                            ShowMenu(item.MenuCode, item.URL);
+                        } else {
+                            cssSelected = "";
+                        }
+                        lihtml = '<a id="mt_' + item.MenuCode + '" href="javascript:void(0)" tag=\"' + item.MenuCode + "," + item.URL + "," + item.Description + '\" ' + cssSelected + ' ><img src="' + item.IconURL + '" style="height:25px;width:25px;" title="' + item.MenuName + '" /><h2>' + item.MenuName + '</h2></a>';
+                        topMenuContainer.append($("<li></li>").append(lihtml));
+                    });
+                    $(".nav li a").click(function () {
+                        $('.bo_iimg1').show();
+                        var tag = $(this).attr("tag");
+                        var code = tag.split(',')[0];
+                        var url = tag.split(',')[1];
+                        $(".nav li a.selected").removeClass("selected");
+                        $(this).addClass("selected");
+                        var menuText = $(this).find("h2").text();
+                        //console.log(code);
+                        if (code == 00) {
+                            $('.bo_position').addClass('bohide').hide();
+                        } else {
+                            $('.bo_position').removeClass('bohide').show();
+                        }
+                        ShowMenu(code, url, menuText, tag.split(',')[2]);
+                    });
+                }
+            });
+
+
+            $('body').on('click', '#popIntro', function () { rthyinfoWarnInfo(); });
+        });
+
+        function FirstQuery() {//进入默认加载
+            var ckbnode = '';
+            var ckblist = "Water|Rain";
+            var rainSow = "P";
+            var stype = "SD";
+            var datelist = '2018-07-28 08:00|2018-07-28 11:27|';
+            if (window.frames['mainMap'].contentWindow) {
+                window.frames['mainMap'].contentWindow.createAll(ckblist, rainSow, 'New|RvNew', '', datelist.split('|')[0], datelist.split('|')[1], datelist.split('|')[2], ckbnode);
+            } else {
+                window.frames['mainMap'].createAll(ckblist, rainSow, 'New|RvNew', '', datelist.split('|')[0], datelist.split('|')[1], datelist.split('|')[2], ckbnode);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function openMenu(topCode, Url) {
+            debugger;
+            var t = $("#mt_" + topCode);
+            $(".nav li a.selected").removeClass("selected");
+            t.addClass("selected");
+            var menuText = t.find("h2").text();
+
+            ShowMenu(topCode, Url, menuText, 'self');
+        }
+        function ShowMenu(code, url, menuText, description) {
+            url = $.trim(url);
+            if (!!description) {
+                if (description == 'blank') {//打开新窗口
+                    window.open(url);
+                } else if (description == 'menu') {//加载左侧菜单
+                    LoadMenu(code, menuText, url);
+                } else if (description == 'noconditionmap') {//无条件地图显示
+                    $("#page_container").layout("hidden", "west");
+                    //ToggleMapFrame("");
+                    //ToggleNonMapFrame("none");
+                    //FirstQuery();
+                    $("#mainF").attr("src", url).show();
+                    ToggleNonMapFrame("");
+                    ToggleMapFrame("none");
+
+                } else if (description == 'menuiframe') {//左侧IFrame
+                    $("#leftContent").html("<iframe src='" + url + "' width='100%' height='100%' frameborder='0'></iframe>");
+
+                    $("#page_container").layout("show", "west");
+                    ToggleMapFrame("");
+                    ToggleNonMapFrame("none");
+
+                } else if (description == 'mainiframe') {//中间内容IFrame
+                    //$("#mainF").html("<iframe src='" + url + "' width='100%' height='100%' frameborder='0'></iframe>");
+                    //document.frames["mainF"].src = url;
+
+                    $("#mainF").attr("src", url).show();
+
+                    $("#page_container").layout("show", "west");
+                    ToggleMapFrame("none");
+                    ToggleNonMapFrame("");
+
+                } else if (description == 'mainiframeMap') {//中间内容IFrame为地图--水情首页
+                    $("#page_container").layout("show", "west");
+                    ToggleNonMapFrame("none");
+                    ToggleMapFrame("");
+                    setTimeout(FirstQuery, 3000);
+                } else if (description == 'leftcondition') {
+                    $("#leftContent").html("<iframe src='" + url + "' width='100%' height='100%' frameborder='0'></iframe>");
+                } else {
+                    LoadMenu(code, menuText, url);
+                    //$("#mainF").html("<iframe src='" + url + "' width='100%' height='100%' frameborder='0'></iframe>");
+
+                }
+            } else {
+                $("#mainF").attr("src", url).show();
+                $("#page_container").layout("hidden", "west");
+            }
+        }
+        /**
+         * 切换地图frame
+         * param state 传"":显示 "none":不显示
+         */
+        function ToggleMapFrame(state) {
+
+            $("#mainMap").css("display", state);
+        }
+        /**
+         * 切换非地图Frame
+         * param state
+         */
+        function ToggleNonMapFrame(state) {
+            $("#mainF").css("display", state);
+        }
+        function LoadMenu(parentCode, menuText, selectUrl) {
+            com.ajax({
+                type: 'get',
+                url: '/Home/GetUserMenuByParentCode',
+                data: { parentCode: parentCode },
+                success: function (d) {
+                    console.log(d);
+                    new AccordionMenu({
+                        menuArrs: d, topMenuText: menuText, defaultUrl: selectUrl
+                    });
+                    if (d.length <= 0) {
+                        $("#page_container").layout("hidden", "west");
+                    } else {
+                        $("#page_container").layout("show", "west");
+                    }
+                },
+                error: function (data) {
+                    window.location.href = '/Access/Login';
+                }
+            });
+        }
+       
+        function openmessage(title, mid, content) {
+            $.messager.confirm({
+                width: 400,
+                height: 250,
+                title: title,
+                msg: content,
+                ok: '<font class=sms_send>查看</font>', cancel: '<font class=sms_ignore>忽略</font>',
+                fn: function (r) {
+                    if (r) {
+                        sendsms('/Duty/SMSManage/Send?mId=' + mid);
+                    } else {
+                        //忽略
+                        ignoresms(mid);
+                    }
+                }
+            });
+        }
+      
+        function setFullScreen() {
+            var meLayout = $("page_container").layout();
+            if (meLayout.state.north.isClosed) {
+                meLayout.open("north");
+                meLayout.open("west");
+            } else {
+                meLayout.close("north");
+                meLayout.close("west");
+            }
+        }
+            //window.onload = FirstQuery;
+    </script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.layout_extend.js"></script>
+    <script type="text/javascript" src="~/js/Menu/MenuNew.js?v=222"></script>
+</body>
+</html>

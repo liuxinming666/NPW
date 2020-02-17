@@ -1,0 +1,260 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "VideoInfo";
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>视频信息</title>
+    <script src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+    <script src="~/js/core/common.js"></script>
+    <script type="text/javascript">
+        var GData;  //全局数据集
+        var stcd = '@ViewData["stcd"]';
+	    $(document).ready(function(e) {
+            $(".tab li").click(function(){
+			    $(".tab li").eq($(this).index()).addClass("activ").siblings().removeClass("activ");
+			    //$(".tabCon div").hide().eq($(this).index()).show();
+		    })
+        });
+
+//        function Init()
+//        {
+//            document.getElementById("li1").style.display = "none";
+//        }
+
+        function InitPage()
+        {
+            //document.getElementById("frmVideo").src = getRootPath() + "/VideoMoni/videoHKPT.aspx?sip=10.4.61.31&sport=80&username=admin&userpassword=Xxzx3465&passway=001400";
+                       
+            var para = {
+                stcd: stcd
+            };
+            com.ajax({
+                type: 'get',
+                url: '/MapVideo/Camera/GetVideoManageList',
+                data: para,
+                async: false,
+                success: function (result) {
+                    if (!!result.state) {
+                        if (result.state === "error") {
+                            alert(result.message);
+                            return;
+                        }
+                    }
+                    GData = eval(result);
+                    console.log(GData);
+                }
+            });
+           
+            if(GData == null || GData.length == 0)
+            {
+                return;
+            }
+
+            var length = GData.length;
+            if(length == 0)
+            {
+                return;
+            }
+            else if(length == 1)
+            {
+                //1个视频
+                document.getElementById('li0').innerHTML = trim(GData[0].SNAME)
+                document.getElementById('li1').style.display = "none";
+
+            }
+            else if(length == 2)
+            {
+                //2个视频
+                document.getElementById('li0').innerHTML = trim(GData[0].SNAME)
+                document.getElementById('li1').innerHTML = trim(GData[1].SNAME)
+            }
+            else if (length == 3) {
+                //3个视频
+                document.getElementById('li0').innerHTML = trim(GData[0].SNAME)
+                document.getElementById('li1').innerHTML = trim(GData[1].SNAME)
+                document.getElementById('li2').innerHTML = trim(GData[2].SNAME)
+            }
+            else if (length == 4) {
+                //4个视频
+                document.getElementById('li0').innerHTML = trim(GData[0].SNAME)
+                document.getElementById('li1').innerHTML = trim(GData[1].SNAME)
+                document.getElementById('li2').innerHTML = trim(GData[2].SNAME)
+                document.getElementById('li3').innerHTML = trim(GData[3].SNAME)
+            }
+            SetVideoUrl(0);
+        }
+       
+        //设置视频URL为某个指定摄像头
+        function SetVideoUrl(nIndex)
+        {
+            var videoUrl;
+            switch(trim(GData[nIndex].LINETYPE))
+            {
+                //case "HK":
+                //    videoUrl = getRootPath() + "/VideoMoni/videoHKNew.aspx?";
+                //    videoUrl += "sip=" + GData[nIndex].SIP + "&sport=" + GData[nIndex].SPORT + "&username=" + GData[nIndex].USERNAME;
+                //    videoUrl += "&userpassword=" + GData[nIndex].USERPASSWORD + "&passway=" + GData[nIndex].PASSWAY;
+                //    break;
+                case "DHPT":
+                    videoUrl = "/MapVideo/Camera/videoDHPTNew?";
+                    videoUrl += "sip=" + GData[nIndex].SIP + "&sport=" + GData[nIndex].SPORT + "&username=" + GData[nIndex].USERNAME;
+                    videoUrl += "&userpassword=" + GData[nIndex].PASSWORD + "&passway=" + GData[nIndex].PASSWAY;
+                    break;
+                //case "HKPT":
+                //    videoUrl = "/MapVideo/Camera/videoHKPT?";
+                //    videoUrl += "sip=" + GData[nIndex].SIP + "&sport=" + GData[nIndex].SPORT + "&username=" + GData[nIndex].USERNAME;
+                //    videoUrl += "&userpassword=" + GData[nIndex].PASSWORD + "&passway=" + GData[nIndex].PASSWAY;
+                case "HKPT":
+                    videoUrl = "/MapVideo/Camera/videoHKPTNew?stcd=" + stcd;
+                    break;
+                //case "JM":
+                //    videoUrl = getRootPath() + "/VideoMoni/videoJMNew.aspx?";
+                //    videoUrl += "sip=" + GData[nIndex].SIP + "&sport=" + GData[nIndex].SPORT + "&username=" + GData[nIndex].USERNAME;
+                //    videoUrl += "&userpassword=" + GData[nIndex].USERPASSWORD + "&passway=" + GData[nIndex].PASSWAY;
+                //    break;
+                //case "HKPT8700":
+                //    videoUrl = getRootPath() + "/VideoMoni/videoHKPT8700.aspx?";
+                //    videoUrl += "sip=" + GData[nIndex].SIP + "&sport=" + GData[nIndex].SPORT + "&username=" + GData[nIndex].USERNAME;
+                //    videoUrl += "&userpassword=" + GData[nIndex].USERPASSWORD + "&passway=" + GData[nIndex].PASSWAY;
+                //    break;
+                default:
+                    //alert("buzhidao");
+                    break;
+            }
+            
+            document.getElementById("frmVideo").src = videoUrl;
+        }
+
+        function ChangeVideo(nType)
+        {
+            SetVideoUrl(nType);
+        }
+    </script>
+    <style>
+        body {
+            font: 12px/20px Open Sans,宋体, Helvetica, Arial, sans-serif;
+            background: #F9F9F9;
+            margin: 0;
+            padding: 0;
+            color: #555555;
+            min-width: 1000px
+        }
+
+        a {
+            color: #111111;
+            text-decoration: none;
+            -webkit-transition: color 0.2s linear;
+            -moz-transition: color 0.2s linear;
+            -o-transition: color 0.2s linear;
+            transition: color 0.2s linear
+        }
+
+            a:focus, a:link, a:active {
+                outline: none
+            }
+
+            a:hover {
+                color: #F30
+            }
+
+        ol, ul, li {
+            list-style: none
+        }
+
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%
+        }
+
+        .table_card {
+            width: 100%;
+            margin: 0 auto;
+            margin-top: 0px
+        }
+
+            .table_card .tab {
+                height: 20px;
+                font-size: 14px;
+                border-bottom: 1px #e1e1e1 solid
+            }
+
+                .table_card .tab li {
+                    float: left;
+                    height: 40px;
+                    line-height: 40px;
+                    padding: 0 25px;
+                    margin-right: 0px;
+                    background: #f0f0f0;
+                    border-top: 1px #e1e1e1 solid;
+                    border-left: 1px #e1e1e1 solid;
+                    border-right: 1px #e1e1e1 solid;
+                }
+
+                    .table_card .tab li:hover {
+                        height: 20px;
+                        background: #fff;
+                        color: #333;
+                        cursor: pointer
+                    }
+
+            .table_card .activ {
+                height: 20px !important;
+                background: #fff !important;
+                color: #333
+            }
+
+            .table_card .tabCon {
+                background: #fff;
+                height: 100%;
+                width: 100%;
+                padding: 0px;
+                border-bottom: 1px #e1e1e1 solid;
+                border-left: 1px #e1e1e1 solid;
+                border-right: 1px #e1e1e1 solid;
+            }
+
+                .table_card .tabCon div {
+                    display: none
+                }
+
+                .table_card .tabCon .on {
+                    display: block
+                }
+    </style>
+</head>
+<body onload="InitPage();" scroll=no>
+    <form id="form1" runat="server">
+        <table style="height:100%; width:100%;">
+            <tr style="height:5%;">
+                <td valign="top">
+                    <div class="warpbox">
+                        <div class="table_card">
+                            <ul class="tab">
+                                <li id="li0" onclick="ChangeVideo(0);" style="cursor:hand;" class="activ"></li>
+                                <li id="li1" onclick="ChangeVideo(1);" style="cursor:hand;"></li>
+                                <li id="li2" onclick="ChangeVideo(2);" style="cursor:hand;"></li>
+                                <li id="li3" onclick="ChangeVideo(3);" style="cursor:hand;"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <tr style=" height:95%; width:100%;">
+                <td>
+                    <iframe id="frmVideo" width="100%" height="100%" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>
+

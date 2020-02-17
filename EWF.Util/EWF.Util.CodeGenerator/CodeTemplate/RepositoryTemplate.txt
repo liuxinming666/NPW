@@ -1,0 +1,42 @@
+﻿/**
+*┌──────────────────────────────────────────────────────────────┐
+*│　描    述：{Comment}接口实现                                                    
+*│　作    者：{Author}                                            
+*│　版    本：1.0    模板代码自动生成                                                
+*│　创建时间：{GeneratorTime}                             
+*└──────────────────────────────────────────────────────────────┘
+*┌──────────────────────────────────────────────────────────────┐
+*│　命名空间： {RepositoryNamespace}                                  
+*│　类    名： {ModelName}Repository                                      
+*└──────────────────────────────────────────────────────────────┘
+*/
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Dapper;
+using EWF.Data;
+using EWF.Data.Repository;
+using EWF.IRepository;
+using EWF.Util.Options;
+using EWF.Util;
+using EWF.Entity;
+
+namespace {RepositoryNamespace}
+{
+    public class {ModelName}Repository:RepositoryBase<{ModelName}>, I{ModelName}Repository
+    {
+        public {ModelName}Repository(IOptionsSnapshot<DbOption> options)
+        {
+            dbOption =options.Get("{ConnName}");
+            if (dbOption == null)
+            {
+                throw new ArgumentNullException(nameof(DbOption));
+            }
+            database = DapperFactory.CreateDapper(dbOption.DbType, dbOption.ConnectionString);
+        }
+
+	
+
+    }
+}

@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+</head>
+<body onload="initDate();">
+
+</body>
+<script type="text/javascript">
+    function initDate() {
+        $.ajax({
+            url: "/RealData/River/GetLatestRiverData",
+            //data: { stcd: stcd, region: region },
+            dataType: "json",
+            success: function (data, status, xhr) {
+                debugger;
+                console.log(data);
+            }
+        });
+    }
+
+    function getHomeUrl() {
+        var strFullPath = window.document.location.href;
+        var strPath = window.document.location.pathname;
+        var pos = strFullPath.indexOf(strPath);
+        var prePath = strFullPath.substring(0, pos);
+        var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+        return prePath;
+    }
+</script>
+</html>

@@ -1,0 +1,365 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "河道水情";
+}
+@section CSS{ 
+<style type="text/css">
+    
+    td.table-cell {
+        background: white;
+        border-width: 0px 0px 1px 1px;
+    }
+</style>
+}
+<div class="easyui-layout" fit="true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+        <table>
+            <tr>
+                <td>选择测站:</td>
+                <td>
+                    <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </td>
+                <td>开始日期:</td>
+                <td><input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" /></td>
+                <td align="left">
+                    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                    <a id="btnExportKendo" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;height:100%;overflow:hidden;">
+        <table id="dgGrid" style="height:100%;overflow:auto;"></table>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript">
+        var dataSource;
+        $(function () {
+            InitCondition();
+            $("#btnSearch").click(DoSearch);
+            //DoSearch();
+            ShowRiverGridNew();
+        });
+
+        /**
+         * 初始化条件
+         * */
+        function InitCondition() {
+
+            $("#edate").val(moment().format("YYYY-MM-DD HH:mm"));
+            $("#sdate").val(moment().add(-24, 'hours').format("YYYY-MM-DD HH:mm"));
+
+            bindAreaDataGrid();
+        }
+        /**
+         * 查询
+         * add by SUN
+         * Date:2019-05-23 14:00
+         * */
+        function DoSearch() {
+            //ShowRiverGrid(); 
+            
+            $('#dgGrid').data('kendoGrid').dataSource.read({ stcds: $('#areastcd').combogrid('getValues').join(",")});
+        }
+
+        /**
+         * 表格分页显示河道水情
+         * add by SUN
+         * Date:2019-05-23 14:00
+         * */
+        function ShowRiverGrid() {
+
+            var arrStcd = $('#areastcd').combogrid('getValues');
+            var stcds = arrStcd.join(",");
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                //pagination: true,
+                view: scrollview,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/RealData/River/GetRiverData',
+                queryParams: { 'stcds': stcds, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'RVNM', title: '河名', width: '10%', align: 'center' },
+                    {
+                        field: 'STNM', title: '站名', width: '9%', align: 'center', formatter: function (v, rowData, rowIndex) {
+                            return "<a href='#' onclick='OpenLine(\"" + rowData.STCD + "\",\"" + rowData.TM + "\")'>" + v + "</a>";
+                        }
+                    },
+                    { field: 'TM', title: '时间', width: '12%', align: 'center', formatter: com.formatTimemm },
+                    { field: 'FLWCHRCD', title: '河水特征', width: '9%', align: 'center' },
+                    {
+                        field: 'Z', title: '水位', width: '9%', halign: 'center', align: 'right', formatter: function (v) {
+                            return toDecimal(v, 2);
+                        }
+                    },
+                    {
+                        field: 'WPTN', title: '水势', width: '6%', align: 'center'
+                    },
+                    {
+                        field: 'Q', title: '流量', width: '8%', halign: 'center', align: 'right', formatter: function (v) {
+                            return SaveThreeN(v, 3);
+                        }
+                    },
+                    { field: 'MSQMT', title: '测流方法', width: '13%', align: 'center' },
+                    { field: 'XSA', title: '测流面积', width: '9%', halign: 'center', align: 'right' },
+                    { field: 'AVQ', title: '日均流量', width: '8%', halign: 'center', align: 'right' },
+                    { field: 'S', title: '含沙量', width: '7%', halign: 'center', align: 'right' }
+
+                ]],
+                onLoadSuccess: function () {
+                }
+            });
+
+        }
+
+        function ShowRiverGridNew() {
+            var arrStcd = $('#areastcd').combogrid('getValues');
+            var strStcds = arrStcd.join(",");
+            $('#dgGrid').kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "/RealData/River/GetRiverData",
+                            dataType: 'json',
+                            data: function (option) {
+                                return {
+                                    rows: option.pageSize,
+                                    stcds: strStcds,
+                                    startDate: $("#sdate").val(),
+                                    endDate: $("#edate").val()
+                                };
+                            }
+                        }
+                    },
+                    schema: {
+                        total: "total",
+                        data: function (d) {
+                            return d.rows;  //响应到页面的数据
+                        }
+                    },
+                    serverPaging: true,
+                    serverFiltering: true,
+                    pageSize: 100
+                },
+                height: '100%',
+                serverPaging: false, 
+                scrollable: {
+                    virtual: true
+                },
+                excel: {
+                    allPages: true
+                },
+                sortable: true,
+                selectable: true,
+                columns: [
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: center;background:white;border:1;"
+                    },
+                    field: "RVNM",
+                    title: "河名",
+                    locked: true,
+                    width: 100
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    template: function (dataItem) { return "<a href='#' onclick='OpenLine(\"" + dataItem.STCD + "\",\"" + dataItem.TM + "\")'>" + dataItem.STNM + "</a>"; },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: center;color:blue;"
+                    },
+                    field: "STNM",
+                    title: "站名",
+                    locked: true,
+                    width: 100
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: center;"
+                    },
+                    field: "TM",
+                    template: function (dataItem) { return com.formatTimemm(dataItem.TM) },
+                    title: "时间",
+                    locked: true,
+                    width: 150
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "FLWCHRCD",
+                    title: "河水特征",
+                    width: 80
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "Z",
+                    template: function (dataItem) { return toDecimal(dataItem.Z, 2) },
+                    title: "水位",
+                    width: 100
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: center;"
+                    },
+                    field: "WPTN",
+                    title: "水势",
+                    template: function (dataItem) { return dataItem.WPTN },
+                    width: 60
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "Q",
+                    title: "流量",
+                    template: function (dataItem) { return SaveThreeN(dataItem.Q, 3); },
+                    width: 100
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "MSQMT",
+                    title: "测流方法",
+                    width: 130
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "XSA",
+                    title: "测流面积",
+                    width: 100
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: right;"
+                    },
+                    field: "AVQ",
+                    template: function (dataItem) { return SaveThreeN(dataItem.AVQ, 3); },
+                    title: "日均流量",
+                    width: 150
+                },
+                {
+                    headerAttributes: {
+                        "class": "table-header-cell",
+                        style: "text-align: center;background:#6dc1f3;"
+                    },
+                    attributes: {
+                        "class": "table-cell",
+                        style: "text-align: center;"
+                    },
+                    field: "S",
+                    title: "含沙量",
+                    width: 150
+                }],
+                rowNumber: true
+            });
+        }
+        function OpenLine(stcd, tm) {
+            $.modalOpen({
+                id: "Form",
+                title: "最新水位变化过程",
+                //url: "/RealData/River/ChartRiver?stcd=" + stcd + "&sdate=&edate=" + tm,
+                url: "/RealData/River/ChartRiver?stcd=" + stcd + "&edate=" + tm + "&stype=0",
+                width: "1000px",
+                height: "610px",
+                btn: null
+            });
+        }
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": "'ZZ','ZQ'" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '100px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]]
+
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": "'ZZ','ZQ'" }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+    </script>
+}

@@ -1,0 +1,1426 @@
+2019-08-20 09:39:08,195 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/  
+2019-08-20 09:39:08,489 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-08-20 09:39:08,501 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Login", controller = "Access"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller EWF.Application.Web.Controllers.AccessController (EWF.Application.Web).
+2019-08-20 09:39:08,535 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:08,819 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 281.6539ms.
+2019-08-20 09:39:11,064 [11] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view Login.
+2019-08-20 09:39:11,193 [11] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view Login executed in 2367.869ms.
+2019-08-20 09:39:11,193 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) in 2692.282ms
+2019-08-20 09:39:11,194 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-08-20 09:39:11,203 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 3011.226ms 200 text/html; charset=utf-8
+2019-08-20 09:39:14,722 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 POST http://localhost:16287/Access/SignIn application/x-www-form-urlencoded; charset=UTF-8 28
+2019-08-20 09:39:14,726 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.AccessController.SignInAsync (EWF.Application.Web)'
+2019-08-20 09:39:14,747 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "SignInAsync", controller = "Access"}. Executing controller action with signature System.Threading.Tasks.Task`1[System.String] SignInAsync(System.String, System.String) on controller EWF.Application.Web.Controllers.AccessController (EWF.Application.Web).
+2019-08-20 09:39:14,791 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.AccessController.SignInAsync (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:15,019 [11] INFO  - Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationHandler
+ AuthenticationScheme: Cookies signed in.
+2019-08-20 09:39:15,019 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.AccessController.SignInAsync (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ObjectResult in 228.3131ms.
+2019-08-20 09:39:15,023 [11] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor
+ Executing ObjectResult, writing value of type 'System.String'.
+2019-08-20 09:39:15,024 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.AccessController.SignInAsync (EWF.Application.Web) in 276.9682ms
+2019-08-20 09:39:15,024 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.AccessController.SignInAsync (EWF.Application.Web)'
+2019-08-20 09:39:15,024 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 302.5182ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:15,040 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/Index  
+2019-08-20 09:39:15,053 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.Index (EWF.Application.Web)'
+2019-08-20 09:39:15,055 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Index", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:15,067 [6] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:15,073 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.Index (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:15,086 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.Index (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 12.396ms.
+2019-08-20 09:39:15,429 [6] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view Index.
+2019-08-20 09:39:15,787 [6] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view Index executed in 700.9346ms.
+2019-08-20 09:39:15,787 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.Index (EWF.Application.Web) in 732.0554ms
+2019-08-20 09:39:15,787 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.Index (EWF.Application.Web)'
+2019-08-20 09:39:15,788 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 747.827ms 200 text/html; charset=utf-8
+2019-08-20 09:39:15,868 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/MapsIndex  
+2019-08-20 09:39:15,882 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/SysIndex  
+2019-08-20 09:39:15,890 [7] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web)'
+2019-08-20 09:39:15,890 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:15,892 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "MapsIndex", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult MapsIndex() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:15,892 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "SysIndex", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult SysIndex() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:15,892 [7] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:15,892 [6] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:15,893 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:15,893 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:15,923 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 29.3401ms.
+2019-08-20 09:39:16,157 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/SysManage/SysConfig/GetSysConfigData?stcd=1  
+2019-08-20 09:39:16,158 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetSysConfigData (EWF.Application.Web)'
+2019-08-20 09:39:16,160 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/SysIndex  
+2019-08-20 09:39:16,160 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,160 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetSysConfigData", controller = "SysConfig"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetSysConfigData(Int32) on controller EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController (EWF.Application.Web).
+2019-08-20 09:39:16,160 [13] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:16,160 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "SysIndex", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult SysIndex() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:16,160 [9] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:16,161 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:16,161 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetSysConfigData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:16,163 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 1.9812ms.
+2019-08-20 09:39:16,224 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetSysConfigData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 63.0493ms.
+2019-08-20 09:39:16,226 [13] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:16,230 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetSysConfigData (EWF.Application.Web) in 70.3574ms
+2019-08-20 09:39:16,231 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetSysConfigData (EWF.Application.Web)'
+2019-08-20 09:39:16,231 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 73.7921ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:16,231 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/MapsIndex  
+2019-08-20 09:39:16,232 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,232 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "MapsIndex", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult MapsIndex() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:16,232 [13] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:16,233 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:16,446 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view SysIndex.
+2019-08-20 09:39:16,448 [6] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view SysIndex.
+2019-08-20 09:39:16,589 [6] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view SysIndex executed in 666.09ms.
+2019-08-20 09:39:16,589 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) in 696.8204ms
+2019-08-20 09:39:16,589 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,589 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 707.3091ms 200 text/html; charset=utf-8
+2019-08-20 09:39:16,590 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/GetTopMenu  
+2019-08-20 09:39:16,590 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view SysIndex executed in 427.5397ms.
+2019-08-20 09:39:16,590 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) in 430.2493ms
+2019-08-20 09:39:16,590 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,590 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 430.8935ms 200 text/html; charset=utf-8
+2019-08-20 09:39:16,591 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.GetTopMenu (EWF.Application.Web)'
+2019-08-20 09:39:16,593 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetTopMenu", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.ActionResult`1[System.String] GetTopMenu() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:16,593 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.GetTopMenu (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:16,629 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.GetTopMenu (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 35.4836ms.
+2019-08-20 09:39:16,629 [6] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:16,629 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.GetTopMenu (EWF.Application.Web) in 36.4772ms
+2019-08-20 09:39:16,630 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.GetTopMenu (EWF.Application.Web)'
+2019-08-20 09:39:16,630 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 39.308ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:16,731 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/SysIndex  
+2019-08-20 09:39:16,732 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,732 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "SysIndex", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult SysIndex() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:16,732 [9] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:16,732 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:16,763 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 30.2456ms.
+2019-08-20 09:39:16,763 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view SysIndex.
+2019-08-20 09:39:16,764 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view SysIndex executed in 1.3516ms.
+2019-08-20 09:39:16,764 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web) in 32.397ms
+2019-08-20 09:39:16,764 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.SysIndex (EWF.Application.Web)'
+2019-08-20 09:39:16,764 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 32.99ms 200 text/html; charset=utf-8
+2019-08-20 09:39:18,446 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/SysManage/SysConfig/getConfigStcd  
+2019-08-20 09:39:18,464 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.getConfigStcd (EWF.Application.Web)'
+2019-08-20 09:39:18,466 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "getConfigStcd", controller = "SysConfig"}. Executing controller action with signature System.String getConfigStcd() on controller EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController (EWF.Application.Web).
+2019-08-20 09:39:18,466 [11] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:18,466 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.getConfigStcd (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:18,475 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.getConfigStcd (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ObjectResult in 9.1898ms.
+2019-08-20 09:39:18,476 [11] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor
+ Executing ObjectResult, writing value of type 'System.String'.
+2019-08-20 09:39:18,476 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.getConfigStcd (EWF.Application.Web) in 10.0334ms
+2019-08-20 09:39:18,476 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.getConfigStcd (EWF.Application.Web)'
+2019-08-20 09:39:18,476 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 29.6373ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:18,544 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 POST http://localhost:16287/RealData/River/GetStaByKeywords/ application/x-www-form-urlencoded; charset=UTF-8 12
+2019-08-20 09:39:18,544 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetStaByKeywords (EWF.Application.Web)'
+2019-08-20 09:39:18,548 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetStaByKeywords", controller = "River"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetStaByKeywords(System.String, System.String) on controller EWF.Application.Web.Areas.RealData.Controllers.RiverController (EWF.Application.Web).
+2019-08-20 09:39:18,550 [11] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:18,560 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/Rain/GetLatestRainNewData?stype=0  
+2019-08-20 09:39:18,568 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetStaByKeywords (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:18,572 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web)'
+2019-08-20 09:39:18,574 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRainNewData", controller = "Rain"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRainNewData(Int32) on controller EWF.Application.Web.Areas.RealData.Controllers.RainController (EWF.Application.Web).
+2019-08-20 09:39:18,574 [6] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:18,575 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:18,588 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/River/GetLatestRiverData  
+2019-08-20 09:39:18,600 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web)'
+2019-08-20 09:39:18,602 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRiverData", controller = "River"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRiverData() on controller EWF.Application.Web.Areas.RealData.Controllers.RiverController (EWF.Application.Web).
+2019-08-20 09:39:18,602 [9] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:18,602 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetStaByKeywords (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 67.2013ms.
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetStaByKeywords (EWF.Application.Web) in 86.1243ms
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetStaByKeywords (EWF.Application.Web)'
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 91.5908ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:18,635 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/Rsvr/GetLatestRsvrData  
+2019-08-20 09:39:18,636 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RsvrController.GetLatestRsvrData (EWF.Application.Web)'
+2019-08-20 09:39:18,637 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRsvrData", controller = "Rsvr"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRsvrData(System.String, System.String) on controller EWF.Application.Web.Areas.RealData.Controllers.RsvrController (EWF.Application.Web).
+2019-08-20 09:39:18,637 [11] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:18,638 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RsvrController.GetLatestRsvrData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:20,776 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RsvrController.GetLatestRsvrData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 2138.1169ms.
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RsvrController.GetLatestRsvrData (EWF.Application.Web) in 2139.5479ms
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RsvrController.GetLatestRsvrData (EWF.Application.Web)'
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2141.5766ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/Rain/GetLatestRainNewData?stype=1  
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web)'
+2019-08-20 09:39:20,777 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRainNewData", controller = "Rain"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRainNewData(Int32) on controller EWF.Application.Web.Areas.RealData.Controllers.RainController (EWF.Application.Web).
+2019-08-20 09:39:20,778 [11] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:20,778 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:23,127 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 6894.3637ms.
+2019-08-20 09:39:23,168 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 7275.1452ms.
+2019-08-20 09:39:23,680 [13] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view MapsIndex.
+2019-08-20 09:39:23,680 [7] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view MapsIndex.
+2019-08-20 09:39:23,765 [7] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view MapsIndex executed in 597.0325ms.
+2019-08-20 09:39:23,765 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web) in 7873.4686ms
+2019-08-20 09:39:23,765 [7] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web)'
+2019-08-20 09:39:23,765 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 7897.9185ms 200 text/html; charset=utf-8
+2019-08-20 09:39:23,799 [13] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view MapsIndex executed in 672.7053ms.
+2019-08-20 09:39:23,807 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web) in 7575.3435ms
+2019-08-20 09:39:23,808 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.MapsIndex (EWF.Application.Web)'
+2019-08-20 09:39:23,815 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 7584.3206ms 200 text/html; charset=utf-8
+2019-08-20 09:39:23,919 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/SysManage/SysConfig/GetStnmBySysconfig  
+2019-08-20 09:39:23,919 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetStnmBySysconfig (EWF.Application.Web)'
+2019-08-20 09:39:23,921 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetStnmBySysconfig", controller = "SysConfig"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetStnmBySysconfig() on controller EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController (EWF.Application.Web).
+2019-08-20 09:39:23,921 [13] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:23,921 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetStnmBySysconfig (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:23,923 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/Rain/GetLatestRainStaticData  
+2019-08-20 09:39:23,944 [7] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainStaticData (EWF.Application.Web)'
+2019-08-20 09:39:23,950 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRainStaticData", controller = "Rain"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRainStaticData() on controller EWF.Application.Web.Areas.RealData.Controllers.RainController (EWF.Application.Web).
+2019-08-20 09:39:23,950 [7] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:23,951 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainStaticData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetStnmBySysconfig (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 74.5915ms.
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetStnmBySysconfig (EWF.Application.Web) in 75.2847ms
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.SysManage.Controllers.SysConfigController.GetStnmBySysconfig (EWF.Application.Web)'
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 77.3935ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:23,996 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/layer.css  
+2019-08-20 09:39:24,047 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/layer.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\layer.css'
+2019-08-20 09:39:24,047 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 50.898ms 200 text/css
+2019-08-20 09:39:24,072 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/layer2.css  
+2019-08-20 09:39:24,160 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/layer2.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\layer2.css'
+2019-08-20 09:39:24,160 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 87.7799ms 200 text/css
+2019-08-20 09:39:24,187 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/mars3d.css  
+2019-08-20 09:39:24,238 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/Cesium/Widgets/widgets.css  
+2019-08-20 09:39:24,268 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/mars3d.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\mars3d.css'
+2019-08-20 09:39:24,268 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 81.4535ms 200 text/css
+2019-08-20 09:39:24,271 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/Cesium/Widgets/widgets.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\Cesium\Widgets\widgets.css'
+2019-08-20 09:39:24,271 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 33.1873ms 200 text/css
+2019-08-20 09:39:24,300 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/view.css  
+2019-08-20 09:39:24,345 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/view.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\view.css'
+2019-08-20 09:39:24,345 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 44.7011ms 200 text/css
+2019-08-20 09:39:24,359 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-plugin/showloading/showLoading.css  
+2019-08-20 09:39:24,359 [13] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-plugin/showloading/showLoading.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-plugin\showloading\showLoading.css'
+2019-08-20 09:39:24,359 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.5814ms 200 text/css
+2019-08-20 09:39:24,374 [13] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/fonts/framework-font.css  
+2019-08-20 09:39:26,250 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 7674.7339ms.
+2019-08-20 09:39:26,251 [6] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:26,253 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/fonts/framework-font.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\fonts\framework-font.css'
+2019-08-20 09:39:26,253 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1877.2973ms 200 text/css
+2019-08-20 09:39:26,253 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/GetWeatherImage?sType=yb  
+2019-08-20 09:39:26,253 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.GetWeatherImage (EWF.Application.Web)'
+2019-08-20 09:39:26,255 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetWeatherImage", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetWeatherImage(System.String) on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:39:26,255 [6] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:26,256 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.GetWeatherImage (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:28,028 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainStaticData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 4076.4855ms.
+2019-08-20 09:39:28,028 [7] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:28,028 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainStaticData (EWF.Application.Web) in 4077.3244ms
+2019-08-20 09:39:28,028 [7] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainStaticData (EWF.Application.Web)'
+2019-08-20 09:39:28,028 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4104.0082ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:28,860 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/kriging.js-master/kriging.js  
+2019-08-20 09:39:28,861 [7] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/kriging.js-master/kriging.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\kriging.js-master\kriging.js'
+2019-08-20 09:39:28,861 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6473ms 200 application/javascript
+2019-08-20 09:39:28,861 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-plugin/showloading/jquery.showLoading.min.js  
+2019-08-20 09:39:28,887 [7] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web) in 10312.425ms
+2019-08-20 09:39:28,887 [7] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web)'
+2019-08-20 09:39:28,887 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 10326.8351ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:28,889 [7] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-plugin/showloading/jquery.showLoading.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-plugin\showloading\jquery.showLoading.min.js'
+2019-08-20 09:39:28,889 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 27.7014ms 200 application/javascript
+2019-08-20 09:39:28,919 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Cesium.js  
+2019-08-20 09:39:28,920 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/tfjs/tfjs.js  
+2019-08-20 09:39:28,943 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/turf5.1.6/turf.min.js  
+2019-08-20 09:39:29,026 [7] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/tfjs/tfjs.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\tfjs\tfjs.js'
+2019-08-20 09:39:29,027 [7] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 106.5421ms 200 application/javascript
+2019-08-20 09:39:29,243 [21] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/turf5.1.6/turf.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\turf5.1.6\turf.min.js'
+2019-08-20 09:39:29,243 [21] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 300.0952ms 200 application/javascript
+2019-08-20 09:39:29,302 [21] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/River/GetRiverLine?stnm=%E9%BE%99%E5%8F%A3%E4%B8%8B  
+2019-08-20 09:39:29,302 [21] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web)'
+2019-08-20 09:39:29,304 [21] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetRiverLine", controller = "River"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetRiverLine(System.String) on controller EWF.Application.Web.Areas.RealData.Controllers.RiverController (EWF.Application.Web).
+2019-08-20 09:39:29,304 [21] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:29,305 [21] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:29,533 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/River/GetRiverLine?stnm=%E5%BA%9C%E8%B0%B7  
+2019-08-20 09:39:29,533 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web)'
+2019-08-20 09:39:29,534 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetRiverLine", controller = "River"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetRiverLine(System.String) on controller EWF.Application.Web.Areas.RealData.Controllers.RiverController (EWF.Application.Web).
+2019-08-20 09:39:29,534 [25] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:29,534 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 8755.2322ms.
+2019-08-20 09:39:29,534 [11] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:29,534 [11] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web) in 8756.2286ms
+2019-08-20 09:39:29,534 [11] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RainController.GetLatestRainNewData (EWF.Application.Web)'
+2019-08-20 09:39:29,534 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 8756.7876ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:29,535 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:29,587 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.GetWeatherImage (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 3331.4983ms.
+2019-08-20 09:39:29,616 [6] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:29,616 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.GetWeatherImage (EWF.Application.Web) in 3360.6466ms
+2019-08-20 09:39:29,616 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.GetWeatherImage (EWF.Application.Web)'
+2019-08-20 09:39:29,616 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 3363.2275ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:29,697 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/bo_iicon1.png  
+2019-08-20 09:39:29,719 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/bo_iicon1.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\bo_iicon1.png'
+2019-08-20 09:39:29,719 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 22.0963ms 200 image/png
+2019-08-20 09:39:29,757 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Images/basemaps/tdt_img.png  
+2019-08-20 09:39:29,830 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/Images/basemaps/tdt_img.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\Images\basemaps\tdt_img.png'
+2019-08-20 09:39:29,830 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 73.0776ms 200 image/png
+2019-08-20 09:39:29,839 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Images/basemaps/vector.png  
+2019-08-20 09:39:29,844 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/Images/basemaps/vector.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\Images\basemaps\vector.png'
+2019-08-20 09:39:29,844 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4.2459ms 200 image/png
+2019-08-20 09:39:29,877 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/bo_yujing.png  
+2019-08-20 09:39:29,894 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/bo_yujing.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\bo_yujing.png'
+2019-08-20 09:39:29,894 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 17.5926ms 200 image/png
+2019-08-20 09:39:29,909 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Images/close1.png  
+2019-08-20 09:39:29,909 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/Images/close1.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\Images\close1.png'
+2019-08-20 09:39:29,910 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.7717ms 200 image/png
+2019-08-20 09:39:30,004 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/prm/11.gif  
+2019-08-20 09:39:30,033 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/prm/11.gif'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\prm\11.gif'
+2019-08-20 09:39:30,033 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 29.2224ms 200 image/gif
+2019-08-20 09:39:31,665 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Cesium.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Cesium.js'
+2019-08-20 09:39:31,665 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2745.9496ms 200 application/javascript
+2019-08-20 09:39:33,231 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/approximateTerrainHeights.json  
+2019-08-20 09:39:33,261 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/measureView.html  
+2019-08-20 09:39:33,321 [6] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/measureView.html'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\measureView.html'
+2019-08-20 09:39:33,321 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 60.05ms 200 text/html
+2019-08-20 09:39:33,342 [28] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/approximateTerrainHeights.json'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\approximateTerrainHeights.json'
+2019-08-20 09:39:33,342 [28] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 111.6258ms 200 application/json
+2019-08-20 09:39:33,419 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.39/Build/Cesium/Cesium.js  
+2019-08-20 09:39:33,420 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/style.css  
+2019-08-20 09:39:33,442 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/style.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\style.css'
+2019-08-20 09:39:33,442 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 21.9976ms 200 text/css
+2019-08-20 09:39:33,480 [19] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.39/Build/Cesium/Cesium.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.39\Build\Cesium\Cesium.js'
+2019-08-20 09:39:33,480 [19] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 61.5907ms 200 application/javascript
+2019-08-20 09:39:33,489 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/bootstrap.css  
+2019-08-20 09:39:33,544 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/Cesium/widget-win.css  
+2019-08-20 09:39:33,588 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/widget-win.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\widget-win.css'
+2019-08-20 09:39:33,588 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 43.4648ms 200 text/css
+2019-08-20 09:39:33,601 [19] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/Cesium/bootstrap.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\Cesium\bootstrap.css'
+2019-08-20 09:39:33,601 [19] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 112.7615ms 200 text/css
+2019-08-20 09:39:33,789 [21] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 4484.1379ms.
+2019-08-20 09:39:33,789 [21] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:33,789 [21] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web) in 4485.0514ms
+2019-08-20 09:39:33,789 [21] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web)'
+2019-08-20 09:39:33,789 [21] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4487.3208ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:34,156 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 4620.3692ms.
+2019-08-20 09:39:34,156 [25] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:39:34,156 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web) in 4622.2936ms
+2019-08-20 09:39:34,156 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetRiverLine (EWF.Application.Web)'
+2019-08-20 09:39:34,156 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4623.2785ms 200 text/plain; charset=utf-8
+2019-08-20 09:39:38,520 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/River/GetLatestRiverData  
+2019-08-20 09:39:38,520 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web)'
+2019-08-20 09:39:38,520 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetLatestRiverData", controller = "River"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetLatestRiverData() on controller EWF.Application.Web.Areas.RealData.Controllers.RiverController (EWF.Application.Web).
+2019-08-20 09:39:38,520 [25] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:38,521 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:49,507 [9] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of application/json
+2019-08-20 09:39:49,507 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web) in 30904.306ms
+2019-08-20 09:39:49,507 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web)'
+2019-08-20 09:39:49,507 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 30918.021ms 200 application/json
+2019-08-20 09:39:57,858 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Stationinfo/Details/StationsTree  
+2019-08-20 09:39:57,858 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.StationsTree (EWF.Application.Web)'
+2019-08-20 09:39:57,859 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "StationsTree", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult StationsTree() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:39:57,860 [9] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:39:57,860 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.StationsTree (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:39:57,860 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.StationsTree (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.1097ms.
+2019-08-20 09:39:58,058 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/tabs_icons.png  
+2019-08-20 09:39:58,091 [26] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/tabs_icons.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\tabs_icons.png'
+2019-08-20 09:39:58,091 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 33.1104ms 200 image/png
+2019-08-20 09:39:58,221 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view StationsTree.
+2019-08-20 09:39:58,222 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/IAU2006_XYS/IAU2006_XYS_16.json  
+2019-08-20 09:39:58,346 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/IAU2006_XYS/IAU2006_XYS_16.json'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\IAU2006_XYS\IAU2006_XYS_16.json'
+2019-08-20 09:39:58,346 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 124.1687ms 200 application/json
+2019-08-20 09:39:59,082 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/cesiumWorkerBootstrapper.js  
+2019-08-20 09:39:59,082 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Images/ion-credit.png  
+2019-08-20 09:39:59,100 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Images/ion-credit.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Images\ion-credit.png'
+2019-08-20 09:39:59,100 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 17.8756ms 200 image/png
+2019-08-20 09:39:59,151 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/transferTypedArrayTest.js  
+2019-08-20 09:39:59,151 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/transferTypedArrayTest.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\transferTypedArrayTest.js'
+2019-08-20 09:39:59,151 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.8791ms 200 application/javascript
+2019-08-20 09:39:59,193 [26] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/cesiumWorkerBootstrapper.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\cesiumWorkerBootstrapper.js'
+2019-08-20 09:39:59,193 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 110.8651ms 200 application/javascript
+2019-08-20 09:39:59,546 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/fonts/fontawesome-webfont.woff?v=4.5.0  
+2019-08-20 09:39:59,649 [26] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/fonts/fontawesome-webfont.woff'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\fonts\fontawesome-webfont.woff'
+2019-08-20 09:39:59,649 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 103.2424ms 200 application/font-woff
+2019-08-20 09:39:59,931 [9] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view StationsTree executed in 2071.0123ms.
+2019-08-20 09:39:59,931 [9] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.StationsTree (EWF.Application.Web) in 2071.8294ms
+2019-08-20 09:39:59,931 [9] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.StationsTree (EWF.Application.Web)'
+2019-08-20 09:39:59,931 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2073.7985ms 200 text/html; charset=utf-8
+2019-08-20 09:40:00,217 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/moonSmall.jpg  
+2019-08-20 09:40:00,244 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_px.jpg  
+2019-08-20 09:40:00,244 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_py.jpg  
+2019-08-20 09:40:00,244 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_my.jpg  
+2019-08-20 09:40:00,293 [9] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/moonSmall.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\moonSmall.jpg'
+2019-08-20 09:40:00,293 [9] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 76.5262ms 200 image/jpeg
+2019-08-20 09:40:00,384 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_mx.jpg  
+2019-08-20 09:40:00,390 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_my.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_my.jpg'
+2019-08-20 09:40:00,390 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 145.5059ms 200 image/jpeg
+2019-08-20 09:40:00,390 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_py.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_py.jpg'
+2019-08-20 09:40:00,390 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 146.0045ms 200 image/jpeg
+2019-08-20 09:40:00,446 [29] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_px.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_px.jpg'
+2019-08-20 09:40:00,446 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 202.6008ms 200 image/jpeg
+2019-08-20 09:40:00,540 [18] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_mx.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_mx.jpg'
+2019-08-20 09:40:00,540 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 156.5085ms 200 image/jpeg
+2019-08-20 09:40:00,587 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui.css  
+2019-08-20 09:40:00,731 [18] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\bootstrap\easyui.css'
+2019-08-20 09:40:00,731 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 144.1302ms 200 text/css
+2019-08-20 09:40:00,770 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createVerticesFromHeightmap.js  
+2019-08-20 09:40:00,791 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/styles/kendo.common.min.css  
+2019-08-20 09:40:00,902 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/styles/kendo.common.min.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\styles\kendo.common.min.css'
+2019-08-20 09:40:00,902 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 111.2152ms 200 text/css
+2019-08-20 09:40:00,919 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/styles/kendo.default.min.css  
+2019-08-20 09:40:00,923 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_pz.jpg  
+2019-08-20 09:40:00,926 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createVerticesFromHeightmap.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\createVerticesFromHeightmap.js'
+2019-08-20 09:40:00,926 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 156.1588ms 200 application/javascript
+2019-08-20 09:40:00,953 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/styles/kendo.default.min.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\styles\kendo.default.min.css'
+2019-08-20 09:40:00,953 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 33.4526ms 200 text/css
+2019-08-20 09:40:00,976 [18] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_pz.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_pz.jpg'
+2019-08-20 09:40:00,976 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 51.8793ms 200 image/jpeg
+2019-08-20 09:40:01,102 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN.js  
+2019-08-20 09:40:01,103 [31] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\locale\easyui-lang-zh_CN.js'
+2019-08-20 09:40:01,103 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6284ms 200 application/javascript
+2019-08-20 09:40:01,103 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_mz.jpg  
+2019-08-20 09:40:01,107 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/easyloader.js?locale=zh_CN&theme=gray  
+2019-08-20 09:40:01,109 [18] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/easyloader.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\easyloader.js'
+2019-08-20 09:40:01,109 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.7432ms 200 application/javascript
+2019-08-20 09:40:01,226 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/jquery.easyui.datagrid_extend.js  
+2019-08-20 09:40:01,227 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/extends/jquery.easyui.messager_extend.js  
+2019-08-20 09:40:01,227 [36] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/jquery.easyui.datagrid_extend.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\jquery.easyui.datagrid_extend.js'
+2019-08-20 09:40:01,227 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.1491ms 200 application/javascript
+2019-08-20 09:40:01,227 [36] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/extends/jquery.easyui.messager_extend.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\extends\jquery.easyui.messager_extend.js'
+2019-08-20 09:40:01,228 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6734ms 200 application/javascript
+2019-08-20 09:40:01,230 [36] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Assets/Textures/SkyBox/tycho2t3_80_mz.jpg'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Assets\Textures\SkyBox\tycho2t3_80_mz.jpg'
+2019-08-20 09:40:01,230 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 127.2541ms 200 image/jpeg
+2019-08-20 09:40:01,274 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/Menu.js  
+2019-08-20 09:40:01,275 [31] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/Menu.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\Menu.js'
+2019-08-20 09:40:01,275 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6793ms 200 application/javascript
+2019-08-20 09:40:01,327 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/EWaterCharts/SectScour.min.js  
+2019-08-20 09:40:01,328 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/js/kendo.all.min.js  
+2019-08-20 09:40:01,359 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/js/jszip.min.js  
+2019-08-20 09:40:01,363 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/EWaterCharts/SectScour.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\EWaterCharts\SectScour.min.js'
+2019-08-20 09:40:01,363 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 36.0339ms 200 application/javascript
+2019-08-20 09:40:01,449 [18] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/js/jszip.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\js\jszip.min.js'
+2019-08-20 09:40:01,449 [18] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 90.0998ms 200 application/javascript
+2019-08-20 09:40:01,474 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/js/kendo.grid.exportexcell.js  
+2019-08-20 09:40:01,474 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/js/kendo.grid.exportexcell.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\js\kendo.grid.exportexcell.js'
+2019-08-20 09:40:01,474 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6493ms 200 application/javascript
+2019-08-20 09:40:01,784 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/extends/datagrid-export.js  
+2019-08-20 09:40:01,784 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/My97DatePicker/WdatePicker.js  
+2019-08-20 09:40:01,784 [29] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/extends/datagrid-export.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\extends\datagrid-export.js'
+2019-08-20 09:40:01,784 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.9406ms 200 application/javascript
+2019-08-20 09:40:01,785 [29] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/My97DatePicker/WdatePicker.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\My97DatePicker\WdatePicker.js'
+2019-08-20 09:40:01,785 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.5281ms 200 application/javascript
+2019-08-20 09:40:01,954 [29] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/js/kendo.all.min.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\js\kendo.all.min.js'
+2019-08-20 09:40:01,954 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 626.2929ms 200 application/javascript
+2019-08-20 09:40:06,473 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/plugins/jquery.parser.js  
+2019-08-20 09:40:06,474 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/My97DatePicker/skin/WdatePicker.css  
+2019-08-20 09:40:06,474 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/plugins/jquery.parser.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\plugins\jquery.parser.js'
+2019-08-20 09:40:06,474 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.1246ms 200 application/javascript
+2019-08-20 09:40:06,474 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/My97DatePicker/skin/WdatePicker.css'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\My97DatePicker\skin\WdatePicker.css'
+2019-08-20 09:40:06,474 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.5794ms 200 text/css
+2019-08-20 09:40:07,159 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/search.png  
+2019-08-20 09:40:07,265 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/search.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\search.png'
+2019-08-20 09:40:07,265 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 106.3534ms 200 image/png
+2019-08-20 09:40:07,380 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 POST http://localhost:16287/Details/GetStationList  0
+2019-08-20 09:40:07,380 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web)'
+2019-08-20 09:40:07,382 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetStationList", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetStationList(System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:07,382 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:07,382 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:07,489 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 107.0995ms.
+2019-08-20 09:40:07,489 [34] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:07,490 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 POST http://localhost:16287/StationInfo/Details/GetSearchKeywords  0
+2019-08-20 09:40:07,506 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetSearchKeywords (EWF.Application.Web)'
+2019-08-20 09:40:07,507 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetSearchKeywords", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetSearchKeywords(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:07,507 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:07,523 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetSearchKeywords (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:07,607 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web) in 225.705ms
+2019-08-20 09:40:07,608 [20] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web)'
+2019-08-20 09:40:07,608 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 228.1454ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:07,672 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-plugin/showloading/images/loading.gif  
+2019-08-20 09:40:07,675 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/LoadAreaBoundary/  
+2019-08-20 09:40:07,675 [29] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.LoadAreaBoundary (EWF.Application.Web)'
+2019-08-20 09:40:07,678 [29] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "LoadAreaBoundary", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult LoadAreaBoundary() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:40:07,678 [29] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:07,678 [29] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.LoadAreaBoundary (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetSearchKeywords (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 217.7219ms.
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetSearchKeywords (EWF.Application.Web) in 233.3913ms
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetSearchKeywords (EWF.Application.Web)'
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 250.9618ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/RealData/IceJam/GetDynamicJson/  
+2019-08-20 09:40:07,741 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetDynamicJson (EWF.Application.Web)'
+2019-08-20 09:40:07,743 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetDynamicJson", controller = "IceJam"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetDynamicJson() on controller EWF.Application.Web.Areas.RealData.Controllers.IceJamController (EWF.Application.Web).
+2019-08-20 09:40:07,744 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:07,744 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetDynamicJson (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:08,366 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/LoadLine_Line1/  
+2019-08-20 09:40:08,366 [20] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.LoadLine_Line1 (EWF.Application.Web)'
+2019-08-20 09:40:08,368 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "LoadLine_Line1", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult LoadLine_Line1() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:40:08,368 [20] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:08,369 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.LoadLine_Line1 (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:08,378 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Home/LoadLine_Polygon1/  
+2019-08-20 09:40:08,379 [33] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.HomeController.LoadLine_Polygon1 (EWF.Application.Web)'
+2019-08-20 09:40:08,381 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "LoadLine_Polygon1", controller = "Home"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult LoadLine_Polygon1() on controller EWF.Application.Web.Controllers.HomeController (EWF.Application.Web).
+2019-08-20 09:40:08,381 [33] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:08,382 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.HomeController.LoadLine_Polygon1 (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:08,384 [26] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-plugin/showloading/images/loading.gif'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-plugin\showloading\images\loading.gif'
+2019-08-20 09:40:08,385 [26] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 712.3801ms 200 image/gif
+2019-08-20 09:40:08,523 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetDynamicJson (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 778.803ms.
+2019-08-20 09:40:08,523 [34] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:08,544 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetDynamicJson (EWF.Application.Web) in 800.0905ms
+2019-08-20 09:40:08,544 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetDynamicJson (EWF.Application.Web)'
+2019-08-20 09:40:08,544 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 802.8317ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:08,675 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.LoadLine_Line1 (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 305.6123ms.
+2019-08-20 09:40:08,675 [20] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:08,713 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.LoadLine_Line1 (EWF.Application.Web) in 344.931ms
+2019-08-20 09:40:08,713 [20] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.LoadLine_Line1 (EWF.Application.Web)'
+2019-08-20 09:40:08,713 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 347.7922ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:08,731 [25] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of application/json
+2019-08-20 09:40:08,731 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web) in 30210.5018ms
+2019-08-20 09:40:08,731 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.RealData.Controllers.RiverController.GetLatestRiverData (EWF.Application.Web)'
+2019-08-20 09:40:08,731 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 30211.1465ms 200 application/json
+2019-08-20 09:40:09,024 [30] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetStationList?stcds=  
+2019-08-20 09:40:09,024 [30] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web)'
+2019-08-20 09:40:09,024 [30] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetStationList", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetStationList(System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:09,024 [30] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:09,025 [30] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:09,047 [30] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 22.0367ms.
+2019-08-20 09:40:09,047 [30] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:09,049 [30] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web) in 24.7787ms
+2019-08-20 09:40:09,049 [30] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationList (EWF.Application.Web)'
+2019-08-20 09:40:09,049 [30] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 25.3826ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:09,264 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.LoadLine_Polygon1 (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 882.015ms.
+2019-08-20 09:40:09,264 [33] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:09,271 [20] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.LoadLine_Polygon1 (EWF.Application.Web) in 889.7617ms
+2019-08-20 09:40:09,271 [20] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.LoadLine_Polygon1 (EWF.Application.Web)'
+2019-08-20 09:40:09,271 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 893.1013ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:10,251 [29] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Controllers.HomeController.LoadAreaBoundary (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 2572.3825ms.
+2019-08-20 09:40:10,251 [29] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:10,270 [29] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.HomeController.LoadAreaBoundary (EWF.Application.Web) in 2592.0318ms
+2019-08-20 09:40:10,270 [29] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.HomeController.LoadAreaBoundary (EWF.Application.Web)'
+2019-08-20 09:40:10,270 [29] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2595.1776ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:11,169 [30] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createGeometry.js  
+2019-08-20 09:40:11,176 [20] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createGeometry.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\createGeometry.js'
+2019-08-20 09:40:11,176 [20] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 7.2228ms 200 application/javascript
+2019-08-20 09:40:11,333 [30] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/info.png  
+2019-08-20 09:40:11,333 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createPolylineGeometry.js  
+2019-08-20 09:40:11,336 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createPolylineGeometry.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\createPolylineGeometry.js'
+2019-08-20 09:40:11,336 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2.9926ms 200 application/javascript
+2019-08-20 09:40:11,365 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/info.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\info.png'
+2019-08-20 09:40:11,365 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 32.6639ms 200 image/png
+2019-08-20 09:40:11,479 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/bootstrap/images/tree_icons.png  
+2019-08-20 09:40:11,479 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/areap.png  
+2019-08-20 09:40:11,479 [34] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/areap.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\areap.png'
+2019-08-20 09:40:11,479 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.6233ms 200 image/png
+2019-08-20 09:40:11,494 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/bootstrap/images/tree_icons.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\bootstrap\images\tree_icons.png'
+2019-08-20 09:40:11,495 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 15.9314ms 200 image/png
+2019-08-20 09:40:12,680 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/Images/prm/sw.png  
+2019-08-20 09:40:12,706 [34] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/Images/prm/sw.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\Images\prm\sw.png'
+2019-08-20 09:40:12,706 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 25.9752ms 200 image/png
+2019-08-20 09:40:13,377 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createPolygonGeometry.js  
+2019-08-20 09:40:13,391 [34] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/createPolygonGeometry.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\createPolygonGeometry.js'
+2019-08-20 09:40:13,391 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 13.5582ms 200 application/javascript
+2019-08-20 09:40:14,648 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/Workers/combineGeometry.js  
+2019-08-20 09:40:14,668 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/Cesium-1.62/Build/CesiumUnminified/Workers/combineGeometry.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\Cesium-1.62\Build\CesiumUnminified\Workers\combineGeometry.js'
+2019-08-20 09:40:14,668 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 19.729ms 200 application/javascript
+2019-08-20 09:40:24,258 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/hydro.png  
+2019-08-20 09:40:24,259 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/hydro.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\hydro.png'
+2019-08-20 09:40:24,259 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.4455ms 200 image/png
+2019-08-20 09:40:29,809 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/layer3.0/skin/default/icon.png  
+2019-08-20 09:40:29,809 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/layer3.0/skin/default/loading-1.gif  
+2019-08-20 09:40:29,810 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/index?stcd=40105150  
+2019-08-20 09:40:29,810 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.Index (EWF.Application.Web)'
+2019-08-20 09:40:29,812 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Index", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Index() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:29,812 [25] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:29,812 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.Index (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:29,812 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.Index (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.1701ms.
+2019-08-20 09:40:29,832 [34] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/layer3.0/skin/default/icon.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\layer3.0\skin\default\icon.png'
+2019-08-20 09:40:29,832 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 22.7133ms 200 image/png
+2019-08-20 09:40:29,832 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/layer3.0/skin/default/loading-1.gif'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\layer3.0\skin\default\loading-1.gif'
+2019-08-20 09:40:29,832 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 22.6324ms 200 image/gif
+2019-08-20 09:40:30,279 [25] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view Index.
+2019-08-20 09:40:30,287 [25] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view Index executed in 475.07ms.
+2019-08-20 09:40:30,287 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.Index (EWF.Application.Web) in 475.7585ms
+2019-08-20 09:40:30,288 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.Index (EWF.Application.Web)'
+2019-08-20 09:40:30,288 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 477.8763ms 200 text/html; charset=utf-8
+2019-08-20 09:40:38,666 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/WaterChart?stcd=40105150  
+2019-08-20 09:40:38,667 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:38,668 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "WaterChart", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult WaterChart() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:38,668 [25] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:38,669 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:38,669 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.21ms.
+2019-08-20 09:40:38,710 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/WaterChart?stcd=40105150  
+2019-08-20 09:40:38,711 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:38,711 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "WaterChart", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult WaterChart() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:38,711 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:38,712 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:38,712 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.0185ms.
+2019-08-20 09:40:38,712 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/WaterChart?stcd=40105150  
+2019-08-20 09:40:38,712 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:38,712 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "WaterChart", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult WaterChart() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:38,713 [38] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:38,713 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:38,713 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.0544ms.
+2019-08-20 09:40:38,779 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/WaterChart?stcd=40105150  
+2019-08-20 09:40:38,779 [22] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:38,779 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "WaterChart", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult WaterChart() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:38,779 [22] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:38,780 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:38,781 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.013ms.
+2019-08-20 09:40:39,303 [22] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view WaterChart.
+2019-08-20 09:40:39,315 [22] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view WaterChart executed in 534.8603ms.
+2019-08-20 09:40:39,316 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) in 536.2163ms
+2019-08-20 09:40:39,316 [22] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,316 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 536.9225ms 200 text/html; charset=utf-8
+2019-08-20 09:40:39,317 [38] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view WaterChart.
+2019-08-20 09:40:39,318 [38] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view WaterChart executed in 604.3666ms.
+2019-08-20 09:40:39,318 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) in 605.0271ms
+2019-08-20 09:40:39,318 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,318 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 605.9705ms 200 text/html; charset=utf-8
+2019-08-20 09:40:39,320 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view WaterChart.
+2019-08-20 09:40:39,320 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view WaterChart executed in 608.5277ms.
+2019-08-20 09:40:39,320 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) in 609.3394ms
+2019-08-20 09:40:39,321 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,321 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 610.3282ms 200 text/html; charset=utf-8
+2019-08-20 09:40:39,324 [25] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view WaterChart.
+2019-08-20 09:40:39,325 [25] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view WaterChart executed in 656.3858ms.
+2019-08-20 09:40:39,325 [25] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) in 657.2112ms
+2019-08-20 09:40:39,325 [25] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,325 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 659.3717ms 200 text/html; charset=utf-8
+2019-08-20 09:40:39,787 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/WaterChart?stcd=40105150  
+2019-08-20 09:40:39,787 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,787 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "WaterChart", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult WaterChart() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:39,788 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:39,788 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:39,788 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.0098ms.
+2019-08-20 09:40:39,788 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view WaterChart.
+2019-08-20 09:40:39,789 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view WaterChart executed in 0.7358ms.
+2019-08-20 09:40:39,789 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web) in 1.2012ms
+2019-08-20 09:40:39,789 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.WaterChart (EWF.Application.Web)'
+2019-08-20 09:40:39,789 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.8213ms 200 text/html; charset=utf-8
+2019-08-20 09:40:41,639 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/swfobject.js  
+2019-08-20 09:40:41,669 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/swfobject.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\swfobject.js'
+2019-08-20 09:40:41,669 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 29.4001ms 200 application/javascript
+2019-08-20 09:40:44,843 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetThreeLineData?stcd=40105150&sDate=2019-06-20+00%3A00&eDate=2019-08-20+00%3A00  
+2019-08-20 09:40:44,843 [22] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web)'
+2019-08-20 09:40:44,845 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetThreeLineData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetThreeLineData(System.String, System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:44,845 [22] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:44,846 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:46,410 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 1564.3196ms.
+2019-08-20 09:40:46,410 [22] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:40:46,410 [22] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web) in 1565.1743ms
+2019-08-20 09:40:46,411 [22] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web)'
+2019-08-20 09:40:46,411 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1568.0915ms 200 text/plain; charset=utf-8
+2019-08-20 09:40:47,048 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/My97DatePicker/skin/datePicker.gif  
+2019-08-20 09:40:47,078 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/My97DatePicker/skin/datePicker.gif'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\My97DatePicker\skin\datePicker.gif'
+2019-08-20 09:40:47,078 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 30.2693ms 200 image/gif
+2019-08-20 09:40:48,275 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/sum.png  
+2019-08-20 09:40:48,275 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/pencil.png  
+2019-08-20 09:40:48,276 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/sum.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\sum.png'
+2019-08-20 09:40:48,276 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.9197ms 200 image/png
+2019-08-20 09:40:48,291 [35] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/pencil.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\pencil.png'
+2019-08-20 09:40:48,291 [35] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 15.8197ms 200 image/png
+2019-08-20 09:40:48,308 [25] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/bootstrap/images/spinner_arrows.png  
+2019-08-20 09:40:48,309 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/bootstrap/images/spinner_arrows.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\bootstrap\images\spinner_arrows.png'
+2019-08-20 09:40:48,309 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.4649ms 200 image/png
+2019-08-20 09:40:52,839 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/ZQRLSet?stcd=40105150&sDate=2019-06-20%2000%3A00&eDate=2019-08-20%2000%3A00  
+2019-08-20 09:40:52,839 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.ZQRLSet (EWF.Application.Web)'
+2019-08-20 09:40:52,841 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "ZQRLSet", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult ZQRLSet() on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:40:52,841 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:40:52,842 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.ZQRLSet (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:40:52,842 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.ZQRLSet (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ViewResult in 0.1697ms.
+2019-08-20 09:40:53,316 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executing ViewResult, running view ZQRLSet.
+2019-08-20 09:40:53,358 [34] INFO  - Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor
+ Executed ViewResult - view ZQRLSet executed in 515.6926ms.
+2019-08-20 09:40:53,358 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.ZQRLSet (EWF.Application.Web) in 516.5934ms
+2019-08-20 09:40:53,358 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.ZQRLSet (EWF.Application.Web)'
+2019-08-20 09:40:53,358 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 519.0528ms 200 text/html; charset=utf-8
+2019-08-20 09:40:54,705 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/echarts/dist/echarts.js  
+2019-08-20 09:40:54,706 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/stat/dist/stat.js  
+2019-08-20 09:40:54,707 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/estat/dist/ecStat.js  
+2019-08-20 09:40:54,710 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/stat/dist/stat.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\stat\dist\stat.js'
+2019-08-20 09:40:54,710 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4.4828ms 200 application/javascript
+2019-08-20 09:40:54,736 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 28.9781ms 404 
+2019-08-20 09:40:54,740 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/echarts/dist/echarts.js'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\echarts\dist\echarts.js'
+2019-08-20 09:40:54,740 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 35.0636ms 200 application/javascript
+2019-08-20 09:41:02,176 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/estat/dist/ecStat.js  
+2019-08-20 09:41:02,204 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 28.1917ms 404 
+2019-08-20 09:41:04,148 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/css/icon/icon/add.png  
+2019-08-20 09:41:04,149 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/clear.png  
+2019-08-20 09:41:04,169 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/css/icon/icon/add.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\css\icon\icon\add.png'
+2019-08-20 09:41:04,169 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 20.7214ms 200 image/png
+2019-08-20 09:41:04,188 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/clear.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\clear.png'
+2019-08-20 09:41:04,188 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 38.8927ms 200 image/png
+2019-08-20 09:41:04,206 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/bootstrap/images/accordion_arrows.png  
+2019-08-20 09:41:04,207 [36] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/bootstrap/images/accordion_arrows.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\bootstrap\images\accordion_arrows.png'
+2019-08-20 09:41:04,207 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 0.8356ms 200 image/png
+2019-08-20 09:41:04,294 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/jquery-easyui-1.5.2/themes/icons/filesave.png  
+2019-08-20 09:41:04,307 [38] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/jquery-easyui-1.5.2/themes/icons/filesave.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\jquery-easyui-1.5.2\themes\icons\filesave.png'
+2019-08-20 09:41:04,307 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 12.7339ms 200 image/png
+2019-08-20 09:41:07,054 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetThreeLineData?stcd=40105150&sDate=2019-06-20+00%3A00&eDate=2019-08-20+00%3A00  
+2019-08-20 09:41:07,054 [33] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web)'
+2019-08-20 09:41:07,055 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetThreeLineData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetThreeLineData(System.String, System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:07,055 [33] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:07,055 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:07,559 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 503.8504ms.
+2019-08-20 09:41:07,559 [33] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:07,559 [33] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web) in 504.6111ms
+2019-08-20 09:41:07,559 [33] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetThreeLineData (EWF.Application.Web)'
+2019-08-20 09:41:07,559 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 505.2628ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:08,400 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/line.png  
+2019-08-20 09:41:08,401 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 POST http://localhost:16287/StationInfo/Details/GetStationZQRLYearMonth?outtype=json&stcd=40105150  0
+2019-08-20 09:41:08,401 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationZQRLYearMonth (EWF.Application.Web)'
+2019-08-20 09:41:08,402 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetStationZQRLYearMonth", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetStationZQRLYearMonth(System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:08,402 [38] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:08,403 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationZQRLYearMonth (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:08,475 [22] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/line.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\line.png'
+2019-08-20 09:41:08,475 [22] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 75.083ms 200 image/png
+2019-08-20 09:41:08,536 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/images/d15.png  
+2019-08-20 09:41:08,628 [36] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/images/d15.png'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\images\d15.png'
+2019-08-20 09:41:08,628 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 91.9836ms 200 image/png
+2019-08-20 09:41:09,339 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationZQRLYearMonth (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 936.1611ms.
+2019-08-20 09:41:09,339 [38] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:09,339 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationZQRLYearMonth (EWF.Application.Web) in 936.8164ms
+2019-08-20 09:41:09,339 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetStationZQRLYearMonth (EWF.Application.Web)'
+2019-08-20 09:41:09,339 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 938.6658ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:09,999 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetZQRLYearMonthData?stcd=40105150&year=2015-07-01  
+2019-08-20 09:41:10,001 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetZQRLYearMonthData?stcd=40105150&year=2015-07-01  
+2019-08-20 09:41:10,001 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:10,003 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:10,003 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetZQRLYearMonthData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetZQRLYearMonthData(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:10,004 [38] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:10,004 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:10,005 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetZQRLYearMonthData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetZQRLYearMonthData(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:10,006 [31] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:10,006 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:10,010 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 4.544ms.
+2019-08-20 09:41:10,011 [31] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:10,011 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) in 5.2099ms
+2019-08-20 09:41:10,011 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:10,011 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 15.7135ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:10,020 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 15.8249ms.
+2019-08-20 09:41:10,020 [38] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:10,020 [38] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) in 16.5019ms
+2019-08-20 09:41:10,020 [38] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:10,020 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 23.9086ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:11,717 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/Cesium-1.62/Build/CesiumUnminified/protobuf.js.map  
+2019-08-20 09:41:11,718 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 1.6295ms 404 
+2019-08-20 09:41:11,726 [36] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/telerik.kendoui/js/kendo.all.min.js.map  
+2019-08-20 09:41:11,921 [38] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/js/echarts/dist/echarts.js.map  
+2019-08-20 09:41:13,960 [34] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/js/echarts/dist/echarts.js.map'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\js\echarts\dist\echarts.js.map'
+2019-08-20 09:41:13,960 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 2039.0269ms 200 text/plain
+2019-08-20 09:41:14,885 [33] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/lib/telerik.kendoui/js/kendo.all.min.js.map'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\lib\telerik.kendoui\js\kendo.all.min.js.map'
+2019-08-20 09:41:14,886 [33] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 3159.5099ms 200 text/plain
+2019-08-20 09:41:29,943 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetZQRLYearMonthData?stcd=40105150&year=2015-07-01  
+2019-08-20 09:41:29,943 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:29,943 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetZQRLYearMonthData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetZQRLYearMonthData(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:29,943 [31] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:29,944 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:29,947 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 3.1525ms.
+2019-08-20 09:41:29,947 [31] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:29,947 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) in 3.9199ms
+2019-08-20 09:41:29,947 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:29,947 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4.5282ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:33,843 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetZQRLYearMonthData?stcd=40105150&year=2015-07-01  
+2019-08-20 09:41:33,843 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:33,844 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetZQRLYearMonthData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetZQRLYearMonthData(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:33,844 [34] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:33,844 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:33,847 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 2.8982ms.
+2019-08-20 09:41:33,847 [34] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:33,847 [34] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) in 3.6289ms
+2019-08-20 09:41:33,847 [34] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:33,847 [34] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 4.3588ms 200 text/plain; charset=utf-8
+2019-08-20 09:41:37,628 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/StationInfo/Details/GetZQRLYearMonthData?stcd=40105150&year=2015-07-01  
+2019-08-20 09:41:37,628 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:37,629 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "GetZQRLYearMonthData", controller = "Details"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult GetZQRLYearMonthData(System.String, System.String) on controller EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController (EWF.Application.Web).
+2019-08-20 09:41:37,629 [31] INFO  - Microsoft.AspNetCore.Authorization.DefaultAuthorizationService
+ Authorization was successful.
+2019-08-20 09:41:37,629 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) - Validation state: Valid
+2019-08-20 09:41:37,631 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action method EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web), returned result Microsoft.AspNetCore.Mvc.ContentResult in 2.2362ms.
+2019-08-20 09:41:37,631 [31] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ContentResultExecutor
+ Executing ContentResult with HTTP Response ContentType of text/plain; charset=utf-8
+2019-08-20 09:41:37,631 [31] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web) in 2.8493ms
+2019-08-20 09:41:37,632 [31] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Areas.StationInfo.Controllers.DetailsController.GetZQRLYearMonthData (EWF.Application.Web)'
+2019-08-20 09:41:37,632 [31] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 3.4426ms 200 text/plain; charset=utf-8

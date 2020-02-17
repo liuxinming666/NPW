@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewData["Title"] = "河道预警设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section CSS{
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+            bindGrid("");
+        })
+
+        function bindGrid(name) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/RiverWarnSet/GetRiverWarnSetData/',
+                queryParams: { 'stnm': name },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'STCD', title: '测站编码', width: '15%', align: 'center'},
+                    { field: 'STNM', title: '测站名称', width: '15%', align: 'center' },
+                    { field: 'WRZ', title: '警戒水位', width: '15%', align: 'center' },
+                    { field: 'WRQ', title: '警戒流量', width: '15%', align: 'center' },
+                    { field: 'GRZ', title: '保证水位', width: '15%', align: 'center' },
+                    { field: 'GRQ', title: '保证流量', width: '15%', align: 'center' },
+                    { field: 'operate', title: '操作', width: '10%', align: 'center', formatter: formatOper }
+                ]]
+            });
+        }
+
+        function formatOper(val, row, index) {
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            return edit;
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            $("#STCD").val(row.STCD);
+            $("#STNM").textbox("setValue", row.STNM);
+            $("#WRZ").textbox("setValue", row.WRZ);
+            $("#WRQ").textbox("setValue", row.WRQ);
+            $("#GRZ").textbox("setValue", row.GRZ);
+            $("#GRQ").textbox("setValue", row.GRQ);
+            $('#dlg').dialog('open').dialog('setTitle', '修改河道预警信息');
+        }
+
+        function saveData() {
+            $("#fm").form("submit", {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                url: '/SysManage/RiverWarnSet/EditRiverWarnSet',
+                success: function (data) {
+                    $('#dlg').dialog('close');
+                    alert(data);
+                    $('#dgGrid').datagrid('reload');
+                }
+
+            });
+        }
+
+        function doSearch() {
+            var name = $('#name').val();
+            bindGrid(name);
+        }
+
+
+    </script>
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                站名：<input id="name" name="name" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:480px;height:350px;padding:10px 20px;display:none;" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">测站名称：</td>
+                    <td>
+                        <input id="STNM" name="STNM" type="text" class="easyui-textbox" style="width:300px" readonly />
+                        <input id="STCD" name="STCD" type="hidden" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">警戒水位：</td>
+                    <td>
+                        <input id="WRZ" name="WRZ" type="text" class="easyui-textbox" style="width:300px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">警戒流量：</td>
+                    <td>
+                        <input id="WRQ" name="WRQ" style="width:300px;" type="text" class="easyui-textbox" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">保证水位：</td>
+                    <td>
+                        <input id="GRZ" name="GRZ" style="width:300px;" type="text" class="easyui-textbox" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">保证流量：</td>
+                    <td>
+                        <input id="GRQ" name="GRQ" type="text" class="easyui-textbox" style="width:300px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,333 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "实时水情";
+}
+
+@section CSS {
+    <style>
+        .panel-title {
+            font-size: 10px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(function () {
+            bindGrid("");
+        })
+        function bindGrid(rolename) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/RealData/River/GetRealData',
+                queryParams: { 'STNM': rolename },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'STNM', title: '站名', width: '20%', align: 'center' },
+                    { field: 'STCD', title: '站码', width: '20%', align: 'center' },
+                    { field: 'TM', title: '时间', width: '20%', align: 'center' },
+                    { field: 'Z', title: '水位', width: '30%', align: 'center' }
+                ]],
+                onLoadSuccess: function () {
+                    mergeCellsByField("dgGrid", "RoleCode");
+                }
+            });
+        }
+        function formatOper(val, row, index) {
+            var rolwcode = row["RoleCode"];
+            var edit = '<a href="#" onclick="editData(' + index + ')">修改</a>';
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            var setrole = '<a href="#" onclick="setRole(' + index + ')">菜单授权</a>';
+            return edit + " " + del + " " + setrole;
+        }
+        function addData() {
+            $('#RoleCode').textbox('textbox').attr('readonly', false);
+            $('#dlg').dialog('open').dialog('setTitle', '添加角色信息');
+            $('#fm').form('clear');
+            url = "/Sys/Role/addRoleInfo/";
+        }
+        function editData(index) {
+            $('#dgGrid').datagrid('selectRow', index);// 关键在这里
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $("#RoleCode").textbox('setValue', row.RoleCode);
+                $('#RoleCode').textbox('textbox').attr('readonly', true);
+                $("#RoleName").textbox('setValue', row.RoleName);
+                $("#Description").textbox('setValue', row.Description);
+                $('#dlg').dialog('open').dialog('setTitle', '修改角色信息');
+                url = '/Sys/Role/editRoleInfo?RoleCode=' + row.RoleCode;
+            }
+            else {
+                $.messager.alert('提示', '请先选择行', 'info')
+            }
+        }
+        function deleteData(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/Sys/Role/deleteRoleInfo', { RoleCode: row.RoleCode }, function (ren) {
+                            if (ren.indexOf('成功') > -1)
+                                $('#dgGrid').datagrid('reload'); // reload the user data
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function setRole(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            $('#RoleCode1').val(row.RoleCode);
+            bindMenuGrid(row.RoleCode);
+            document.getElementById('aa').innerText = row.RoleName;
+            $('#dlgMenu').dialog('open').dialog('setTitle', '菜单权限');
+        }
+        function bindMenuGrid(rolecode) {
+            $("#table").html("");
+            $("#table").append('<table id="gridlist" style="width:430px;height:310px;"></table>');
+            $('#gridlist').treegrid({
+                singleSelect: false,
+                checkOnSelect: false,
+                selectOnCheck: false,
+                collapsible: true,
+                idField: '_id',
+                treeField: 'MenuName',
+                loadFilter: loadfilter,
+                url: '/Sys/Menu/GetMenuAll',
+                queryParams: { 'RoleCode': rolecode },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: '_id', hidden: true },
+                    { field: 'ischeck', hidden: true },
+                    { field: 'ck', checkbox: true, width: '10%' },
+                    { field: 'MenuName', title: '菜单名称', width: '50%', align: 'center' },
+                    { field: 'MenuCode', title: '菜单编码', width: '40%', align: 'center' }
+                ]],
+                onLoadSuccess: function () {
+                    com.ajax({
+                        type: 'get',
+                        url: '/Sys/Role/GetRoleMenuCode',
+                        data: { 'RoleCode': rolecode },
+                        success: function (d) {
+                            $.each(d, function (index, row) {
+                                $('#gridlist').treegrid('checkRow', row.MenuCode);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        function saveRoleMenu() {
+            var str = "";
+            var rows = $("#gridlist").treegrid("getChecked");
+            for (var i = 0; i < rows.length; i++) {
+                str += rows[i].MenuCode + ",";
+            }
+            str = str.substr(0, str.length - 1);
+            $('#MenuCode').val(str);
+            $('#fm1').form('submit', {
+                url: '/Sys/Role/SaveSetMenu',
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+                    var result = eval('(' + result + ')');
+                    if (result.errorMsg) {
+                        $.messager.show({
+                            title: '提示错误',
+                            msg: result.msg,
+                            showType: null,
+                            style: {
+                            }
+                        });
+                    } else {
+                        $('#dlgMenu').dialog('close'); 	// close the dialog
+                        $('#dgGrid').datagrid('reload'); // reload the resourcedirc data
+                    }
+                }
+            });
+        }
+        function loadfilter(d) {
+            d = utils.copyProperty(d.rows || d, ["MenuCode", "IconClass"], ["_id", "iconCls"], false);
+            return utils.toTreeData(d, '_id', 'ParentCode', "children");
+        }
+        function doSearch() {
+            var rolename = $('#rolename').val();
+            bindGrid(rolename);
+        }
+        function saveData() {
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+                    var result = eval('(' + result + ')');
+                    if (result.errorMsg) {
+                        $.messager.show({
+                            title: '提示错误',
+                            msg: result.msg,
+                            showType: null,
+                            style: {
+                            }
+                        });
+                    } else {
+                        $('#dlg').dialog('close'); 	// close the dialog
+                        $('#dgGrid').datagrid('reload'); // reload the resourcedirc data
+                    }
+                }
+            });
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            if ($("#btnExport") != undefined) {
+                $("#btnExport").bind("click", function () {
+
+                    ExportExcel($('#dgGrid'));
+                });
+
+            }
+            if ($("#btnExportNew") != undefined) {
+                $("#btnExportNew").bind("click", function () {
+                    $('#dgGrid').data('kendoGrid').saveAsExcel();
+                });
+            }
+
+            if ($("#btnPrint") != undefined) {
+                $("#btnPrint").bind("click", function () {
+                    $('#dgGrid').printArea();
+                });
+            }
+        });
+        //   bobo     加的内容        开始
+        $('.bo_pright').on('click', function () {
+            $('.bo_table1 tr:gt(0)').toggle("slow");
+        });
+        //   bobo     加的内容        结束
+    </script>
+
+
+}
+
+<div class="div_condition bo_tablecon">
+    <table style="height:100%;width:100%" class="bo_table1">
+        <tr>
+            <td>
+                角色名：<input id="rolename" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                角色名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                角色名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                角色名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+                <a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">添加</a>
+            </td>
+            <td>
+                <div class="panel-tool bo_pright">
+                    <a href="###" class="accordion-collapse accordion-expand"></a>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                测站名：<input id="rolename" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站名：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                测站33：<input id="rolename" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站33：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站33：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+            <td>
+                测站33：<input id="" name="rolename" style="width:140px;" type="text" />&nbsp;&nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="day" style="display:none; margin-top: 43px;" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:500px;height:300px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">角色编码：</td>
+                    <td>
+                        <input id="RoleCode" name="RoleCode" type="text" class="easyui-textbox" style="width:300px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">角色名称：</td>
+                    <td>
+                        <input id="RoleName" name="RoleName" type="text" class="easyui-textbox" style="width:300px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">描述：</td>
+                    <td>
+                        <input id="Description" name="Description" type="text" class="easyui-textbox" style="width:300px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+<div id="dlgMenu" class="easyui-dialog" style="width:480px;height:430px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons1">
+    <form id="fm1" method="post" style="width:420px;height:330px">
+        <div>
+            <span id="aa" class="icon32 icon-group32" style="padding-left: 48px; font-weight: bold; font-size: 14px;color: #666;">
+            </span>
+            <input id="MenuCode" name="MenuCode" type="hidden" />
+            <input id="RoleCode1" name="RoleCode1" type="hidden" />
+        </div>
+        <div id="table">
+            <table id="gridlist" style="width:430px;height:310px;"></table>
+        </div>
+    </form>
+    <div id="dlg-buttons1">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveRoleMenu()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlgMenu').dialog('close')">取消</a>
+    </div>
+</div>
+

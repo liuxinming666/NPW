@@ -1,0 +1,49 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "凌情动态";
+}
+<div style="margin:5px 10px;">
+    凌情日期：
+</div>
+
+<div style="margin:5px 10px;">
+    <input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" />
+</div>
+<div style="margin:5px 10px;">
+    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            InitCondition();
+            //绑定查询按钮到事件
+            $("#btnSearch").click(DoSearch);
+            DoSearch();
+        });
+        /**
+         * 初始化时间条件
+         * add by lw
+         * Date:2019-05-29 15:00
+         * */
+        function InitCondition() {
+
+            $("#sdate").val(moment().format("YYYY-MM-DD hh:00"));
+
+        }
+
+        /**
+         * 执行查询
+         * add by lw
+         * Date:2019-05-30 15:00
+         * */
+        function DoSearch() {
+            var mapWnd = parent.frames['mainMap'];
+            mapWnd.ShowIceJamDynamic($("#sdate").val());
+            mapWnd.GetDynamic($("#sdate").val());
+            mapWnd.ShowDynamicGrid($("#sdate").val());
+            mapWnd.GetIceJam_River($("#sdate").val());
+            mapWnd.GetDynamicDTMS($("#sdate").val());
+        }
+    </script>
+
+}

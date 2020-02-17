@@ -1,0 +1,149 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "测站概况";
+}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>测站信息</title>
+    <meta name="NetLicenseServer" content="http://10.4.1.2:81/" />
+    <meta http-equiv="X-UA-Compatible" content="IE=IE8,IE9,IE9,IE10,IE11" />
+    <link type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/gray/easyui.css" rel="Stylesheet" />
+    <link type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/icon.css" rel="Stylesheet" />
+    <style type="text/css">
+        .documentItem {
+            height: 52px;
+            line-height: 52px;
+            border: solid 1px #066DAB;
+            margin: 2px;
+            vertical-align: middle;
+            overflow: hidden;
+            border-radius: 4px;
+            -o-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            clear: both;
+        }
+
+        .documentItemTitle {
+            height: 30px;
+            line-height: 30px;
+            color: #0066CC;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemTitleSelect {
+            height: 30px;
+            line-height: 30px;
+            color: red;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemSummary {
+            height: 20px;
+            line-height: 20px;
+            font-family: "微软雅黑";
+            font-size: 12px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .divTabCss {
+            font-family: "微软雅黑";
+            color: #45A9FF;
+        }
+    </style>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/js/core/common.js"></script>
+    <script language="javascript" type="text/javascript">
+        function InitData() {
+            var stcd = $.getUrlParam("stcd");
+            if (stcd == "40105150")//暂时用花园口的
+            {
+                document.getElementById("frmXX").src = getRootPath() + "/StationInfo/" + stcd + "/xx.htm";
+                document.getElementById("frmTZ").src = getRootPath() + "/StationInfo/" + stcd + "/tz.htm";
+                document.getElementById("frmYG").src = getRootPath() + "/StationInfo/" + stcd + "/yg.htm";
+                document.getElementById("frmGK").src = getRootPath() + "/StationInfo/" + stcd + "/gk.htm";
+            }
+            else {
+                document.getElementById("frmXX").src = getRootPath() + "/StationInfo/noData.htm";
+                document.getElementById("frmTZ").src = getRootPath() + "/StationInfo/noData.htm";
+                document.getElementById("frmYG").src = getRootPath() + "/StationInfo/noData.htm";
+                document.getElementById("frmGK").src = getRootPath() + "/StationInfo/noData.htm";
+            }
+        }
+        function getRootPath() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+            return prePath;
+        }
+        //更改选项卡的内容
+        function changeFrmChart(nType, objTmp) {
+            $(".selCss").removeClass("documentItemTitleSelect");
+            $(".selCss").addClass("documentItemTitle");
+            objTmp.children[0].className = "documentItemTitleSelect selCss";
+            if (nType == 1) {
+                $("#frmXX").show();
+                $("#frmTZ").hide();
+                $("#frmYG").hide();
+                $("#frmGK").hide();
+            }
+            else if (nType == 2) {
+                $("#frmXX").hide();
+                $("#frmTZ").show();
+                $("#frmYG").hide();
+                $("#frmGK").hide();
+            }
+            else if (nType == 3) {
+                $("#frmXX").hide();
+                $("#frmTZ").hide();
+                $("#frmYG").show();
+                $("#frmGK").hide();
+            }
+            else if (nType == 4) {
+                $("#frmXX").hide();
+                $("#frmTZ").hide();
+                $("#frmYG").hide();
+                $("#frmGK").show();
+            }
+        }
+
+    </script>
+</head>
+<body onload="InitData();" style="margin:0px; font-family:'微软雅黑'">
+    <div id="p">
+        <a href="javascript:void(0);" onclick="changeFrmChart(1,this);" style="cursor:hand;"><span class="documentItemTitleSelect selCss">基本信息</span></a>
+        <a href="javascript:void(0);" onclick="changeFrmChart(2,this);" style="cursor:hand;"><span class="documentItemTitle selCss">测站特性</span></a>
+        <a href="javascript:void(0);" onclick="changeFrmChart(3,this);" style="cursor:hand;"><span class="documentItemTitle selCss">测站沿革</span></a>
+        <a href="javascript:void(0);" onclick="changeFrmChart(4,this);" style="cursor:hand;"><span class="documentItemTitle selCss">测站以上流域（区间）概况</span></a>
+        <div style="width:100%;height:96%;">
+            <div id="div1" class="divContent" style="">
+                <iframe id="frmXX" width="100%" height="100%" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+            </div>
+            <div id="div2" class="divContent">
+                <iframe id="frmTZ" width="100%" height="100%" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+            </div>
+            <div id="div3" class="divContent">
+                <iframe id="frmYG" width="100%" height="100%" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+            </div>
+            <div id="div4" class="divContent">
+                <iframe id="frmGK" width="100%" height="100%" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,131 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "实时凌情";
+}
+<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+    <table style="height:99%;">
+        <tr>
+            <td>选择测站:</td>
+            <td>
+                <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                <div id="tb11">
+                    <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                </div>
+            </td>
+            <td>开始日期:</td>
+            <td><input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+            <td>结束日期:</td>
+            <td><input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" /></td>
+            <td align="left">
+                <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                <a id="btnExportRiverData" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+
+            </td>
+        </tr>
+
+    </table>
+</div>
+<div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;height:100%;overflow:hidden;">
+    <table id="dgGrid" style="height:100%;overflow:auto;">
+    </table>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        var dataSource;
+        $(function () {
+            InitCondition();
+            $("#btnSearch").click(DoSearch);
+            //DoSearch();
+        });
+
+        /**
+         * 初始化条件
+         * */
+        function InitCondition() {
+            var curdate = new Date();
+            var newDate = DateAdd("hh", 1, curdate);
+            $("#edate").val(utils.formatDate(curdate, 'yyyy-MM-dd  hh:mm'));
+            $("#sdate").val(utils.formatDate(DateAdd('d', -30, newDate), 'yyyy-MM-dd hh:00'));
+            bindAreaDataGrid();
+        }
+        /**
+         * 查询
+         * add by lw
+         * Date:2019-05-23 14:00
+         * */
+        function DoSearch() {
+            ShowRsvrGrid();
+        }
+
+        /**
+         * 表格显示实时凌情
+         * add by lw
+         * Date:2019-05-28 14:00
+         * */
+        function ShowRsvrGrid() {
+            var stcd = $('#areastcd').combogrid('getValue');
+            var stnm = $('#areastcd').combogrid('getText');
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                url: '/RealData/IceJam/GetIceDate',
+                queryParams: { 'stcds': stcd, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+                loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'STNM', title: '站名', width: '10%', align: 'center' },
+                    { field: 'TM', title: '时间', width: '10%', align: 'center', formatter: com.formatTimemm  },
+                    { field: 'HTMP', title: '日最高气温', width: '10%', align: 'center' },
+                    { field: 'LTMP', title: '日最低气温', width: '10%', align: 'center'},
+                    { field: 'AVTP', title: '平均气温', width: '10%', align: 'center' },
+                    { field: 'AVWT', title: '平均水温', width: '10%', align: 'center' },
+                    { field: 'DXID', title: '定性冰情号', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'DXICE', title: '定性冰情', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'DLID', title: '定量冰情号', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'DLICE', title: '定量冰情', width: '10%', halign: 'center', align: 'right' }
+                ]],
+                onLoadSuccess: function () {
+                }
+            });
+
+        }
+
+
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 300,
+                multiple: false,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": "'ZZ','ZQ'" },
+                columns: [[
+                    { field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '35%', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '35%', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+
+                    //$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+                    DoSearch();
+
+                }
+
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": "'ZZ','ZQ'" }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+    </script>
+}

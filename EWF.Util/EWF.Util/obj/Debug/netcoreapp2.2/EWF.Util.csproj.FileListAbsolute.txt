@@ -1,0 +1,14 @@
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\EWF.Util.deps.json
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\EWF.Util.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\EWF.Util.pdb
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Abstractions.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Core.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Abstractions.xml
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\bin\Debug\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Core.xml
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.csprojAssemblyReference.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.csproj.CoreCompileInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.AssemblyInfoInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.AssemblyInfo.cs
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.csproj.CopyComplete
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Util\obj\Debug\netcoreapp2.2\EWF.Util.pdb

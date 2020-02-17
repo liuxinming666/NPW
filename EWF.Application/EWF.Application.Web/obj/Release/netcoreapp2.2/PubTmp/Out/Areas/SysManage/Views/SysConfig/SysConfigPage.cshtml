@@ -1,0 +1,405 @@
+﻿@using EWF.Entity;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "系统配置";
+    SYS_Config sconfig = (SYS_Config)ViewBag.SConfig;
+}
+
+@section CSS {
+    <style>
+        label {
+            position: relative;
+        }
+
+        .bo_sysinput1 > span:nth-of-type(1) {
+            margin-top: -32px;
+        }
+        .combo-panel {
+            height: 266px !important;
+            padding: 0 !important;
+        }
+        .easyui-fluid {
+            width: 100% !important;       
+            height: 100% !important;
+            margin: 0 !important;
+        }
+        .datagrid-wrap {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="~/lib/webuploader-0.1.5/webuploader.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/css/jcj_bjq/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/jcj_bjq/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/colpick.css" />
+    <link href="~/css/jcj_bjq/css/prettify.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div id="dlg" class="col-sm-12 b_container">
+        <form id="fm" method="post" class="form-horizontal" role="form">
+            <input type="hidden" id="SYSID" name="SYSID" value="@sconfig.SYSID" />
+            <input id="VIDEONAME1" name="VIDEONAME1" type="hidden" />
+            <input type="hidden" id="stcds" name="stcds" />
+            <div class="form-group">
+                <label for="SYSNAME" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">系统名称</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6">
+                    <input id="SYSNAME" name="SYSNAME" type="text" class="form-control" placeholder="请输入项目名称" value="@sconfig.SYSNAME" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="FILE_URL" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">LOGO</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6 bo_sysinput1">
+                    <input id="SYSLOGO" name="SYSLOGO" type="text" class="easyui-textbox" style="width:250px" value="@sconfig.SYSLOGO" />
+                    <span id="filePicker">上传</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="FILE_URLPIC" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">背景图片</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6 bo_sysinput1">
+                    <input id="SYSBGPIC" name="SYSBGPIC" type="text" class="easyui-textbox" style="width:250px" value="@sconfig.SYSBGPIC" />
+                    <span id="filePickerpic">上传</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="SYSCOL" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">背景颜色</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6 ">
+                    <input id="SYSCOL" name="SYSCOL" type="text" class="easyui-textbox" style="width:250px" value="@sconfig.SYSCOL" />
+                    <button id="picker" class="bo_sysinput1">开始选择颜色</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="STCD" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">关注站点</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6">
+                    <input id="STCD" name="STCD" class="easyui-combogrid" style="width:250px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="STCD" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">经纬度</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6">
+                    <input id="LGLT" name="LGLT" type="text" class="form-control" placeholder="请输入经纬度并以逗号分隔" value="@sconfig.LGLT" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="VIDEONAME" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">关注视频点</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6">
+                    <input id="VIDEONAME" name="VIDEONAME" class="easyui-combotree" style="width:250px" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label y_label">
+                    <font class="b_txt1">描述</font>
+                    <span class="glyphicon glyphicon-asterisk b_colorred"></span>
+                </label>
+                <div class="col-sm-6">
+                    <textarea id="SYSCONTENT" name="SYSCONTENT">@sconfig.SYSCONTENT</textarea>
+                    <input type="hidden" name="contenthtml" id="contenthtml" />
+                </div>
+            </div>
+            <div id="dlg-buttons" style="text-align:center">
+                <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+@section Scripts{
+    @*<script src="~/css/jcj_bjq/js/jquery-1.11.3.js" type="text/javascript" charset="utf-8"></script>*@
+    <script src="~/css/jcj_bjq/js/kindeditor-all.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/webuploader-0.1.5/webuploader.js"></script>
+    @*<script type="text/javascript" src="~/js/jquery-1.7.2.min.js"></script>*@
+    <script type="text/javascript" src="~/js/colpick.js"></script>
+
+    <script type="text/javascript">
+        var colpic = "";
+        var currentColor = "";
+        $('#picker').colpick({
+            flat: false,
+            color:'@sconfig.SYSCOL',
+            onChange: function (a, b, c) {//b:为一个颜色
+                currentColor = b;
+
+            },
+            onSubmit: function () {//ok之后的确认事件
+                colpic = currentColor;
+                $('#bgcolor').textbox('setValue','#'+colpic);
+            }
+        });
+
+        var uploader = null,
+            uploader1 = null,
+            BASE_URL = window.location.origin;
+        window.onload = function () {
+            initUploader();
+            initUploaderPic();
+            InitDta();
+            bindAreaDataGrid();
+            $('#VIDEONAME').combotree({
+                url: '/SysManage/SysConfig/GetVideoManageData',
+                checkbox: true,
+                multiple: true,
+                onlyLeafCheck: true
+            });
+        }
+        function initUploaderPic() {
+            // 初始化Web Uploader
+            uploader1 = WebUploader.create({
+                // 选完文件后，是否自动上传。
+                auto: true,
+                // swf文件路径
+                swf: BASE_URL + '/lib/webuploader-0.1.5/Uploader.swf',
+                // 文件接收服务端。
+                server: BASE_URL + '/SysManage/SysConfig/Upload',
+                // 选择文件的按钮。可选。
+                // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                pick: '#filePickerpic',
+                //验证文件总大小是否超出限制, 超出则不允许加入队列
+                fileSizeLimit: 200 * 1024 * 1024,
+                //验证单个文件大小是否超出限制, 超出则不允许加入队列。
+                fileSingleSizeLimit: 50 * 1024 * 1024,
+                // 是否可以重复上传
+                duplicate: true
+            }
+            );
+
+            // 文件上传成功
+            uploader1.on('uploadSuccess', function (file, response) {
+                if (response.state == "error") {
+                    alert(response.message);
+                } else {
+                    var data = response.data;
+                    $("#FILE_URLPIC").textbox('setValue', data.FilePath);
+
+                }
+            });
+            // 文件上传失败，显示上传出错。
+            uploader1.on('uploadError', function (file, error) {
+                alert(error);
+            });
+
+            // 文件上传失败，显示上传出错。
+            uploader1.on('error', function (error) {
+                alert(error);
+            });
+        }
+        function initUploader() {
+            // 初始化Web Uploader
+            uploader = WebUploader.create({
+                // 选完文件后，是否自动上传。
+                auto: true,
+                // swf文件路径
+                swf: BASE_URL + '/lib/webuploader-0.1.5/Uploader.swf',
+                // 文件接收服务端。
+                server: BASE_URL + '/SysManage/SysConfig/Upload',
+                // 选择文件的按钮。可选。
+                // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                pick: '#filePicker',
+                //验证文件总大小是否超出限制, 超出则不允许加入队列
+                fileSizeLimit: 200 * 1024 * 1024,
+                //验证单个文件大小是否超出限制, 超出则不允许加入队列。
+                fileSingleSizeLimit: 50 * 1024 * 1024,
+                // 是否可以重复上传
+                duplicate: true
+            }
+            );
+
+            // 文件上传成功
+            uploader.on('uploadSuccess', function (file, response) {
+                if (response.state == "error") {
+                    alert(response.message);
+                } else {
+                    var data = response.data;
+                    $("#FILE_URL").textbox('setValue', data.FilePath);
+
+                }
+            });
+            // 文件上传失败，显示上传出错。
+            uploader.on('uploadError', function (file, error) {
+                alert(error);
+            });
+
+            // 文件上传失败，显示上传出错。
+            uploader.on('error', function (error) {
+                alert(error);
+            });
+        }
+        function InitDta() {
+
+            com.ajax({
+                type: 'get',
+                url: '/SysManage/SysConfig/GetSysConfigData',
+                data: { 'stcd': "1" },
+                success: function (d) {
+
+                    if (d.total > 0) {
+
+
+                        $('#SYSNAME').val(d.rows[0].SYSNAME);
+
+                        // $("#SYSLOGO").html(d.rows[0].SYSLOGO);
+                        $("#FILE_URL").textbox('setValue', d.rows[0].SYSLOGO);
+                        $("#FILE_URLPIC").textbox('setValue', d.rows[0].SYSBGPIC);
+                        editor.html(d.rows[0].SYSCONTENT);
+                    }
+                }
+            });
+        }
+        KindEditor.ready(function (K) {
+            editor = K.create('#SYSCONTENT', {
+                cssPath: '/css/jcj_bjq/css/prettify.css',
+                items: [
+                    'forecolor', 'hilitecolor', 'bold', 'italic', 'underline', 'strikethrough',
+                    'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+                    'insertunorderedlist', '|', 'emoticons', 'cg_schoolName', 'cg_contactMan', 'cg_jobTitle'],//定义工具栏
+                width: ($(window).width() - 80) * 0.6 * 0.6,
+                height: ($(window).height() - 30) * 0.3,
+                resizeType: 0,
+                allowPreviewEmoticons: false,
+                allowImageUpload: false,
+                allowFileManager: false,//上传文件和图片
+                afterCreate: function () {
+                    this.sync();
+                },
+                afterBlur: function () {
+                    this.sync();
+                }
+            });
+
+        });
+        KindEditor.ready(function (K) {
+            editor1 = K.create('#watchcontent', {
+                cssPath: '/css/jcj_bjq/css/prettify.css',
+                items: [],//定义工具栏
+                width: ($(window).width() - 80) * 0.6 * 0.6,
+                height: ($(window).height() - 30) * 0.3,
+                resizeType: 0,
+                allowPreviewEmoticons: false,
+                allowImageUpload: false,
+                allowFileManager: false,//上传文件和图片
+                afterCreate: function () {
+                    this.sync();
+                },
+                afterBlur: function () {
+                    this.sync();
+                }
+            });
+
+        });
+        function saveData() {
+            var arrStcd = $('#STCD').combogrid('getValues');
+            var stcds = arrStcd.join(",");
+            $('#stcds').val(stcds);
+            var videoname = $('#VIDEONAME').val();
+            $('#VIDEONAME1').val(videoname);
+            url = '/SysManage/SysConfig/EditSysConfigInfo?pic=' + colpic;
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+
+                    window.location.reload();
+                }
+            });
+        }
+        //绑定站点列表
+        function bindAreaDataGrid() {            
+            var sttps = "'ZQ'";
+            $('#STCD').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": sttps },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '80px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {  
+                    var values = [];
+                    var s = '@sconfig.STCD'.split(',');
+                    if (s.length > 0) {
+                        for (var i = 0; i < s.length; i++) {
+                            values.push(s[i]);
+                        }
+                    }
+                    $('#STCD').combogrid('setValues', values);
+                    //$('#STCD').combogrid('setValue', '@sconfig.STCD');
+                }
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#STCD");
+            var grid = ele.combogrid('grid');
+            var sttps = "'ZQ'";
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": sttps }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+
+        //绑定视频站点列表
+        function bindVideoList() {            
+            var sttps = "";
+            $('#STCD').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/SysManage/SysConfig/GetVideoStcd/",
+                queryParams: { "q": "", "sttp": sttps },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '80px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {  
+                    var values = [];
+                    var s = '@sconfig.STCD'.split(',');
+                    if (s.length > 0) {
+                        for (var i = 0; i < s.length; i++) {
+                            values.push(s[i]);
+                        }
+                    }
+                    $('#VIDEOSTCD').combogrid('setValues', values);
+                    //$('#STCD').combogrid('setValue', '@sconfig.STCD');
+                }
+            });
+        }
+    </script>
+}

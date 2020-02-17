@@ -1,0 +1,367 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "多站水位对比";
+}
+
+<div class="easyui-layout" data-options="fit:true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false">
+        <table style="height:100%;">
+            <tr>
+                <td>选择测站:</td>
+                <td>
+                    <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </td>
+                <td>开始日期:</td>
+                <td><input id="startdate" class="Wdate" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="enddate" class="Wdate" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" /></td> 
+                <td>
+                    <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a> 
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'west',split:true,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:410px;">
+        <table id="dgGrid" style="height:100%;width:100%;"></table>
+    </div>
+    <div data-options="region:'center',split:false,title:'',border:false">
+        <div style="width:100%;height:100%;overflow:hidden;" id="divLineContainer">
+
+            <div style="height: 100%;width:100%;" id="divZLine">
+            </div>
+        </div>
+    </div>
+</div>
+ 
+@section Scripts{
+    <script type="text/javascript">
+        
+        var arrSTCD = [];
+        var arrSTNM = [];
+        
+        $(function () {
+
+            
+            Highcharts.setOptions({
+                lang: {
+                    months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+                    downloadJPEG: "导出JPEG图片",
+                    downloadPDF: "导出PDF",
+                    downloadPNG: "导出PNG图片",
+                    downloadSVG: "导出SVG图片",
+                    printChart: "打印图表",
+                    resetZoom: '重置'
+                }
+            });
+            
+            initDateComponent();
+ 
+
+            $('#divZLine').bind('mousemove touchmove touchstart', function (e) {
+
+                var chart, point, i, event;
+                try {
+                    for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+
+                        chart = Highcharts.charts[i];
+                        event = chart.pointer.normalize(e.originalEvent); // Find coordinates within the chart
+                        point = chart.series[0].searchPoint(event, true); // Get the hovered point
+                        if (point) {
+                            point.highlight(e);
+                        }
+                    }
+                } catch (e) { }
+            });
+            
+        });
+
+        function initDateComponent() {
+            
+            $("#enddate").val(moment().format("YYYY-MM-DD HH:mm"));
+            $("#startdate").val(moment().add(-10, 'days').format("YYYY-MM-DD HH:mm"));
+            bindAreaDataGrid();
+        }
+
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": "'ZZ','ZQ'" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '100px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    if ($('#areastcd').combogrid('getValues').length <= 0) {
+                        $('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+                    } 
+                    doSearch();
+
+                }
+
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": "'ZZ','ZQ'"}, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+      
+        
+        /**
+       * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
+       */
+        Highcharts.Pointer.prototype.reset = function () {
+            return undefined;
+        };
+        /**
+        * 高亮当前的数据点，并设置鼠标滑动状态及绘制十字准星线
+        */
+        Highcharts.Point.prototype.highlight = function (event) {
+            event = this.series.chart.pointer.normalize(event);
+            this.onMouseOver(); // 显示鼠标激活标识
+            this.series.chart.tooltip.refresh(this); // 显示提示框
+            this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
+        };
+        function doSearch() {
+           
+            arrSTCD = $('#areastcd').combogrid('getValues');
+            arrSTNM = $('#areastcd').combogrid('getText').split(',');
+            var arr = [];
+            for (var i = 0; i < arrSTCD.length; i++) {
+                if ($.inArray(arrSTCD[i], arr) == -1) {
+                    arr.push(arrSTCD[i]);
+                }
+            }
+            arrSTCD = arr;
+            var stcds = arrSTCD.join(",");
+            var sdate = $("#startdate").val();
+            var edate = $("#enddate").val();
+            com.ajax({
+                type: 'get',
+                url: '/RealData/River/GetZContraData/',
+                data: { 'stcds': stcds, 'startDate': sdate, 'endDate': edate },
+                success: function (d) {
+                    
+                    ShowTable(eval(d));
+                    DrawZLine(eval(d));
+                }
+            });
+        }
+
+        //画水位过程线
+        function DrawZLine(data) {
+            var jsonData = GetData(data);
+
+            $("#divZLine").empty();
+
+            var oneH = $("#divZLine").height() / 4 - 10;
+            var compuH = $("#divZLine").height() / jsonData.length - 10;
+
+            if (compuH < oneH) {
+                compuH = oneH;
+            }
+
+            $.each(jsonData, function (i, dataset) {
+
+                $('<div class="chart">').appendTo('#divZLine').highcharts({
+                    chart: {
+                        marginLeft: 100, // Keep all charts left aligned
+                        marginRight: 30,
+                        spacingTop: 20,
+                        spacingBottom: 20,
+                        height: compuH,
+                        zoomType: 'x'
+                    },
+                    title: {
+                        text: " ", // dataset.name,
+                        align: 'left',
+                        margin: 0,
+                        x: 30
+                    },
+                    plotOptions: {
+                        series: {
+                            marker: {
+                                enabled: false
+                            }
+                        },
+                        line: {
+                            cropThreshold:50000
+                        }
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    legend: {
+                        enabled: false,
+                        padding: 10
+                    },
+                    xAxis: {
+                        crosshair: true,
+                        events: {
+                            setExtremes: syncExtremes
+                        },
+                        visible: i == jsonData.length - 1,
+                        type: "datetime",
+                        startOnTick: true,
+                        endOnTick: true,
+                        tickPixelInterval: 220,
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%m-%d %H', this.value);
+                            }
+                        },
+                        tickmarkPlacement: 'on'
+                    },
+                    yAxis: {
+                        title: {
+                            text: dataset.name,
+                            style: {
+                                fontSize: '14px'
+                            }
+                        },
+                        lineWidth: 2,
+                        lineColor: "#000"
+                    },
+                    tooltip: {
+                        positioner: function () {
+                            return {
+                                x: this.chart.chartWidth - this.label.width - this.chart.marginRight, // right aligned
+                                y: -1 // align to title
+                            };
+                        },
+                        borderWidth: 0,
+                        backgroundColor: 'none',
+                        pointFormat: '&nbsp;&nbsp;&nbsp;&nbsp;水位：{point.y}',
+                        headerFormat: '时间：{point.key}',
+                        shadow: false,
+                        useHTML: true,
+                        style: {
+                            fontSize: '14px',
+                            color: '#00f'
+                        },
+                        valueDecimals: 2,
+                        xDateFormat: '%Y-%m-%d %H:%M'
+                    },
+                    series: [{
+                        data: dataset.data,
+                        name: dataset.name,
+                        type: dataset.type,
+                        lineWidth: 1,
+                        color: Highcharts.getOptions().colors[i],//'#f00',
+                        fillOpacity: 0.3,
+                        tooltip: {
+                            valueSuffix: ' m'
+                        }
+                    }]
+                });
+            });
+        }
+        function LeftCollapse() {
+            $("#divLineContainer").width($(document).width() - 50);
+            ReflowChart();
+        }
+
+        function LeftExpand() {
+
+            $("#divLineContainer").width($(document).width() - 430);
+            ReflowChart();
+        }
+        function ReflowChart() {
+            //var HChart = $(".chart").highcharts();
+            var hcharts = $(".chart");
+            $.each(hcharts, function (i, item) {
+                $(item).highcharts().reflow();
+            })
+            //HChart.reflow();
+        }
+        function syncExtremes(e) {
+            var thisChart = this.chart;
+            try {
+                if (e.trigger !== 'syncExtremes') {
+                    Highcharts.each(Highcharts.charts, function (chart) {
+
+                        if (chart !== thisChart) {
+                            if (chart.xAxis[0] != undefined && chart.xAxis[0].setExtremes) {
+                                chart.xAxis[0].setExtremes(e.min, e.max, true, false, { trigger: 'syncExtremes' });
+                            }
+                        }
+                    });
+                }
+            } catch (ex) {
+                alert(ex.StackTrace);
+            }
+        }
+
+        function ShowTable(jsonData) {
+            $('#dgGrid').datagrid({
+                title: "",
+                striped: true,
+                singleSelect: true,
+                collapsible: true,
+                rownumbers: true,
+                nowrap: false,
+                emptyMsg: "<div style='font-weight:bold;margin-top:20px;font-size:20px;color:red'>查无数据</div>",
+                //view: scrollview,
+                frozenColumns: [[
+                    { field: 'TM', title: '时间', width: '160', rowspan: 1, align: 'center', formatter: com.formatTimemm }
+                ]],
+                pageSize: 20,
+                remoteSort: false,
+                loadMsg: '',
+                data: jsonData,
+                columns: GetColumns()
+            });
+        }
+        function GetColumns() {
+
+            var cols = [];
+            var objCol = [];
+            $.each(arrSTCD, function (i, item) {
+                objCol.push({ field: item, title: arrSTNM[i], width: '100', rowspan: 1, align: 'right', formatter: changevalue });
+            });
+            cols.push(objCol);
+            return cols;
+        }
+        function GetData(jsonData) {
+
+            var result = [];
+            
+            $.each(arrSTCD, function (i, stcd) {
+                var obj = {
+                    type: 'line',
+                    data: [],
+                    name: arrSTNM[i]
+                };
+                var beginDate = ""; 
+                $.each(jsonData, function (index, item) {
+                    if (item[stcd]) {
+                        if (beginDate != "" && (com.ToUTC(item["TM"]) - com.ToUTC(beginDate)) / 1000 / 3600/24 >7) {
+                            obj.data.push([com.ToUTC(item["TM"]), null]);
+                        }
+
+                        obj.data.push([com.ToUTC(item["TM"]), Number(item[stcd])]);
+                        beginDate = item["TM"];
+                    } 
+                });
+                result.push(obj); 
+            });
+            return result;
+        }
+ 
+    </script>
+}

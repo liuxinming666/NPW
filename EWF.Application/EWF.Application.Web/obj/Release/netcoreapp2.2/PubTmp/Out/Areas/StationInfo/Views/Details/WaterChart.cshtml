@@ -1,0 +1,1304 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "水文图表";
+}
+
+@section CSS {
+    <link href="~/lib/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .documentItem {
+            height: 52px;
+            line-height: 52px;
+            border: solid 1px #066DAB;
+            margin: 2px;
+            vertical-align: middle;
+            overflow: hidden;
+            border-radius: 4px;
+            -o-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            clear: both;
+        }
+
+        .documentItemTitle {
+            height: 30px;
+            line-height: 30px;
+            color: #0066CC;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemTitleSelect {
+            height: 30px;
+            line-height: 30px;
+            color: red;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemSummary {
+            height: 20px;
+            line-height: 20px;
+            font-family: "微软雅黑";
+            font-size: 12px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .divTabCss {
+            font-family: "微软雅黑";
+            color: #45A9FF;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/js/core/framework-ui.js"></script>
+    <script src="~/js/swfobject.js"></script>
+    <script type="text/javascript">
+        var g_stcd = "";
+        var g_stnm = "";
+        var g_threeLineData;
+        var g_chart;    //图标控件全局对象
+        var g_maxQ;     //流量最大值
+        var g_maxA;     //面积最大值
+        var g_maxS;     //流速最大值
+
+        var g_proLineObj = {};
+        var g_colorArr = ["0xFFFF0000", "0xFF000000", "0xFF00FF00", "0xFF0000FF", "0xFFFFFF01", "0xFF6F3695", "0xFF2771B2", "0xFFFF9000", "0xFFC7007D", "0xFF8DC700", "0xEEEE00", "0xEE3A8C", "0xEE00EE", "0xDEB887", "0xCD9B1D", "0xCD1076", "0xCAFF70", "0xBDB76B", "0x9B30FF", "0x8B5A2B"];
+
+        $(function () {
+            $("#txtBeginDate").val(moment().subtract(2, 'months').format("YYYY-MM-DD"));
+            $("#txtEndDate").val(moment().format("YYYY-MM-DD"));
+
+            //初始化水沙过程套绘图的时间框
+            $("#calLineBeginDate").val(moment().subtract(30, 'days').format("YYYY-MM-DD"));
+            $("#calLineEndDate").val(moment().format("YYYY-MM-DD"));
+
+            $('#btnChartSet').bind('click', function () {
+                $('#w').window('open');
+            });
+
+            $('#btnSetLine').bind('click', function () {
+                var sDate = document.getElementById("txtBeginDate").value + " 00:00";
+                var eDate = document.getElementById("txtEndDate").value + " 00:00";
+                $.modalOpenMax({
+                    id: "ZQRLSet",
+                    title: "定线",
+                    url: "/StationInfo/Details/ZQRLSet?stcd=" + g_stcd + "&sDate=" + escape(sDate) + "&eDate=" + escape(eDate),
+                    width: "1200px",
+                    height: "1000px",
+                    //maxmin: true,
+                    btn: null
+                });
+                //fitLine();
+                //$('#ZQRLSet').window('open');
+            });
+
+            $('#btnCalLineQuery').bind('click', function () {
+                QueryCalLine();
+            });
+
+            $('#btnQuery').bind('click', function () {
+                InitThreeLineChart();
+            });
+
+            InitThreeLine();
+        });
+
+        //初始化三关系线图表
+        function InitThreeLine() {
+            //g_stcd = GetURLParameter("stcd");
+            g_stcd = $.getUrlParam("stcd");
+            var objTmp = document.getElementById('p').children[0];
+
+            changeFrmChart(2, objTmp);
+            InitThreeLineChart();
+        }
+
+        //三关系线图表
+        function InitThreeLineChart() {
+            var sDate = document.getElementById("txtBeginDate").value + " 00:00";
+            var eDate = document.getElementById("txtEndDate").value + " 00:00";
+
+
+            $.getJSON("/StationInfo/Details/GetThreeLineData", { "stcd": g_stcd, "sDate": sDate, "eDate": eDate }, reInitThreeLineChart);
+        }
+
+        function reInitThreeLineChart(d) {
+            g_threeLineData = d;
+            var data = d.rows;
+            var length = d.total;
+
+            if (length == 0) {
+                document.getElementById('tdContent').innerHTML = "暂无数据！";
+                return;
+            }
+
+            var stnm = $.trim(data[0].STNM);
+            g_stnm = stnm;
+            g_proLineObj.stnm = stnm;
+            var aryZQ = new Array();    //水位-流量
+            var aryZA = new Array();    //水位-面积
+            var aryZS = new Array();
+            for (var i = 0; i < length; i++) {
+                var aryZQTmp = new Array();
+                aryZQTmp.push(Number(data[i].Q));
+                aryZQTmp.push(Number(data[i].Z));
+
+                if ($.trim(data[i].XSA) != "") {
+                    var aryZATmp = new Array();
+                    aryZATmp.push(Number(data[i].XSA));
+                    aryZATmp.push(Number(data[i].Z));
+                    aryZA.push(aryZATmp);
+
+                    var aryZSTmp = new Array();
+                    aryZSTmp.push(Math.round((Number(data[i].Q) / Number(data[i].XSA)) * 100) / 100);
+                    aryZSTmp.push(Number(data[i].Z));
+                    aryZS.push(aryZSTmp);
+                }
+
+                aryZQ.push(aryZQTmp);
+            }
+            SetChartData(stnm, aryZQ, aryZA, aryZS);
+        }
+
+        //设置三关系线的数据
+        function SetChartData(stnm, aryZQ, aryZA, aryZS) {
+            Highcharts.setOptions({
+                lang: {
+                    contextButtonTitle: "图表导出菜单",
+                    downloadJPEG: "下载JPEG图片",
+                    downloadPDF: "下载PDF文件",
+                    downloadPNG: "下载PNG文件",
+                    downloadSVG: "下载SVG文件",
+                    loading: "加载中",
+                    noData: "没有数据",
+                    printChart: "打印图表",
+                    resetZoom: "恢复缩放",
+                    resetZoomTitle: "恢复图表",
+                    thousandsSep: ""
+                }
+            });
+
+            var sDate = document.getElementById("txtBeginDate").value;
+            var eDate = document.getElementById("txtEndDate").value;
+
+            //流量的最大值
+            var maxQ = aryZQ[aryZQ.length - 1][0];
+            var maxA = aryZA[aryZA.length - 1][0];
+            var maxS = aryZS[aryZS.length - 1][0];
+
+            g_maxQ = maxQ;
+            g_maxA = maxA;
+            g_maxS = maxS;
+
+            var chart = Highcharts.chart('container', {
+                chart: {
+                    zoomType: 'x'
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: '<b>' + stnm + '水文站三关系线图' + '</b>'
+                },
+                subtitle: {
+                    text: '<b>' + sDate + '至' + eDate + '</b>'
+                },
+                xAxis: [
+                    {//流量X坐标轴
+                        id: 'xAxis-Q',
+                        title: {
+                            text: '流量(m³/s)',
+                            margin: -5,
+                            align: 'low'
+                        },
+                        max: maxQ * 2.5,   //设置流量坐标轴的最大值
+                        gridLineWidth: 1
+                    },
+                    {//面积X坐标轴
+                        id: 'xAxis-Area',
+                        title: {
+                            enabled: true,
+                            margin: -5,
+                            text: '面积(㎡)',
+                            align: 'low'
+                        },
+                        max: maxA * 2.5  //设置面积坐标轴的最大值
+                    },
+                    {//流速X坐标轴
+                        id: 'xAxis-Speed',
+                        title: {
+                            enabled: true,
+                            margin: -5,
+                            text: '流速(m/s)',
+                            align: 'low'
+                        },
+                        max: maxS * 2.5
+                    }
+                ],
+                yAxis: {
+                    title: {
+                        text: '水位(m)'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                legend: {
+                    layout: 'horizontal',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    width: 320,
+                    //height:600,
+                    floating: true,
+                    borderWidth: 1,
+                    itemStyle: {
+                        fontSize: '13px'
+                    }
+
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br />',
+                    formatter: function () {
+                        var y = this.y + 'm';
+                        if (this.series.name.indexOf("实测流量") >= 0) {
+                            var x = this.x + 'm³/s';
+                            return "<span style='border:0px solid'>" + this.series.name + ":<br>流量:" + x + "<br>水位:" + y + "</span>";
+                        } else if (this.series.name.indexOf("实测面积") >= 0) {
+                            var x = this.x + '㎡';
+                            return "<span style='border:0px solid'>" + this.series.name + ":<br>面积:" + x + "<br>水位:" + y + "</span>";
+                        } else if (this.series.name.indexOf("实测流速") >= 0) {
+                            var x = this.x + 'm/s';
+                            return "<span style='border:0px solid'>" + this.series.name + ":<br>流速:" + x + "<br>水位:" + y + "</span>";
+                        }
+                    }
+                },
+                series: [
+                    {
+                        name: '水位-流量',
+                        data: aryZQ,
+                        xAxis: 0,
+                        yAxis: 0
+                    },
+                    {
+                        name: '水位-面积',
+                        data: aryZA,
+                        xAxis: 1,
+                        yAxis: 0
+                    },
+                    {
+                        name: '水位-流速',
+                        data: aryZS,
+                        xAxis: 2,
+                        yAxis: 0
+                    },
+                    {
+                        name: '实测流量',
+                        type: "scatter",
+                        data: aryZQ,
+                        xAxis: 0,
+                        yAxis: 0
+                    },
+                    {
+                        name: '实测面积',
+                        type: "scatter",
+                        data: aryZA,
+                        xAxis: 1,
+                        yAxis: 0
+                    },
+                    {
+                        name: '实测流速',
+                        type: "scatter",
+                        data: aryZS,
+                        xAxis: 2,
+                        yAxis: 0
+                    }
+                ]
+            });
+            //计算和设置面积坐标轴向右平移的值
+            var n_xAxis_Area_left = chart.xAxis[0].toPixels(maxQ * 1.1);
+            chart.update({
+                xAxis: [//面积X坐标轴
+                    {
+                        id: 'xAxis-Area',
+                        left: n_xAxis_Area_left
+                    }
+                ]
+            });
+
+            //计算和设置流速坐标轴向右平移的值
+            var n_xAxis_Speed_left = chart.xAxis[1].toPixels(maxA * 1.1);
+            chart.update({
+                xAxis: [{//流速X坐标轴
+                    id: 'xAxis-Speed',
+                    left: n_xAxis_Speed_left
+                }]
+            });
+            g_chart = chart;
+        }
+
+        //更改水文图表选项卡的内容
+        function changeFrmChart(nType, objTmp) {
+            $(".selCss").removeClass("documentItemTitleSelect");
+            $(".selCss").addClass("documentItemTitle");
+            objTmp.children[0].className = "documentItemTitleSelect selCss";
+            switch (nType) {
+                case 1:
+                    $("#divCalLine").show();
+                    QueryCalLine();
+                    $("#divThreeLineCharts").hide();
+                    $("#divZQRLChart").hide();
+                    $("#divProline").hide();
+                    break;
+                case 2:
+                    $("#divThreeLineCharts").show();
+                    $("#divCalLine").hide();
+                    $("#divZQRLChart").hide();
+                    $("#divProline").hide();
+                    break;
+                case 3:
+                    $("#divProline").show();
+                    //初始化过流断面的选择框
+                    initProLineCombox();
+                    $("#divThreeLineCharts").hide();
+                    $("#divCalLine").hide();
+                    $("#divZQRLChart").hide();
+                    break;
+                case 4:
+                    $("#divZQRLChart").show();
+                    QueryZQRLChart();
+                    $("#divThreeLineCharts").hide();
+                    $("#divCalLine").hide();
+                    $("#divProline").hide();
+                    break;
+            }
+        }
+
+        //比例调整
+        function onScaleControlChange(nType, newValue, oldValue) {
+            switch (nType) {
+                case 0:
+                    g_chart.update({
+                        xAxis: [//流量X坐标轴
+                            {
+                                id: 'xAxis-Q',
+                                max: g_maxQ * newValue
+                            }
+                        ]
+                    });
+                    break;
+                case 1:
+                    g_chart.update({
+                        xAxis: [//面积X坐标轴
+                            {
+                                id: 'xAxis-Area',
+                                max: g_maxA * newValue
+                            }
+                        ]
+                    });
+                    break;
+                case 2:
+                    g_chart.update({
+                        xAxis: [//流速X坐标轴
+                            {
+                                id: 'xAxis-Speed',
+                                max: g_maxS * newValue
+                            }
+                        ]
+                    });
+                    break;
+            }
+        }
+
+        //偏移调整
+        function onDevControlChange(nType, newValue, oldValue) {
+            switch (nType) {
+                case 1:
+                    var n_xAxis_Area_left = g_chart.xAxis[0].toPixels(g_maxQ * newValue);
+                    g_chart.update({
+                        xAxis: [//面积X坐标轴
+                            {
+                                id: 'xAxis-Area',
+                                left: n_xAxis_Area_left
+                            }
+                        ]
+                    });
+                    break;
+                case 2:
+                    var n_xAxis_Speed_left = g_chart.xAxis[1].toPixels(g_maxA * newValue);
+                    g_chart.update({
+                        xAxis: [{//流速X坐标轴
+                            id: 'xAxis-Speed',
+                            left: n_xAxis_Speed_left
+                        }]
+                    });
+                    break;
+            }
+        }
+
+        function DBNull2String(s, rs) {
+            if (s == null) {
+                return rs;
+            }
+            else {
+                return s;
+            }
+        }
+
+        //显示水沙过程套绘图过程线
+        function reQueryCalLine(d) {
+            var dt1 = d.dt1;
+            var dt2 = d.dt2;
+            var dt3 = d.dt3;
+
+            var flashUrl = getHomeUrl() + "/flash/CalDrawLine.swf";
+
+            //var zData = "<graph direction='left_0' title='水位' color='0xFE0100'><value xid='2019-01-19 08:00'>89.51</value><value xid='2019-01-19 10:33'>89.51</value><value xid='2019-01-20 08:00'>89.49</value><value xid='2019-01-21 08:00'>89.49</value><value xid='2019-01-21 08:00'>89.49</value><value xid='2019-01-22 08:00'>89.49</value></graph>";
+            //var qData = "<graph direction='right_0' title='流量' color='0x0003FF'><value xid='2019-01-19 08:00'>435</value><value xid='2019-01-19 10:33'>440</value><value xid='2019-01-20 08:00'>426</value><value xid='2019-01-21 08:00'>426</value><value xid='2019-01-21 08:00'>426</value><value xid='2019-01-22 08:00'>426</value></graph>";
+            //var sData = "<graph direction = 'right_1' title = '含沙量' color = '0xFF00FD' > <value xid='2019-01-19 08:00'>-1</value> <value xid='2019-01-19 10:33'>-1</value> <value xid='2019-01-20 08:00'>-1</value> <value xid='2019-01-21 08:00'>-1</value> <value xid='2019-01-21 08:00'>-1</value> <value xid='2019-01-22 08:00'>-1</value></graph></graphs>";
+
+            var zData = "<graph direction='left_0' title='水位' color='0xFE0100'>";
+            var qData = "<graph direction='right_0' title='流量' color='0x0003FF'>";
+            var sData = "<graph direction = 'right_1' title = '含沙量' color = '0xFF00FD' >";
+
+            var length = dt2.length;
+            for (var i = 0; i < length; i++) {
+                var date = moment(dt2[i].TM);
+                zData = zData + "<value xid ='" + date.format('YYYY-MM-DD HH:mm') + "' >" + DBNull2String(dt2[i].Z, '-1') + "</value>";
+                qData = qData + "<value xid ='" + date.format('YYYY-MM-DD HH:mm') + "' >" + DBNull2String(dt2[i].Q, '-1') + "</value>";
+                sData = sData + "<value xid ='" + date.format('YYYY-MM-DD HH:mm') + "' >" + DBNull2String(dt2[i].S, '-1') + "</value>";
+            }
+
+            zData = zData + "</graph>";
+            qData = qData + "</graph>";
+            sData = sData + "</graph></graphs>";
+
+            var standData = "<graphs><param>"
+                + "<sfsw>0</sfsw>"
+                + "<jjsw>" + DBNull2String(dt3[0].WRZ, "") + "</jjsw>"
+                + "<bzsw>" + DBNull2String(dt3[0].GRZ, "") + "</bzsw>"
+                + "<zgsw>" + DBNull2String(dt3[0].OBHTZ, "") + "</zgsw>"
+                + "<ddgc></ddgc>"
+                + "<bzll>" + DBNull2String(dt3[0].GRQ, "") + "</bzll>"
+                + "<yjll>" + DBNull2String(dt3[0].OBMXQ, "") + "</yjll>"
+                + "<jjll>" + DBNull2String(dt3[0].WRQ, "") + "</jjll>"
+                + "<zdll>" + DBNull2String(dt3[0].FLPQ, "") + "</zdll>"
+                + "<ptll></ptll>"
+                + "<zdgd></zdgd>"
+                + "<ydgd></ydgd>"
+                + "<zdhsl>" + DBNull2String(dt3[0].HMXS, "") + "</zdhsl>"
+                + "</param>";
+
+            var strData = standData + zData + qData + sData;
+
+            var strLineObject = '<OBJECT codeBase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 width="100%" height="100%">'
+                + '<embed src="'
+                + flashUrl
+                + '"'
+                + 'FlashVars="dataXML=<chart><settings> <background> <color>0xffffff,0x000000</color> <alpha>1,0</alpha>'
+                + '<bordercolor>0xFF9E01</bordercolor><borderalpha>0</borderalpha> </background><title><primary>'
+                + $.trim(dt1[0].STNM)
+                + '水位流量过程线'
+                + '</primary> <primsize>18</primsize><secondary></secondary> <secsize>0</secsize><titlecolor>0x000000</titlecolor></title> <area><charttype> line</charttype> <popup>4</popup>'
+                + ' <linewidth>1</linewidth><linecolor>0x000000</linecolor> <alpha>1</alpha> <width>912</width><bcolor>0xc2c2c2</bcolor><balpha>0.8</balpha><borderalpha>0.5</borderalpha><bordercolor>0x000000</bordercolor>  '
+                + '<height>650</height> <left>120</left> <right>50</right><top>50</top> <bottom>400</bottom>'
+                + '<animation>true</animation><jsenabled>false</jsenabled></area><bullet> <size>10</size> <xname>时间:|时间:|时间:</xname> <yname>水位:|流量:|含沙量:</yname>'
+                + '<isbullet>true</isbullet></bullet><scroller><color>0x000000,0x000000</color><bcolor>0xffffff</bcolor> <height>13</height> <alpha>0,0.3</alpha>'
+                + "</scroller><xaxis> <name></name > <value align='bottom' min='0' max='0' format='YYYY / MM / DD'>0</value> </xaxis > <yaxis> <yalign>left_0|right_0|right_1</yalign><yname>水  位|流  量|含沙量</yname>"
+                + '<ycolor>0xFE0100|0x0003FF|0xFF00FD</ycolor><ylinewidth>1|1|1</ylinewidth><ymin>0|0|1</ymin><yminvalue>0|0|0</yminvalue> <ymax>0|0|0</ymax> <ymaxvalue>0|0|0</ymaxvalue></yaxis> <bottom><type>2</type><align>bottom</align> <number>6</number> <left>50</left> <top>10</top> </bottom>  </settings > '
+                + strData
+                + '</chart>" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="100%" height="100%">'
+                + '</embed ></OBJECT>';
+
+            $("#divCalLineChart").html(strLineObject);
+        }
+
+        function QueryCalLine() {
+            var sUrlTmp = "/RealData/River/StationRiverLine?stcd=" + g_stcd + "&stnm=" + escape(g_stnm);
+            document.getElementById('frmCalLine').src = sUrlTmp;
+        }
+
+        //初始化过流断面选择框
+        function initProLineCombox()
+        {
+            //初始化断面名称选择框
+            $('#selSectionName').combobox({
+                editable: false,
+                valueField: 'MS',
+                textField: 'MS',
+                url: '/StationInfo/Details/GetStationSectionNames?outtype=json&stcd=' + g_stcd,
+                onChange: function (newValue, oldValue) {
+                    QueryProLine();
+                },
+                onLoadSuccess: function () {
+                    var aryTmp = $('#selSectionName').combobox('getData');
+                    $('#selSectionName').combobox('select', aryTmp[0]['MS']);
+
+                    QueryProLine();
+                }
+            });
+
+            //初始化年份选择框
+            $('#selProlineYears').combobox({
+                editable: false,
+                valueField: 'TM',
+                textField: 'TM',
+                multiple: true,
+                url: '/StationInfo/Details/GetStationSectionYears?outtype=json&stcd=' + g_stcd,
+                onChange: function (newValue, oldValue) {
+                    QueryProLine();
+                },
+                onClick: onALLCKclick2,
+                onLoadSuccess: function () {
+                    var aryTmp = $('#selProlineYears').combobox('getData');
+                    if (aryTmp[0]['TM'] == '全选/反选') {
+                        return;
+                    }
+                    aryTmp.unshift({ "TM": "全选/反选", "STNM": "" });
+                    $('#selProlineYears').combobox('loadData', aryTmp);
+                    $('#selProlineYears').combobox('select', aryTmp[aryTmp.length - 1]['TM']);
+
+                    QueryProLine();
+                }
+            });
+        }
+
+        var onALLCKclick2 = function (record) {
+            var select = $("#selProlineYears");
+            var valueField = select.combobox("options").valueField;
+            if (record[valueField] == "全选/反选") {
+                var data = select.combobox("getData");
+                var values = select.combobox("getValues");
+                var selectVaues = [];
+                if ((data.length - 1) != values.length) {
+                    data.reduce(function (prev, current, index, array) {
+                        selectVaues.push(current[valueField]);
+                    }, selectVaues);
+                } else {
+                    selectVaues.push(record[valueField]);
+                }
+                select.combobox('setValues', selectVaues);
+            }
+        };
+
+        function QueryProLine() {
+            var secName = $('#selSectionName').combobox('getValue');
+            var year = ($('#selProlineYears').combobox('getValues')).toString();
+            g_proLineObj.secName = secName;
+            if (secName != "" && year != "") {
+                $.getJSON("/StationInfo/Details/GetGLDMInfo", { "stcd": g_stcd, "stnm": secName, "year": year, "sDt": "2,3" }, reQueryProLine);
+            }
+        }
+
+        function reQueryProLine(d) {
+            if (d.length == 0) {
+                return;
+            }
+            let serAry = new Array();
+            let doTmp = { name: '', data: new Array() };
+            for (let i = 0; i < d.length; i++) {
+                if (doTmp.name != d[i].SCSJ) {
+                    doTmp = { name: d[i].SCSJ, data: new Array() };
+                    serAry.push(doTmp);
+                }
+
+                doTmp.data.push([d[i].QDJ, d[i].GC]);
+            }
+
+            $("#mySumSection").DrawSumSect({
+                chart: {
+                    marginRight: 50,
+                    marginRight: 160
+                },
+                title: {
+                    text: g_stnm + $('#selSectionName').combo('getValue') + "断面冲淤变化图"
+                },
+                vLabel: {
+                    //marginTop:60
+                },
+                xAxis: {
+                    startOnTick: true,
+                    title: {
+                        text: '起点距'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: "高程(米)"
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    verticalAlign: 'top',
+                    layout: 'vertical',
+                    itemMarginTop: 10,
+                    y: 20
+                },
+                series: serAry
+            });
+        }
+
+        function getHomeUrl() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+            return prePath;
+        }
+    </script>
+
+    <script language="javascript" type="text/javascript">
+        var g_stcd;
+        var g_chart;    //全局图表对象
+        var g_mouseZ;   //全局鼠标所在的水位值
+        var g_mouseQ;   //全局鼠标所在的流量值
+        var g_labelObj = null;  //全局label对象
+        var g_scatterObj = null;    //全局测量模式下的散点对象
+        var colorsAry = ['#FF0000', '#000000', '#00FF00', '#0000FF', '#FFFF01', '#6F3695', '#2771B2', '#FF9000', '#C7007D', '#8DC700'];
+        //查询显示历史水位流量关系曲线
+        function QueryZQRLChart() {//InitThreeLine
+            g_stcd = $.getUrlParam("stcd");//'40105150';
+            InitZQChart();
+            InitSelYear();
+        }
+        function MSelOpen() {
+            document.getElementById('trzqContent').style.display = "none";
+        }
+        function MSelClose() {
+            document.getElementById('trzqContent').style.display = "";
+            var aYear = $("#ms").combobox('getValues');
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetZQRLYearsData/',
+                data: { "stcd": g_stcd, "years": aYear.toString() },
+                success: function (d) {
+                    var data = d.rows;
+                    var length = data.length;
+                    if (length == 0) {
+                        return;
+                    }
+
+                    var stnm = trim(data[0].STNM);
+                    var serAry = new Array();   //数据数组
+                    var dataTmp = new Array();      //关系曲线数据
+                    var dataMeaTmp = new Array();   //实测点数据
+                    var iStart = 0;
+                    var objIndex = 0;   //用于定义点和线的ID值，一一对应
+
+                    for (var i = 0; i < length; i++) {
+                        var zqTmp = new Array();
+                        var zqMeaTmp = new Array();
+
+                        zqTmp.push(Number(data[i].Q));
+                        zqTmp.push(Number(data[i].Z));
+                        zqMeaTmp.push(Number(data[i].QMEA));
+                        zqMeaTmp.push(Number(data[i].ZMEA));
+
+                        if (i != 0) {
+                            if (trim(data[i].LNNM) != trim(data[i - 1].LNNM))        //当LNNM不等于上一条数据时，说明此时是新数据开始
+                            {
+                                var ptMarkerObj = { symbol: 'circle', radius: 3 };
+
+                                var objData = dataTmp.slice(iStart, dataTmp.length);
+                                //var objData2 = dataMeaTmp.slice(iStart,dataMeaTmp.length);
+                                var objTmp = { name: trim(data[i - 1].LNNM), type: 'spline', data: objData, id: 'l' + objIndex, color: colorsAry[objIndex] };
+                                //var objTmp2 = {name:trim(data[i - 1].LNNM),type:'scatter',data:objData2,marker:ptMarkerObj,id:'p' + objIndex,color:colorsAry[objIndex]};
+
+                                serAry.push(objTmp);
+                                //serAry.push(objTmp2);
+                                iStart = i;
+                                objIndex++;
+                                //dataTmp.splice(0,dataTmp.length);
+                            }
+
+                            if (i == (length - 1)) {
+                                var ptMarkerObj = { symbol: 'circle', radius: 3 };
+
+                                var objData = dataTmp.slice(iStart, dataTmp.length);
+                                //var objData2 = dataMeaTmp.slice(iStart,dataMeaTmp.length);
+                                var objTmp = { name: trim(data[i].LNNM), type: 'spline', data: objData, id: 'l' + objIndex, color: colorsAry[objIndex] };
+                                //var objTmp2 = {name:trim(data[i - 1].LNNM),type:'scatter',data:objData2,marker:ptMarkerObj,id:'p' + objIndex,color:colorsAry[objIndex]};
+
+                                serAry.push(objTmp);
+                                //serAry.push(objTmp2);
+                                iStart = i;
+                                objIndex++;
+                            }
+                        }
+                        dataTmp.push(zqTmp);
+                        //dataMeaTmp.push(zqMeaTmp);
+                    }
+
+                    SetZQChartData(stnm, serAry);
+                }
+            });
+
+
+        }
+
+        function InitZQChart() {
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetZQRLData/',
+                data: { "stcd": g_stcd },
+                success: function (d) {
+                    var data = d.rows;
+                    var length = data.length;
+                    if (length == 0) {
+                        document.getElementById('tdzqContent').innerHTML = "暂无数据！";
+                        return;
+                    }
+                    var stnm = trim(data[0].STNM);
+                    var serAry = new Array();   //数据数组
+                    var dataTmp = new Array();      //关系曲线数据
+                    var dataMeaTmp = new Array();   //实测点数据
+                    var iStart = 0;
+                    var objIndex = 0;   //用于定义点和线的ID值，一一对应
+
+                    for (var i = 0; i < length; i++) {
+                        var zqTmp = new Array();
+                        var zqMeaTmp = new Array();
+
+                        zqTmp.push(Number(data[i].Q));
+                        zqTmp.push(Number(data[i].Z));
+                        zqMeaTmp.push(Number(data[i].QMEA));
+                        zqMeaTmp.push(Number(data[i].ZMEA));
+
+                        if (i != 0) {
+                            if (trim(data[i].LNNM) != trim(data[i - 1].LNNM))        //当LNNM不等于上一条数据时，说明此时是新数据开始
+                            {
+                                var ptMarkerObj = { symbol: 'circle', radius: 3 };
+
+                                var objData = dataTmp.slice(iStart, dataTmp.length);
+                                //var objData2 = dataMeaTmp.slice(iStart,dataMeaTmp.length);
+                                var objTmp = { name: trim(data[i - 1].LNNM), type: 'spline', data: objData, id: 'l' + objIndex, color: colorsAry[objIndex] };
+                                //var objTmp2 = {name:trim(data[i - 1].LNNM),type:'scatter',data:objData2,marker:ptMarkerObj,id:'p' + objIndex,color:colorsAry[objIndex]};
+
+                                serAry.push(objTmp);
+                                //serAry.push(objTmp2);
+                                iStart = i;
+                                objIndex++;
+                                //dataTmp.splice(0,dataTmp.length);
+                            }
+
+                            if (i == (length - 1)) {
+                                var ptMarkerObj = { symbol: 'circle', radius: 3 };
+
+                                var objData = dataTmp.slice(iStart, dataTmp.length);
+                                //var objData2 = dataMeaTmp.slice(iStart,dataMeaTmp.length);
+                                var objTmp = { name: trim(data[i].LNNM), type: 'spline', data: objData, id: 'l' + objIndex, color: colorsAry[objIndex] };
+                                //var objTmp2 = {name:trim(data[i - 1].LNNM),type:'scatter',data:objData2,marker:ptMarkerObj,id:'p' + objIndex,color:colorsAry[objIndex]};
+
+                                serAry.push(objTmp);
+                                //serAry.push(objTmp2);
+                                iStart = i;
+                                objIndex++;
+                            }
+                        }
+                        dataTmp.push(zqTmp);
+                        //dataMeaTmp.push(zqMeaTmp);
+                    }
+
+                    SetZQChartData(stnm, serAry);
+                }
+            });
+
+        }
+        //设置水位流量关系曲线的数据
+        function SetZQChartData(stnm, serAry) {
+            Highcharts.setOptions({
+                lang: {
+                    contextButtonTitle: "图表导出菜单",
+                    downloadJPEG: "下载JPEG图片",
+                    downloadPDF: "下载PDF文件",
+                    downloadPNG: "下载PNG文件",
+                    downloadSVG: "下载SVG文件",
+                    loading: "加载中",
+                    noData: "没有数据",
+                    printChart: "打印图表",
+                    resetZoom: "恢复缩放",
+                    resetZoomTitle: "恢复图表",
+                    thousandsSep: ""
+                }
+            });
+
+            var chart = Highcharts.chart('ZQChart', {
+                chart: {
+                    zoomType: 'xy'
+                    //width: $(window).width() - 20,
+                    //height: $(window).width() - 110
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: '<b>' + stnm + '水文站水位流量关系曲线' + '</b>'
+                },
+                xAxis: {
+                    title: {
+                        text: '流量(m³/s)',
+                        align: 'low'
+                    },
+                    gridLineWidth: 1
+                },
+                yAxis: {
+                    title: {
+                        text: '水位(m)'
+                    }
+                },
+                plotOptions: {
+                    scatter: {
+                        //enableMouseTracking: false,
+                        dataLabels: {
+                            enabled: true,
+                            allowOverlap: true,
+                            headerFormat: '<b>{series.name}</b>',
+                            formatter: function () {
+                                var x = this.x.toFixed(2) + 'm³/s';
+                                var y = this.y.toFixed(2) + 'm';
+                                return "<span style='border:0px solid'>水位:" + y + "<br>流量:" + x + "</span>";
+                                //return "<span style='border:0px solid'>"+this.series.name+"年<br>流量:"+x+"<br>水位:"+y+"</span>";
+                            }
+                        }
+                    },
+                    spline: {
+                        enableMouseTracking: true,
+                        cursor: 'pointer',
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                legend: {
+                    itemStyle: {
+                        'fontSize': '15px'
+                    },
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    //              width:162,
+                    //x: ($(window).width() - 15) * 10.8 / 13.5,
+                    //y: ($(window).height() - 45) * 0.4 / 6.5,
+                    x: -10,
+                    y: 30,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                    borderWidth: 1
+                },
+                tooltip: {
+                    enabled: true,
+                    headerFormat: '<b>{series.name}</b><br />',
+                    formatter: function () {
+                        var x = this.x + 'm³/s';
+                        var y = this.y + 'm';
+                        if (this.series.name != 'tmpPoint') {
+                            return "<span style='border:0px solid'>" + this.series.name + "年<br>流量:" + x + "<br>水位:" + y + "</span>";
+                        }
+                        else {
+                            return "";
+                        }
+                    },
+                    crosshairs: [true, true],  // 同时启用竖直及水平准星线
+                    crosshairs: [{
+                        width: 1,
+                        color: "#006cee",
+                        dashStyle: 'longdashdot',
+                        zIndex: 100
+                    }, {
+                        width: 1,
+                        color: "#006cee",
+                        dashStyle: 'longdashdot',
+                        zIndex: 100
+                    }]
+                },
+                series: serAry
+            });
+
+            g_chart = chart;
+
+            var extremes = chart.xAxis[0].getExtremes();
+            var max = extremes.max / 0.75;
+            chart.xAxis[0].setExtremes(extremes.min, max);
+
+            //设置点和线的颜色一致(这种方式速度慢，效率太低)
+            /*var length = serAry.length / 2;
+            for(var i=0;i < length;i++)
+            {
+                var lObj = chart.get("l" + i);
+                var lColor = lObj.color;
+
+                chart.update({
+                        series: [{
+                            id:'p' + i,
+                            color:lColor
+                        }]
+                });
+            }*/
+        }
+
+        //初始化年份列表框
+        function InitSelYear() {
+            //获取该测站有数据的年份数据
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetStationZQRLYear/',
+                data: { "stcd": g_stcd },
+                success: function (d) {
+                    var yData = d.rows;
+                    var length = yData.length;
+                    if (yData == null || length == 0) {
+                        return;
+                    }
+                    yData.unshift({ "LNNM": "", "LNNMTEXT": "全选/反选" });
+                    $('#ms').combobox({
+                        valueField: 'LNNM',
+                        textField: 'LNNMTEXT',
+                        panelHeight: 'auto',
+
+                        editable: true,// 不可编辑，只能选择
+                        data: yData,
+                        multiple: true,
+
+                        onLoadSuccess: function () {
+                            //var val = $(this).combobox('getData');
+                            //for (var item in val[0]) {
+                            //    if (item == 'LNNM') {
+                            //        $(this).combobox('select', val[0][item]);
+                            //    }
+                            //}
+                            var valueField = $(this).combobox("options").valueField;
+                            var data = $(this).combobox("getData");
+                            var values = $(this).combobox("getValues");
+                            var selectVaues = [];
+                            if ((data.length - 1) != values.length) {
+                                data.reduce(function (prev, current, index, array) {
+                                    selectVaues.push(current[valueField]);
+                                }, selectVaues);
+                            } else {
+                                selectVaues.push(record[valueField]);
+                            }
+                            //删除全选
+                            selectVaues.splice(0, 1);
+                            $(this).combobox('setValues', selectVaues);
+                        },
+                        onChange: function () {
+                            MSelClose();
+                        },
+                        onClick: onALLCKclick,
+
+
+                    });
+                }
+            });
+
+
+        }
+        /*
+         * 扩展的核心函数之一，自己扩展combobox的onclick的函数，判断是否是全选/反选 选项，
+         *  若果是 则选中全部的选项，否则，清空全部的选项
+         */
+        var onALLCKclick = function (record) {
+            var select = $("#ms");
+            var valueField = select.combobox("options").valueField;
+            if (!record[valueField]) {
+                var data = select.combobox("getData");
+                var values = select.combobox("getValues");
+                var selectVaues = [];
+                if ((data.length - 1) != values.length) {
+                    data.reduce(function (prev, current, index, array) {
+                        selectVaues.push(current[valueField]);
+                    }, selectVaues);
+                } else {
+                    selectVaues.push(record[valueField]);
+                }
+                select.combobox('setValues', selectVaues);
+            }
+        };
+        //去空
+        function trim(val) {
+            if (val != null && val != "" && val != undefined)
+                return val.toString().replace(/(^\s*)|(\s*$)/g, "");
+
+        }
+        //测量模式切换
+        function onBtnMeasureClick() {
+            btnOpt = $('#btnMeasure').linkbutton('options');
+            if (btnOpt.text == '进入测量模式') {
+                //进入测量模式
+                $("#btnMeasure").linkbutton({
+                    iconCls: 'icon-back',
+                    text: '退出测量模式'
+                });
+                $("#btnMeasure").css("color", "red");
+
+                //关闭节点跟踪
+                g_chart.update({
+                    plotOptions: {
+                        spline: {
+                            enableMouseTracking: false
+                        }
+                    }
+                });
+
+                //提示框设置
+                g_chart.update({
+                    tooltip: {
+                        borderWidth: 0,
+                        padding: 0,
+                        shadow: false
+                    }
+                });
+            }
+            else {
+                //退出测量模式
+                $("#btnMeasure").linkbutton({
+                    iconCls: 'icon-redo',
+                    text: '进入测量模式'
+                });
+                $("#btnMeasure").css("color", "#444");
+
+                //开启节点跟踪
+                g_chart.update({
+                    plotOptions: {
+                        spline: {
+                            enableMouseTracking: true
+                        }
+                    }
+                });
+
+                //label删除
+                if (g_labelObj != null) {
+                    g_labelObj.destroy();
+                    g_labelObj = null;
+                }
+                //散点删除
+                if (g_scatterObj != null) {
+                    g_scatterObj.remove();
+                    g_scatterObj = null;
+                }
+
+                //提示框设置
+                g_chart.update({
+                    tooltip: {
+                        borderWidth: 1,
+                        padding: 8,
+                        shadow: true
+                    }
+                });
+            }
+        }
+
+        //绘制标签
+        function render(chart, zVal, qVal, cxx, cyy) {
+            //var tt = chart.renderer.label('水位: ' + zVal + '流量:' + qVal,  cxx - chart.plotLeft , cyy-41, 'callout', cxx - 4, cyy);
+            var labelObj = chart.renderer.label('水位: ' + zVal + '<br>流量:' + qVal, cxx, cyy, 'callout')
+            labelObj.css({
+                color: '#FFFFFF',
+                align: 'center'
+            });
+
+            labelObj.attr({
+                fill: 'rgba(0, 0, 0, 0.4)',
+                padding: 8,
+                r: 5,
+                zIndex: 6
+            });
+
+            labelObj.add();
+
+            return labelObj
+        }
+
+        //测量开始
+        function MeasureBegin() {
+            btnOpt = $('#btnMeasure').linkbutton('options');
+            if (btnOpt.text == '退出测量模式') {
+               if (g_scatterObj == null) {
+                    g_scatterObj = g_chart.addSeries({
+                        type: 'scatter',
+                        name: 'tmpPoint',
+                        showInLegend: false,
+                        data: [[g_mouseQ, g_mouseZ]]
+                    });
+                }
+                else {
+                    g_scatterObj.addPoint([g_mouseQ, g_mouseZ]);
+                }
+            }
+        }
+
+        //测量中鼠标移动事件
+        function onMeasureMouseMove() {
+            btnOpt = $('#btnMeasure').linkbutton('options');
+            if (btnOpt.text == '退出测量模式') {
+                var e = window.event;
+                var pageHeight = document.body.clientHeight;
+                var pageWidth = document.body.clientWidth;
+                //var yOffset = pageHeight * 0.05;
+                var yOffset = (pageHeight - g_chart.chartHeight) / 2 + ($("#trCond").height())/1.5;
+                //var yOffset = (pageHeight - g_chart.chartHeight) / 2 ;
+                var xOffset = (pageWidth - g_chart.chartWidth) / 2;
+                //alert(pageHeight - g_chart.chartHeight);
+                var zVal = g_chart.yAxis[0].toValue(e.clientY - yOffset, false);
+                var qVal = g_chart.xAxis[0].toValue(e.clientX - xOffset, false);
+
+                g_mouseQ = qVal;
+                g_mouseZ = zVal;
+
+                zVal = zVal.toFixed(2);
+                qVal = qVal.toFixed(2);
+
+                //cxx = e.clientX;
+                //cyy = e.clientY - yOffset;
+                //            var oldLabelObj = g_labelObj
+                if (g_labelObj != null) {
+                    g_labelObj.attr({ text: '水位: ' + zVal + 'm<br>流量:' + qVal + 'm³/s' });
+                }
+                else {
+                    g_labelObj = render(g_chart, zVal, qVal, 0, 0);
+                   // g_labelObj = render(g_chart, zVal, qVal, 0, 10);
+                }
+            }
+        }
+
+        //测量结束
+        function MeasureEnd() {
+            alert('双击');
+        }
+
+        function Test() {
+            var e = window.event;
+            var pageHeight = document.body.clientHeight;
+            var yOffset = pageHeight * 0.05;
+            var retVal = g_chart.yAxis[0].toValue(e.clientY - yOffset, false);
+            //alert(document.body.clientWidth);
+            //alert(yOffset);
+            //alert(retVal);
+            //alert(e.clientY);
+        }
+    </script>
+}
+<div id="p" class="easyui-panel" style="width:100%;height:100%;padding:0px;overflow-y:no-display;" data-options="noheader:true">
+    <a href="javascript:void(0);" onclick="changeFrmChart(2,this);" style="cursor:hand;"><span class="documentItemTitle selCss">三关系线图</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(1,this);" style="cursor:hand;"><span class="documentItemTitle selCss">水沙过程套绘图</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(3,this);" style="cursor:hand;"><span class="documentItemTitle selCss">断面冲淤变化图</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(4,this);" style="cursor:hand;"><span class="documentItemTitle selCss">历年水位流量关系曲线</span></a>
+
+    <div id="divThreeLineCharts" style="width:98%;height:92%;">
+        <table style="height:100%; width:100%;">
+            <tr style="height:5%">
+                <td>
+                    开始日期：<input class="Wdate" type="text" id="txtBeginDate" style="width:120px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    结束日期：<input class="Wdate" type="text" id="txtEndDate" style="width:120px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id="btnQuery" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                </td>
+                <td align="right">
+                    <a id="btnSetLine" class="easyui-linkbutton" data-options="iconCls:'icon-sum'">定线</a>
+                    <a id="btnChartSet" class="easyui-linkbutton" data-options="iconCls:'icon-edit'">设置</a>
+                </td>
+            </tr>
+
+            <tr style=" height:95%; width:100%;">
+                <td colspan="2" id="tdContent" align="center" style="font-size:xx-large;">
+                    <div id="container" style="width:100%; height:100%;"></div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="w" class="easyui-window" data-options="title:'设置',top:'5px',resizable:false,minimizable:false,maximizable:false,collapsible:false,modal:false,closed:true,iconCls:'icon-edit'" style="width:500px;height:120px;padding:0px;overflow: hidden;">
+            <table style="height:100%; width:100%;">
+                <tr valign="top">
+                    <td>
+                        流量比例:<input id="inputQScale" class="easyui-numberspinner" style="width:60px;" required="required" value="2.5" data-options="min:1,max:10,
+                    precision:'1',increment:0.5,editable:true,onChange:function(newValue,oldValue){onScaleControlChange(0,newValue,oldValue)}">
+                    </td>
+                    <td>
+                        面积比例:<input id="inputAreaScale" class="easyui-numberspinner" style="width:60px;" required="required" value="2.5" data-options="min:1,max:10,
+                    precision:'1',increment:0.5,editable:true,onChange:function(newValue,oldValue){onScaleControlChange(1,newValue,oldValue)}">
+                    </td>
+                    <td>
+                        流速比例:<input id="inputSpeedScale" class="easyui-numberspinner" style="width:60px;" required="required" value="2.5" data-options="min:1,max:10,
+                    precision:'1',increment:0.5,editable:true,onChange:function(newValue,oldValue){onScaleControlChange(2,newValue,oldValue)}">
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td></td>
+                    <td>
+                        面积偏移:<input id="inputAreaDev" class="easyui-numberspinner" style="width:60px;" required="required" value="1.1" data-options="min:0,max:3,
+                    precision:'1',increment:0.1,editable:true,onChange:function(newValue,oldValue){onDevControlChange(1,newValue,oldValue)}">
+                    </td>
+                    <td>
+                        流速偏移:<input id="inputSpeedDev" class="easyui-numberspinner" style="width:60px;" required="required" value="1.1" data-options="min:0,max:3,
+                    precision:'1',increment:0.1,editable:true,onChange:function(newValue,oldValue){onDevControlChange(2,newValue,oldValue)}">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div id="divCalLine" style="width:100%;height:93%;">
+        <iframe id="frmCalLine" height="90%" width="99%"></iframe>
+        @*<div>
+            开始日期：<input class="Wdate" type="text" id="calLineBeginDate" style="width : 120px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            结束日期：<input class="Wdate" type="text" id="calLineEndDate" style="width : 120px" onFocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a id="btnCalLineQuery" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+        </div>
+        <div id="divCalLineChart" style="width:100%; height:600px;">
+        </div>*@
+    </div>
+
+    <div id="divProline" style="width:100%;height:93%;">
+        <div>
+            <span>断面选择:</span>
+            <input id="selSectionName" class="easyui-combobox" style="width:150px;" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>年份:</span>
+            <input id="selProlineYears" class="easyui-combobox" style="width:150px;" />
+        </div>
+        <div id="mySumSection" style="width:100%; height:600px;"></div>
+    </div>
+
+    <div id="divZQRLChart" style="width:100%;height:93%;">
+        <table style="height:100%; width:100%;">
+            <tr id="trCond" valign="top" style=" height:5%; width:100%;">
+                <td align="right" style="width:100px;">
+                    <span>年份:</span>
+                </td>
+                <td align="left">
+                    @*<select id="ms" multiple="multiple" style="width:150px;"></select>*@
+                    <input id="ms" style="width:150px;" />
+                </td>
+                <td align="right" style="width:80%;">
+                    <a id="btnMeasure" onclick="onBtnMeasureClick();" class="easyui-linkbutton" data-options="iconCls:'icon-redo'">进入测量模式</a>
+                </td>
+            </tr>
+
+            <tr id="trzqContent" style="height:95%; width:100%;">
+                <td id="tdzqContent" align="center" style="font-size:xx-large;" colspan="3">
+                    <div id="ZQChart" onclick="MeasureBegin();" onmousemove="onMeasureMouseMove();" style="width:100%; height:100%;"></div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>

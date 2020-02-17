@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="_Database\RTDBRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.60.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EWF.Data\EWF.Data.Repository\EWF.Data.Repository.csproj" />
+    <ProjectReference Include="..\EWF.Entity\EWF.Entity.csproj" />
+    <ProjectReference Include="..\EWF.IRepository\EWF.IRepository.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+{
+  "defaultAssembly": "EWF.Util.Ioc",
+  "components": [
+    {
+      "type": "EWF.Util.Ioc.SqlDAL, EWF.Util.Ioc",
+      "services": [
+        {
+          "type": "EWF.Util.Ioc.IDAL"
+        }
+      ],
+      "injectProperties": true
+    },
+    {
+      "type": "EWF.Util.Ioc.OracleDAL, EWF.Util.Ioc",
+      "services": [
+        {
+          "type": "EWF.Util.Ioc.IDAL"
+        }
+      ]
+    }
+  ]
+}

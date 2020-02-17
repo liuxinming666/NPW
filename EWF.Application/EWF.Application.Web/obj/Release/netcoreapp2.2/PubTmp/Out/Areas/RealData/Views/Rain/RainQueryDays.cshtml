@@ -1,0 +1,204 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "RainQuery";
+}
+
+<div class="easyui-layout" fit="true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+        <table>
+            <tr>
+                <td>选择测站:</td>
+                <td>
+                    <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </td>
+                <td>开始日期:</td>
+                <td><input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd' })" /></td>
+                <td align="left">
+                    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                    <a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;height:100%;overflow:hidden;">
+        <table id="dgGrid" style="height:100%;overflow:auto;"></table>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var dataSource;
+        $(function () {
+            InitCondition();            
+            $("#btnSearch").click(DoSearch);
+            //DoSearch();
+            //$('#dgGrid').datagrid({ loadFilter: pagerFilter }).datagrid('loadData', getData());
+        });
+
+        /**
+         * 初始化条件
+         * */
+        function InitCondition() {
+            var curdate = new Date();
+            var newDate = DateAdd("dd", -9, curdate);
+            $("#edate").val(utils.formatDate(new Date(), 'yyyy-MM-dd'));
+            $("#sdate").val(utils.formatDate(newDate, 'yyyy-MM-dd'));
+
+            bindAreaDataGrid();
+        }
+        /**
+         * 查询
+         * add by JinJianPing
+         * Date:2019-05-27 13:13
+         * */
+        function DoSearch() {
+            ShowRainGrid();
+        }
+
+        /**
+         * 表格分页显示河道水情
+         * add by JinJianPing
+         * Date:2019-05-27 13:13
+         * */
+        function ShowRainGrid() {
+            var arrStcd = $('#areastcd').combogrid('getValues');
+            var stcds = arrStcd.join(",");
+            com.ajax({
+                url: '/RealData/Rain/GetRainData',
+                data: { 'stcds': stcds, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+                success: function (r) {
+                    $('#dgGrid').datagrid({
+                        width:'100%',
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: true,
+                        pagination: true,
+                        fitCloumns: true,
+                        pagePosition: 'bottom',
+                        pageSize: 20,
+                        data:r,
+                        queryParams: { 'stcds': stcds, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+                        //loadMsg: '数据加载中,请稍后……',       
+                        frozenColumns: [GetSTColumns(r)],
+                        columns:[GetColumns(r)],
+                        onLoadSuccess: function () {
+                        }
+                    });
+                }
+            });
+        }
+        function pagerFilter(data) {
+            if (typeof data.length == 'number' && typeof data.splice == 'function') {	// is array
+                data = {
+                    total: data.length,
+                    rows: data
+                }
+            }
+            var dg = $(this);
+            var opts = dg.datagrid('options');
+            var pager = dg.datagrid('getPager');
+            pager.pagination({
+                onSelectPage: function (pageNum, pageSize) {
+                    opts.pageNumber = pageNum;
+                    opts.pageSize = pageSize;
+                    pager.pagination('refresh', {
+                        pageNumber: pageNum,
+                        pageSize: pageSize
+                    });
+                    dg.datagrid('loadData', data);
+                }
+            });
+            if (!data.originalRows) {
+                data.originalRows = (data.rows);
+            }
+            var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+            var end = start + parseInt(opts.pageSize);
+            data.rows = (data.originalRows.slice(start, end));
+            return data;
+        }
+        function GetSTColumns(r) {
+            var data = r.rows[0];
+            var columns = [];
+            if (r.total > 0) {
+                $.each(data, function (key, value) {
+                    if (key == "站名") {
+                        columns.push(
+                            { field: key, title: '站名', align: 'center' }
+                        );
+                    }
+                });
+            }
+            return columns;
+        }
+        ///绑定横列显示数据的列
+        function GetColumns(r) {
+            var data = r.rows[0];
+            var columns = [];
+            if (r.total > 0) { 
+                $.each(data, function (key, value) {
+                    if (key != "站名") {
+                        columns.push(
+                            {
+                                field: key, title: key, width: '9%', halign: 'center', align: 'right', formatter: function (item) {
+                                    return Round1N(item);
+                                }
+                            }
+                        );
+                    }
+                });
+            }
+            return columns;
+        }
+        function Round1N(v) {
+            if (v == 0) {
+                return "0.0";
+            }
+            else {
+                return Round1New(v);
+            }
+        }
+        //绑定站点列表
+        function bindAreaDataGrid() {
+            var sttps = " 'PP','ZZ','ZQ'";
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": sttps },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '100px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    $('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+                    DoSearch();
+                }
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+            var sttps = " 'PP','ZZ','ZQ'";
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": sttps }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+    </script>
+}
+
+

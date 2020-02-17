@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EWF.Data\EWF.Data.Repository\EWF.Data.Repository.csproj" />
+    <ProjectReference Include="..\EWF.Entity\EWF.Entity.csproj" />
+    <ProjectReference Include="..\EWF.IRepository\EWF.IRepository.csproj" />
+  </ItemGroup>
+
+</Project>

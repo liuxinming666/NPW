@@ -1,0 +1,72 @@
+2019-08-17 11:03:25,282 [4] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Object reference not set to an instance of an object.
+堆栈:    at EWF.Repository.IcejamRepository.GetIceData(String stcds, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\IcejamRepository.cs:line 198
+   at EWF.Services.IcejamService.GetIceDate(String stcd, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\IcejamService.cs:line 181
+   at EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetIceDate(String stcds, String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\IceJamController.cs:line 86
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: EWF.Repository
+--------------------------------------------
+
+2019-08-17 11:03:25,282 [39] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Object reference not set to an instance of an object.
+堆栈:    at EWF.Repository.IcejamRepository.GetIceData(String stcds, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\IcejamRepository.cs:line 198
+   at EWF.Services.IcejamService.GetIceDate(String stcd, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\IcejamService.cs:line 181
+   at EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetIceDate(String stcds, String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\IceJamController.cs:line 86
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: EWF.Repository
+--------------------------------------------
+
+2019-08-17 11:25:44,096 [7] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to completion of the operation or the server is not responding.
+堆栈:    at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, SqlDataReader ds)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean asyncWrite, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior)
+   at System.Data.SqlClient.SqlCommand.ExecuteDbDataReader(CommandBehavior behavior)
+   at System.Data.Common.DbCommand.System.Data.IDbCommand.ExecuteReader(CommandBehavior behavior)
+   at Dapper.SqlMapper.ExecuteReaderWithFlagsFallback(IDbCommand cmd, Boolean wasClosed, CommandBehavior behavior) in C:\projects\dapper\Dapper\SqlMapper.cs:line 1053
+   at Dapper.SqlMapper.QueryImpl[T](IDbConnection cnn, CommandDefinition command, Type effectiveType)+MoveNext() in C:\projects\dapper\Dapper\SqlMapper.cs:line 1081
+   at System.Collections.Generic.List`1.AddEnumerable(IEnumerable`1 enumerable)
+   at System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   at Dapper.SqlMapper.Query[T](IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout, Nullable`1 commandType) in C:\projects\dapper\Dapper\SqlMapper.cs:line 723
+   at Dapper.SqlMapper.Query(IDbConnection cnn, String sql, Object param, IDbTransaction transaction, Boolean buffered, Nullable`1 commandTimeout, Nullable`1 commandType) in C:\projects\dapper\Dapper\SqlMapper.cs:line 650
+   at EWF.Repository.RainRepository.GetRaininess(String startDate, String endDate, Int32 type, String addvcd, Int32 sect) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\RainRepository.cs:line 400
+   at EWF.Services.RainService.GetRaininess(String startDate, String endDate, Int32 type, String addvcd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\RainService.cs:line 370
+   at EWF.Application.Web.Areas.RealData.Controllers.RainController.GetRaininess(String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\RainController.cs:line 302
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: System.ComponentModel.Win32Exception (258): 等待的操作过时。
+源: Core .Net SqlClient Data Provider
+--------------------------------------------
+

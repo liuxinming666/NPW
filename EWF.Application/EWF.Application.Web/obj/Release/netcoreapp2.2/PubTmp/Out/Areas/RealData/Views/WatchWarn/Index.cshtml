@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "超警信息";
+    Layout = "null";
+
+}
+@section Scripts{
+<script type="text/javascript">
+    $(function () {
+        FirstQuery();
+    });
+    function FirstQuery() {//进入默认加载
+        var ppstcds = '', zzstcds = '', rrstcds = '';
+        for (var i = 0; i < objlists.length; i++) {
+            if (objlists[i].sttp == 'PP')
+                ppstcds += objlists[i].stcd + ",";
+            if (objlists[i].sttp == 'ZZ' || objlists[i].sttp == 'ZQ')
+                zzstcds += objlists[i].stcd + ",";
+            if (objlists[i].sttp == 'RR')
+                rrstcds += objlists[i].stcd + ",";
+        }
+        parent.frames["mainMap"].removeAllen();
+        var region = "";
+        if (ppstcds.length > 0)//雨情
+            parent.frames["mainMap"].Pptn('P', 'New', ppstcds, '', '', '', region);
+        if (zzstcds.length > 0)//河道
+            parent.frames["mainMap"].Water("RvNew", zzstcds, region);
+        if (rrstcds.length > 0)//水库
+            parent.frames["mainMap"].Water("RsNew", rrstcds, region);
+    }
+</script>
+}

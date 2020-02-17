@@ -1,0 +1,329 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "测站展示";
+}
+
+@section CSS {
+    <link href="~/lib/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/jquery.galleryview-3.0-dev.css" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="~/css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="~/css/default.css">
+    <link rel="stylesheet" type="text/css" href="~/css/pgwslideshow.css">
+    <style type="text/css">
+        .documentItem {
+            height: 52px;
+            line-height: 52px;
+            border: solid 1px #066DAB;
+            margin: 2px;
+            vertical-align: middle;
+            overflow: hidden;
+            border-radius: 4px;
+            -o-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            clear: both;
+        }
+
+        .documentItemTitle {
+            height: 30px;
+            line-height: 30px;
+            color: #0066CC;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemTitleSelect {
+            height: 30px;
+            line-height: 30px;
+            color: red;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemSummary {
+            height: 20px;
+            line-height: 20px;
+            font-family: "微软雅黑";
+            font-size: 12px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .divTabCss {
+            font-family: "微软雅黑";
+            color: #45A9FF;
+        }
+    </style>
+
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ps-current {
+            height: 76% !important;
+            max-height: 76% !important;
+        }
+
+            .ps-current ul, .ps-current ul li {
+                height: 100%;
+                max-height: 100% !important;
+            }
+
+            .ps-current img {
+                width: 50%;
+                height: 100%;
+                max-height: 100% !important;
+            }
+
+        .pgwSlideshow, .jq22-container {
+            height: 100% !important;
+            max-height: 100% !important;
+        }
+
+        .jq22-content {
+            height: 100% !important;
+            max-height: 100% !important;
+            padding: 0;
+        }
+        .ps-current>ul {
+            margin: 5px 0px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/js/StationInfo/jquery.timers-1.2.js"></script>
+    <script src="~/js/StationInfo/jquery.easing.1.3.js"></script>
+    <script src="~/js/StationInfo/jquery.galleryview-3.0-dev.js"></script>
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript" src="~/js/StationInfo/pgwslideshow2.js"></script>
+    <script src="~/js/swfobject.js"></script>
+    <script type="text/javascript">
+        var g_stcd;//测站编码
+        var g_panroamaImgUrl;//全景url
+        var g_realvideoUrl;//视频站点url
+        var g_picnames;//图片
+        $(function () {
+            g_stcd = unescape($.getUrlParam("stcd"));//'@ViewData["stcd"]';
+
+            var objTmp = document.getElementById('p').children[0];//默认显示图片
+            changeFrmChart(1, objTmp);//设置选项样式
+        });
+
+        //初始化图片
+        function InitStaImg() {
+            if (g_picnames == null) {
+                com.ajax({
+                    type: 'get',
+                    url: '/StationInfo/Show/GetPicInfo',
+                    data: {
+                        stcd: g_stcd
+                    },
+                    success: function (result) {
+                        //加载列表数据
+                        g_picnames = result;
+                        InitPicList(g_picnames);
+                        //$('.pgwSlideshow').pgwSlideshow();
+                    },
+                    error: function () {
+                        alert('获取图片数据失败');
+                    }
+                });
+            }
+            else {
+                //InitPicList(g_picnames);
+            }
+
+
+        }
+        function InitPicList(g_picnames) {
+            if (g_picnames.length == 0) {
+                document.getElementById('divStaImg').innerHTML = "<p align=\"center\">暂无数据！</p>";
+                return;
+            }
+            var str = "";
+            $('#StaImg').empty();
+             
+            for (var index in g_picnames) {
+                //str = "<li><img src=\"../" + g_stcd + "/StaImg/" + picnames[index] + "\" data-frame=\"../" + g_stcd + "/StaImg/" + picnames[index] + "\"/></li >";
+                str = "<li><img src=" + getRootPath() + g_picnames[index] + " data-frame=" + getRootPath() + g_picnames[index] + "></li>";               
+                $('#StaImg').append(str);
+            }
+            $('.pgwSlideshow').pgwSlideshow();
+
+        }
+        function getRootPath() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+            return prePath;
+        }
+        //检查url是否有效 true-有效 false=无效
+        function CheckUrl(urlPath) {
+            var re = "";
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", urlPath, false);
+            xmlhttp.send();
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                    re= "true"
+                } //url存在
+                else if (xmlhttp.status == 404) {
+                    re= "false"
+                } //url不存在
+                else {
+                    re = "false"
+                }//其他状态
+            }
+            return re;
+        }
+        //加载测站全景图片
+        function InitPanoramaImg() {
+            if (g_panroamaImgUrl != null) return;
+            var panroamaImgUrl = getRootPath() + "/_fileupload/StationShow/PanoramaImg/" + g_stcd + "/tour.html";//"../" + g_stcd + "/PanoramaImg/tour.html";
+            if (CheckUrl(panroamaImgUrl) == "false") {
+                document.getElementById('divPanoramaImg').innerHTML = "<p align=\"center\">暂无数据！</p>";
+                return;
+            }
+            document.getElementById('PanoramaImgContent').src = panroamaImgUrl;
+
+        }
+        //视频监控
+        function InitRealVideoContent() {
+
+
+            //window.open("/MapVideo/Camera/VideoInfo?stcd=" + g_stcd, "_blank");
+            window.open("/MapVideo/Camera/VideoHKPTNew?stcd=" + g_stcd, "_blank");
+
+            //if (g_realvideoUrl == null) {
+            //    com.ajax({
+            //        type: 'get',
+            //        url: '/MapVideo/Video/GetVideoList',
+            //        data: {
+            //            ids: '6'
+            //        },
+            //        success: function (result) {
+            //            if (result.length > 0) {
+            //                //加载测站视频监控
+            //                g_realvideoUrl = "/MapVideo/Camera/Index?vname=" + result[0].USERNAME + "&vpwd=" + result[0].PASSWORD + "&vip=" + result[0].IP + "&vport=" + result[0].PORT;
+            //                //alert(panroamaImgUrl);
+            //                document.getElementById('RealVideoContent').src = g_realvideoUrl;
+            //            }
+            //            else {
+            //                document.getElementById('RealVideoContent').innerHTML = "暂无数据";
+            //            }
+
+            //        }
+            //    });
+            //}
+        }
+        //宣传片
+        function InitVideo() {
+            var videoUrl = getRootPath() + '@ViewBag.VideoURL';// "../" + g_stcd + "/video/movie.mp4";
+            if (CheckUrl(videoUrl) == "false") {
+                document.getElementById('divVideo').innerHTML = "<p align=\"center\">暂无数据！</p>";
+                return;
+            }
+            document.getElementById('videoSource').src = videoUrl;
+            document.getElementById('myVideo').load();
+            document.getElementById('myVideo').play();
+        }
+
+        //更改测站展示的类型
+        function changeFrmChart(nType, objTmp) {
+            $(".selCss").removeClass("documentItemTitleSelect");
+            $(".selCss").addClass("documentItemTitle");
+            objTmp.children[0].className = "documentItemTitleSelect selCss";
+
+            switch (nType) {
+                case 1:
+                    $("#divStaImg").show();
+                    InitStaImg();
+                    $("#divPanoramaImg").hide();
+                    $("#divVideo").hide();
+                    $("#divRealVideo").hide();
+                    break;
+                case 2:
+                    $("#divStaImg").hide();
+                    $("#divPanoramaImg").show();
+                    InitPanoramaImg();
+                    $("#divVideo").hide();
+                    $("#divRealVideo").hide();
+                    break;
+                case 3:
+                    $("#divStaImg").hide();
+                    $("#divPanoramaImg").hide();
+                    $("#divVideo").show();
+                    InitVideo();
+                    $("#divRealVideo").hide();
+                    break;
+                case 4:
+                    $("#divStaImg").hide();
+                    //QueryZQRLChart();
+                    $("#divPanoramaImg").hide();
+                    $("#divVideo").hide();
+                    $("#divRealVideo").show();
+                    InitRealVideoContent();
+                    break;
+            }
+        }
+
+
+    </script>
+
+}
+<div id="p" class="easyui-panel" style="width:100%;height:100%;padding:0px;overflow-y:no-display;" data-options="noheader:true">
+    <a href="javascript:void(0);" onclick="changeFrmChart(1,this);" style="cursor:hand;"><span class="documentItemTitle selCss">图片</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(2,this);" style="cursor:hand;"><span class="documentItemTitle selCss">全景图</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(3,this);" style="cursor:hand;"><span class="documentItemTitle selCss">宣传片</span></a>
+    <a href="javascript:void(0);" onclick="changeFrmChart(4,this);" style="cursor:hand;"><span class="documentItemTitle selCss">视频监控</span></a>
+
+    <div id="divStaImg" style="width:100%;height:93%;font-size:xx-large;" >
+        @*<form id="form1" >
+                <center>
+                    <ul id="myGallery" >
+                        <li><img src="~/StationInfo/40105150/StaImg/1.jpg" data-frame="../40105150/StaImg/1.jpg" /></li>
+                        <li><img src="~/StationInfo/40105150/StaImg/2.jpg" data-frame="../40105150/StaImg/2.jpg" /></li>
+
+                    </ul>
+                </center>
+            </form>*@
+
+        <div class="jq22-container" >
+            <div class="jq22-content bgcolor-3">                
+                <ul id="StaImg" class="pgwSlideshow bo_imgcon">
+                    @*<li><img src="~/StationInfo/40105150/StaImg/1.jpg" alt="San Francisco, USA" data-description="Golden Gate Bridge"></li>*@
+                    
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="divPanoramaImg" style="width:100%;height:93%;font-size:xx-large;" align="center">
+        <iframe id="PanoramaImgContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+    </div>
+
+    <div id="divVideo" style="width:100%;height:93%;font-size:xx-large;" align="center">
+        <video id="myVideo" width="100%" height="100%" controls>
+            <source id="videoSource" type="video/mp4">            
+        </video>
+    </div>
+
+    <div id="divRealVideo" style="width:100%;height:93%;font-size:xx-large;" align="center">
+        <iframe id="RealVideoContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+    </div>
+</div>

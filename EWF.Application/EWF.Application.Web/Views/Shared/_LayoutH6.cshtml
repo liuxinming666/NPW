@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewData["Title"]</title>
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui.css" />
+
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/iconextension.css" />
+
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css" />
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/iconextension.css" />
+
+	<!--加载组件CSS-->
+	<link href="~/lib/jquery-plugin/showloading/showLoading.css" rel="stylesheet" type="text/css" />
+	<!--加载图标库CSS-->
+	<link href="~/css/icon/icon.css" rel="stylesheet" type="text/css" />
+	<link href="~/css/Site.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/icon.css" />
+	<style type="text/css">
+		html, body {
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.panel-body {
+			font-size: 14px;
+		}
+
+		.panel-header {
+			/*background-color: #DAE3E0;*/
+			/*background: #DAE3E0;*/
+			/*background:url("../../Content/images/panelheaderbg.png") repeat-x;*/
+			filter: "";
+		}
+
+		.datagrid-header .datagrid-cell span {
+			font-size: 14px;
+		}
+
+		.datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {
+			font-size: 14px;
+		}
+
+		.combobox-item, .combobox-group, .combobox-stick {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-prompt {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-text {
+			font-size: 14px;
+		}
+
+		.tabs-title {
+			font-size: 14px;
+		}
+	</style>
+	<style type="text/css">
+
+		.panel-title {
+			font-size: 14px;
+			color: #251C1F;
+		}
+
+		.panel-tool {
+			height: 26px;
+		}
+
+		.datagrid-row-alt {
+			background: #dce8f3;
+		}
+
+		.datagrid-row-selected {
+			background: #0081c2;
+		}
+	</style>
+
+	@RenderSection("CSS", false)
+
+</head>
+<body class="easyui-layout" data-options="fit:true">
+	@RenderBody()
+
+	<script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.layout_extend.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/easyloader.js?locale=zh_CN&theme=gray"></script>
+	<script type="text/javascript" src="~/lib/jquery-plugin/showloading/jquery.showLoading.min.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.datagrid_extend.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/extends/datagrid-scrollview.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/extends/datagrid-detailview.js"></script>
+	<script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/extends/jquery.easyui.messager_extend.js"></script>
+
+	<script type="text/javascript" src="~/js/core/utils.js"></script>
+	<script type="text/javascript" src="~/js/core/common.js"></script>
+	<script type="text/javascript" src="~/js/Menu.js"></script>
+
+	<script type="text/javascript" src="~/lib/moment/moment.js"></script>
+	<script type="text/javascript" src="~/lib/moment/moment-with-locales.min.js"></script>
+	<script type="text/javascript" src="~/lib/Highcharts/7.1.1/highcharts.js"></script>
+	<script type="text/javascript" src="~/lib/Highcharts/7.1.1/modules/exporting.js"></script>
+	<script type="text/javascript" src="~/lib/export/exportExcel.js"></script>
+	<script type="text/javascript" src="~/lib/print/JQPrint.js"></script>
+	<script type="text/javascript" src="~/lib/layer3.0/layer.js"></script>
+	<script type="text/javascript" src="~/lib/Assets/js/common.js"></script>
+	<script type="text/javascript" src="~/lib/telerik.kendoui/js/jszip.min.js"></script>
+	<script type="text/javascript" src="~/lib/My97DatePicker/WdatePicker.js"></script>
+
+	@RenderSection("Scripts", false)
+
+	<script type="text/javascript">
+		$(function () {
+			if ($("#btnExport") != undefined) {
+				$("#btnExport").bind("click", function () {
+
+					ExportExcel($('#dgGrid'));
+				});
+
+			}
+			if ($("#btnExportNew") != undefined) {
+				$("#btnExportNew").bind("click", function () {
+					$('#dgGrid').data('kendoGrid').saveAsExcel();
+				});
+			}
+
+			if ($("#btnPrint") != undefined) {
+				$("#btnPrint").bind("click", function () {
+					$('#dgGrid').printArea();
+				});
+			}
+		});
+
+	</script>
+</body>
+
+</html>

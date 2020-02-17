@@ -1,0 +1,91 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "极值滑动统计";
+}
+
+<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="height:50px">
+    <table style="height:100%;">
+        <tr>
+            <td>开始日期：</td>
+            <td><input id="startdate" class="Wdate" style="width:160px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:00' })" /></td>
+            <td>结束日期：</td>
+            <td><input id="enddate" class="Wdate" style="width:160px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:00' })" /></td> 
+            <td><a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+                <a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+            </td>
+
+        </tr>
+    </table>
+</div>
+<div id="day" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(function () {
+            $("#startdate").val(moment().add(-7, 'Day').format("YYYY-MM-DD hh:00"));
+            $("#enddate").val(moment().format("YYYY-MM-DD hh:00")); 
+            doSearch();
+        });
+        function bindGrid() {
+            
+            $('#dgGrid').propertygrid({
+                striped: true,
+                fitColumns: true,
+                singleSelect: true,
+                showGroup: true,
+                loadMsg: " ",
+                url: '/RealData/Rain/GetRaininess',
+                queryParams: { 'startDate': $("#startdate").val(), 'endDate': $("#enddate").val()},
+                rownumbers: true,
+                columns: [
+                    [
+                        { field: 'STCD', title: '站码', align: 'center', width: 100 },
+                        { field: 'STNM', title: '站名', halign: 'center', width: 100 },
+                        { field: 'SUMDRP', title: '降雨量', halign: 'center', align: 'right', width: 100, formatter: Round1New },
+                        { field: 'SPANTM', title: '出现时间', align: 'center', width: 200 }
+                    ]
+                ]
+            });
+        }
+        function GetColumns(r) {
+            var columns = [];
+            var content = [];
+            if (r.length > 0) {
+                for (var key in r[0]) {
+                    if (key == "STCD")
+                        content.push({ field: key, title: '站码', width: "10%", align: "center" });
+                    else if (key == "STNM")
+                        content.push({ field: key, title: '站名', width: "15%", align: "center" }); 
+                    else if (key == "ACCP1")
+                        content.push({ field: key, title: '1小时', width: "10%", align: "center", sortable: true, sorter: numberSort, align: 'center', formatter: Round1New });
+                    else if (key == "ACCP3")
+                        content.push({ field: key, title: '3小时', width: "10%", align: "center", sortable: true, sorter: numberSort, align: 'center', formatter: Round1New });
+                    else if (key == "ACCP6")
+                        content.push({ field: key, title: '6小时', width: "10%", align: "center", sortable: true, sorter: numberSort, align: 'center', formatter: Round1New });
+                    else if (key == "ACCP12")
+                        content.push({ field: key, title: '12小时', width: "10%", align: "center", sortable: true, sorter: numberSort, align: 'center', formatter: Round1New });
+                    else if (key == "ACCP24")
+                        content.push({ field: key, title: '24小时', width: "10%", align: "center", sortable: true, sorter: numberSort, align: 'center', formatter: Round1New });
+
+                }
+            }
+            columns.push(content);
+            return columns;
+        }
+        //按照浮点数真实大小排序
+        function numberSort(a, b) {
+            var number1 = parseFloat(a);
+            var number2 = parseFloat(b);
+
+            return (number1 > number2 ? 1 : -1);
+        }
+        function doSearch() {
+            
+            bindGrid();
+        }
+
+    </script>
+}

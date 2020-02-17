@@ -1,0 +1,9 @@
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\bin\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.deps.json
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\bin\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\bin\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.pdb
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.csproj.CoreCompileInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.AssemblyInfoInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.AssemblyInfo.cs
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.pdb
+D:\Prject\NPW\branches\Demo\trunk\EWF.Util\EWF.Dapper.SimpleCRUD\obj\Debug\netcoreapp2.2\EWF.Dapper.SimpleCRUD.csprojAssemblyReference.cache

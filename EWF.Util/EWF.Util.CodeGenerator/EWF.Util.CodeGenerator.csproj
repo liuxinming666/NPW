@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="CodeTemplate\IRepositoryTemplate.txt" />
+    <None Remove="CodeTemplate\IServicesTemplate.txt" />
+    <None Remove="CodeTemplate\MappingTemplate.txt" />
+    <None Remove="CodeTemplate\ModelTemplate.txt" />
+    <None Remove="CodeTemplate\Nodata.IRepositoryTemplate.txt" />
+    <None Remove="CodeTemplate\Nodata.IServicesTemplate.txt" />
+    <None Remove="CodeTemplate\Nodata.RepositoryTemplate.txt" />
+    <None Remove="CodeTemplate\Nodata.ServiceTemplate.txt" />
+    <None Remove="CodeTemplate\Nodata\ControllerTemplate.txt" />
+    <None Remove="CodeTemplate\RepositoryTemplate.txt" />
+    <None Remove="CodeTemplate\ServiceTemplate.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="CodeTemplate\Nodata\IRepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\IRepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\Nodata\IServicesTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\IServicesTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\MappingTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\ModelTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\Nodata\ControllerTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\Nodata\RepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\RepositoryTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\Nodata\ServiceTemplate.txt" />
+    <EmbeddedResource Include="CodeTemplate\ServiceTemplate.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EWF.Data\EWF.Data.Repository\EWF.Data.Repository.csproj" />
+    <ProjectReference Include="..\EWF.Util\EWF.Util.csproj" />
+  </ItemGroup>
+
+</Project>

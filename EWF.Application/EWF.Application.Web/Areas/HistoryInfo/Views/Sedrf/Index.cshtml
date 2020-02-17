@@ -1,0 +1,872 @@
+﻿@{
+	Layout = "~/Views/Shared/_LayoutH6.cshtml";
+	ViewData["Title"] = "实时水情";
+	var sdate = System.DateTime.Now.AddYears(-1).AddDays(-7).ToString("yyyy-MM-dd");
+	var edate = System.DateTime.Now.AddYears(-1).ToString("yyyy-MM-dd");
+	var smonth = System.DateTime.Now.ToString("yyyy-01");
+	var emonth = System.DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+	var year = System.DateTime.Now.AddYears(-1).ToString("yyyy");
+}
+
+@section CSS {
+    <style>
+        #divChartContainer .panel {
+            margin: 0 35px;
+        }
+
+        .panel-body {
+            font-size: 14px;
+        }
+
+        .panel-title {
+            font-size: 10px;
+        }
+
+        .panel-header {
+            /*background-color: #DAE3E0;*/
+            /*background: #DAE3E0;*/
+            /*background:url("../../Content/images/panelheaderbg.png") repeat-x;*/
+            filter: "";
+        }
+
+        .panel-tool {
+            height: 26px;
+        }
+
+        .datagrid-row-alt {
+            background: #dce8f3;
+        }
+
+        .datagrid-row-selected {
+            background: #0081c2;
+        }
+
+
+        .datagrid-header .datagrid-cell span {
+            font-size: 14px;
+        }
+
+        .datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {
+            font-size: 14px;
+        }
+
+        .combobox-item, .combobox-group, .combobox-stick {
+            font-size: 14px;
+        }
+
+        .textbox .textbox-prompt {
+            font-size: 14px;
+        }
+
+        .textbox .textbox-text {
+            font-size: 14px;
+        }
+
+        .tabs-title {
+            font-size: 14px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/highcharts/7.1.1/modules/drilldown.js"></script>
+    <script type="text/javascript">
+        var colors = ['#035294', '#0a60a8', '#0d6cba', '#1979c9', '#1783dd', '#068dec', '#2a9cf4', '#3da8fa', '#59b4fa', '#75bff8', '#9ed2fa', '#badcf7'];
+
+        window.onload = function () {
+            initControl();
+        };
+
+        function initControl() {
+            $("#divChart").height($(window).height() - 80);
+            $('input:radio[name="searchType"]').on("click", function () {
+                var checkValue = $('input:radio[name="searchType"]:checked').val();
+                $(".date-select").hide();
+				var dd = $('#areastcd').combogrid().data;
+
+                if (checkValue === "0") { //启用时段
+					$(".day").show();
+					if ($('#areastcd').combogrid('getValues').length <= 0) {
+						$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+					}
+                }
+                if (checkValue === "1") {//启用旬月
+					$(".month").show();
+					if ($('#areastcd').combogrid('getValues').length <= 0) {
+						$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+					}
+                }
+                if (checkValue === "2") { //启用年
+                    $(".year").show();
+                }
+            });
+
+			bindAreaDataGrid();
+		}
+
+		function bindAreaDataGrid() {
+			$('#areastcd').combogrid({
+				panelWidth: 500,
+				multiple: true,
+				idField: 'CODE',
+				textField: 'KEYNAME',
+				url: "/RealData/River/GetStaByKeywords/",
+				queryParams: { "sttp": "'ZZ','ZQ'","q": "" },
+				columns: [[
+					{ field: 'ck', checkbox: true },
+					{ field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+					{ field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+					{ field: 'TYPE', width: '30%', title: '站类', align: 'center', formatter: changesttp }
+
+				]],
+				onLoadSuccess: function (dd) {
+					var checkValue = $('input:radio[name="searchType"]:checked').val();
+					if (checkValue != 2) {
+						if ($('#areastcd').combogrid('getValues').length <= 0) {
+							$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+						}
+					}
+					doSearch();
+				}
+			});
+		}
+
+		function doSearchSta(value, name) {
+			var ele = $("#areastcd");
+			var grid = ele.combogrid('grid');
+
+			$.getJSON("/RealData/River/GetStaByKeywords/", { "sttp": "'ZZ','ZQ'", "q": value }, function (jsondata) {
+				grid.datagrid("loadData", jsondata);
+			});
+		}
+
+
+		function doSearch() {
+
+			var stcdArray = $('#areastcd').combogrid('getValues');
+
+			var stcd = stcdArray.join(",");
+            var sdate = $('#sdate').val();
+            var edate = $('#edate').val();
+            var smonth = $('#smonth').val();
+            var emonth = $('#emonth').val();
+            var year = $('#year').val();
+            var searchType = $('input:radio[name="searchType"]:checked').val();
+
+            $("body").layout("show", "west");
+            $("#yeardgGrid").hide();
+			
+
+            if (searchType === "0") { //时段
+
+                if (moment(sdate).add(1, 'months').isBefore(edate)) {
+                    alert("时段查询不能超过一个月");
+                    return;
+                }
+                loadDayData(stcd, sdate, edate);
+            }
+            if (searchType === "1") {//旬月
+                if (moment(smonth).add(1, 'years').isBefore(emonth)) {
+                    alert("旬月查询不能超过一个年");
+                    return;
+                }
+                loadMonthData(stcd, smonth, emonth);
+            }
+            if (searchType === "2") { //年
+				$("body").layout("hidden", "west");
+				$(".layout-panel-center .panel-title").css('height','0')
+
+                $("#yeardgGrid").show();
+                loadYearData(stcd, year);
+            }
+        }
+
+
+        function loadDayData(stcd, sdate, edate) {
+            com.ajax({
+                type: 'get',
+                url: '/HistoryInfo/Sedrf/GetData_MDay',
+                data: {
+                    STCD: stcd,
+                    sdate: sdate,
+                    edate: edate
+                },
+                success: function (result) {
+                    //加载列表数据
+                    initDayTable(result);
+                    var subTitle = getSubTitle(result.datasrc);
+                    initDayChart(result.xData, result.yData, result.yDataS,result.isShowSTW, subTitle);
+
+                }
+            });
+        }
+
+        function loadMonthData(stcd, smonth, emonth) {
+            com.ajax({
+                type: 'get',
+                url: '/HistoryInfo/Sedrf/GetData_MMonth',
+                data: {
+                    STCD: stcd,
+                    smonth: smonth,
+                    emonth: emonth
+                },
+                success: function (result) {
+                    //加载列表数据
+                    initMonthTable(result);
+                    var subTitle = getSubTitle(result.datasrc);
+                    initMonthChart(result.xData, result.yData, result.yDataS, subTitle);
+                }
+            });
+        }
+
+        function loadYearData(stcd, year) {
+            com.ajax({
+                type: 'get',
+                url: '/HistoryInfo/Sedrf/GetData_Year',
+                data: {
+                    STCD: stcd,
+                    year: year
+                },
+                success: function (result) {
+                    //加载列表数据
+                    var subTitle = getSubTitle(result.datasrc);
+                    initYearChart(result.rows, year, subTitle);
+
+                    initYearTable(result);
+                }
+            });
+        }
+
+
+        function initDayChart(nameArray, yValueArray, yValueArrayS, isShowSTW, subTitle) {
+         
+            var optionW = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                colors: colors,
+                chart: {
+                    type: 'column',
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: '多日累计径流量--柱状图'
+                },
+                subtitle: {
+                    text: subTitle
+                },
+                xAxis: {
+                    categories: nameArray
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '径流量(百万m³)',
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+				},
+				tooltip: {
+					formatter: function () {
+						return '<b>' + this.x + '</b><br/>' +
+							this.series.name + ': ' + this.y + '<br/>' +
+							'累计径流量: ' + this.point.stackTotal;
+					}
+				},
+				legend: {
+					align: 'center',
+					verticalAlign: 'bottom',
+					borderWidth: 0
+				},
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                textOutline: '1px 1px black'
+                            }
+                        }
+                    }
+                },
+                series: yValueArray
+            }
+			var optionS = {
+				credits: {
+					enabled: false // 禁用版权信息
+				},
+				colors: colors,
+				chart: {
+					type: 'column',
+					zoomType: 'xy'
+				},
+				title: {
+					text: '多日累计输沙量--柱状图'
+				},
+				subtitle: {
+					text: subTitle
+				},
+				xAxis: {
+					categories: nameArray
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '输沙量(万t)',
+					},
+					stackLabels: {  // 堆叠数据标签
+						enabled: true,
+						style: {
+							fontWeight: 'bold',
+							color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+						}
+					}
+				},
+				tooltip: {
+					formatter: function () {
+						return '<b>' + this.x + '</b><br/>' +
+							this.series.name + ': ' + this.y + '<br/>' +
+							'累计输沙量: ' + this.point.stackTotal;
+					}
+				},
+				legend: {
+					align: 'center',
+					verticalAlign: 'bottom',
+					borderWidth: 0
+				},
+				plotOptions: {
+					column: {
+						stacking: 'normal',
+						dataLabels: {
+							enabled: true,
+							color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+							style: {
+								// 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+								textOutline: '1px 1px black'
+							}
+						}
+					}
+				},
+				series: yValueArrayS
+			};
+
+			
+            $("#divChart").empty();
+			if (isShowSTW) {
+				$("#divChart").css("overflow", "auto");
+                $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionW);
+                $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionS);
+            } else {
+                $('#divChart').highcharts(optionW);
+            }
+        }
+
+		function initDayTable(rowsData) {
+			var option = {
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: false,
+				data: rowsData,
+				frozenColumns: [[], []],
+				columns: [[
+					{ field: 'STNM', title: '站名', width: '25%', align: 'center' },
+					{
+						field: 'IDTM', title: '时间', width: '25%', align: 'left', formatter: function (value) {
+							var date = new Date(value);
+							var y = date.getFullYear();
+							var m = date.getMonth() + 1;
+							var d = date.getDate();
+							return m + '-' + d;
+						}
+					},
+					{ field: 'WRNF', title: '径流量', width: '24%', align: 'center' },
+					{ field: 'STW', title: '输沙量', width: '25%', align: 'center' }
+				]]
+			};
+
+			$('#dgGrid').empty().datagrid(option);
+        }
+
+        function initMonthChart(nameArray, yValueArray, yValueArrayS, subTitle) {
+            
+            var optionW = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                colors: colors,
+                chart: {
+                    type: 'column',
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: '多月累计径流量--柱状图'
+                },
+                subtitle: {
+                    text: subTitle
+                },
+                xAxis: {
+                    categories: nameArray
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '径流量(百万m³)',
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y + '<br/>' +
+                            '累计径流量: ' + this.point.stackTotal;
+                    }
+				},
+				legend: {
+					align: 'center',
+					verticalAlign: 'bottom',
+					borderWidth: 0
+				},
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                textOutline: '1px 1px black'
+                            }
+                        }
+                    }
+                },
+                series: yValueArray
+            }
+            var optionS = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                colors: colors,
+                chart: {
+                    type: 'column',
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: '多月累计输沙量--柱状图'
+                },
+                subtitle: {
+                    text: subTitle
+                },
+                xAxis: {
+                    categories: nameArray
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '输沙量(万t)',
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y + '<br/>' +
+                            '累计输沙量: ' + this.point.stackTotal;
+                    }
+				},
+				legend: {
+					align: 'center',
+					verticalAlign: 'bottom',
+					borderWidth: 0
+				},
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                textOutline: '1px 1px black'
+                            }
+                        }
+                    }
+                },
+                series: yValueArrayS
+            }
+			$("#divChart").empty().css("overflow", "auto");
+            $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionW);
+            $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionS);
+        }
+        function initMonthTable(rowsData) {
+			var options = {
+				width: '450',
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                data: rowsData,
+                //loadMsg: '数据加载中,请稍后……',
+				frozenColumns: [[
+					{ field: 'STNM', title: '站名', width: '80', align: 'center', rowspan: 2 },
+					{
+						field: 'Month', title: '月份', width: '60', align: 'center', rowspan: 2, formatter: function (value) {
+							var date = new Date("20" + value + "-01");
+							var y = date.getFullYear();
+							var m = date.getMonth() + 1;
+							var d = date.getDate();
+							return m;
+						}
+					},
+				],[]],
+                columns: [[
+                    { title: '径流量(百万m³)', width: '240', align: 'right', colspan: 4 },
+					{ title: '输沙量(万t)', width: '240', align: 'right', colspan: 4 }
+                ], [
+                        { field: 'WSXun', title: '上旬', align: 'center', width: '60' },
+						{ field: 'WZXun', title: '中旬', align: 'center', width: '60' },
+						{ field: 'WXXun', title: '下旬', align: 'center', width: '60' },
+						{ field: 'WMonSum', title: '月累计', align: 'center', width: '60' },
+						{ field: 'SSXun', title: '上旬', align: 'center', width: '60' },
+						{ field: 'SZXun', title: '中旬', align: 'center', width: '60' },
+						{ field: 'SXXun', title: '下旬', align: 'center', width: '60' },
+						{ field: 'SMonSum', title: '月累计', align: 'center', width: '60' }
+                    ]],
+                onLoadSuccess: function (data) {
+                    mergeCellsByField("dgGrid", "STNM");
+                }
+            };
+
+            var grid = $('#dgGrid').datagrid(options);
+        }
+
+        function initYearChart(dataArray, year, subTitle) {
+            var yData          = [];
+            var drilldownData  = [];
+            var yDataS         = [];
+            var drilldownDataS = [];
+
+            $.each(dataArray, function (n, row) {
+                
+                if (row.CountType === "径流量") {
+                    yData.push({ name: row.STNM, y: parseFloat(row.YearVal), drilldown: row.STNM });
+                    var obj = { name: row.STNM, id: row.STNM, data: [] };
+
+                    obj.data.push(['1月', parseFloat(row.Jan)]);
+                    obj.data.push(['2月', parseFloat(row.Feb)]);
+                    obj.data.push(['3月', parseFloat(row.Mar)]);
+                    obj.data.push(['4月', parseFloat(row.Apr)]);
+                    obj.data.push(['5月', parseFloat(row.May)]);
+                    obj.data.push(['6月', parseFloat(row.June)]);
+                    obj.data.push(['7月', parseFloat(row.July)]);
+                    obj.data.push(['8月', parseFloat(row.Aug)]);
+                    obj.data.push(['9月', parseFloat(row.Sept)]);
+                    obj.data.push(['10月', parseFloat(row.Oct)]);
+                    obj.data.push(['11月', parseFloat(row.Nov)]);
+                    obj.data.push(['12月', parseFloat(row.Dec)]);
+
+                    drilldownData.push(obj);
+                }
+                if (row.CountType === "输沙量") {
+                    yDataS.push({ name: row.STNM, y: parseFloat(row.YearVal), drilldown: row.STNM });
+                    var obj = { name: row.STNM, id: row.STNM, data: [] };
+
+                    obj.data.push(['1月', parseFloat(row.Jan)]);
+                    obj.data.push(['2月', parseFloat(row.Feb)]);
+                    obj.data.push(['3月', parseFloat(row.Mar)]);
+                    obj.data.push(['4月', parseFloat(row.Apr)]);
+                    obj.data.push(['5月', parseFloat(row.May)]);
+                    obj.data.push(['6月', parseFloat(row.June)]);
+                    obj.data.push(['7月', parseFloat(row.July)]);
+                    obj.data.push(['8月', parseFloat(row.Aug)]);
+                    obj.data.push(['9月', parseFloat(row.Sept)]);
+                    obj.data.push(['10月', parseFloat(row.Oct)]);
+                    obj.data.push(['11月', parseFloat(row.Nov)]);
+                    obj.data.push(['12月', parseFloat(row.Dec)]);
+
+                    drilldownDataS.push(obj);
+                }
+            });
+
+            var optionW = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: year + '年各站累计径流量柱状图'
+                },
+                subtitle: {
+                    text: subTitle+ '（点击可查看测站具体每月的累计数据）' 
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    title: {
+                        text: '径流量（百万m³）'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> <br/>'
+				},
+				legend: {
+					align: 'center',
+					verticalAlign: 'bottom',
+					borderWidth: 0
+				},
+				plotOptions: {
+					series: {
+						borderWidth: 0,
+						dataLabels: {
+							enabled: true,
+							format: '{point.y}'
+						}
+					}
+				},
+                series: [{
+                    name: '测站径流量年累计',
+                    colorByPoint: true,
+                    data: yData
+                }],
+                drilldown: {
+                    series: drilldownData
+                }
+            };
+            var optionS = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: year + '年各站累计输沙量-柱状图'
+                },
+                subtitle: {
+                    text: subTitle+ '（点击可查看测站具体每月的累计数据）' 
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    title: {
+                        text: '输沙量（万t）'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> '
+				},
+				legend: {
+					enabled: false
+				},
+				plotOptions: {
+					series: {
+						borderWidth: 0,
+						dataLabels: {
+							enabled: true,
+							format: '{point.y}'
+						}
+					}
+				},
+                series: [{
+                    name: '测站输沙量年累计',
+                    colorByPoint: true,
+                    data: yDataS
+                }],
+                drilldown: {
+                    series: drilldownDataS
+                }
+            };
+
+            $("#divChart").empty();
+            $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionW);
+            $('<div class="chart" style="width:100%;">').appendTo("#divChart").highcharts(optionS);
+
+            $("#divChart").css("overflow","auto");
+        }
+        function initYearTable(rowsData) {
+            var gridOption = {
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                data: rowsData,
+                columns: [[
+                    { field: 'STNM', title: '站名', width: '10%', align: 'center' },
+                    { field: 'CountType', title: '项目', width: '8%', align: 'center' },
+                    { field: 'YearVal', title: '年累计', width: '9%', align: 'right' },
+                    { field: 'Jan', title: '1', width: '6%', align: 'right' },
+                    { field: 'Feb', title: '2', width: '6%', align: 'right' },
+                    { field: 'Mar', title: '3', width: '6%', align: 'right' },
+                    { field: 'Apr', title: '4', width: '6%', align: 'right' },
+                    { field: 'May', title: '5', width: '6%', align: 'right' },
+                    { field: 'June', title: '6', width: '6%', align: 'right' },
+                    { field: 'July', title: '7', width: '6%', align: 'right' },
+                    { field: 'Aug', title: '8', width: '6%', align: 'right' },
+                    { field: 'Sept', title: '9', width: '6%', align: 'right' },
+                    { field: 'Oct', title: '10', width: '6%', align: 'right' },
+                    { field: 'Nov', title: '11', width: '6%', align: 'right' },
+                    { field: 'Dec', title: '12', width: '6%', align: 'right' }
+                ]],
+                onLoadSuccess: function (data) {
+                    mergeCellsByField("yeardgGrid", "STNM");
+                }
+            };
+
+            $('<div id="yeardgGrid" class="grid" style="width:95%;">').appendTo("#divChart").datagrid(gridOption);
+            //$('#yeardgGrid').datagrid(gridOption);
+        }
+    </script>
+    <script type="text/javascript">
+        function getSubTitle(datasrc) {
+            if (datasrc === "history") return "数据来自历史库整编数据";
+            if (datasrc === "real") return "数据来自实时库，由系统计算统计";
+            return "数据来自历史库整编数据";
+        }
+        function getmax(vmax, vmin) {
+            if (vmax == 0) {
+                return 5;
+            }
+            var maxvalue = vmax;
+            var minvalue = vmin;
+            if (vmax <= vmin) {
+                vmax = vmin + 1;
+            }
+            var dy = vmax - vmin;
+            var dt = 1;
+            while (dy <= 1) {
+                dy = dy * 10;
+                dt = dt * 0.1;
+            }
+            while (dy > 10) {
+                dy = dy * 0.1;
+                dt = dt * 10;
+            }
+            while (dy > 8) {
+                dy = dy * 0.5;
+                dt = dt * 2;
+            }
+            while (dy < 3) {
+                dy = dy * 2;
+                dt = dt * 0.5;
+            }
+            var temy = Math.round(vmax / dt); //取整
+            if (temy >= vmax / dt) { maxvalue = temy * dt; }
+            else { maxvalue = (temy + 1) * dt; }
+            temy = Math.round(vmin / dt); //取整
+            if (temy <= vmin / dt) {
+                minvalue = temy * dt;
+            }
+            else {
+                minvalue = (temy - 1) * dt;
+            }
+            return maxvalue;
+        }
+        function LeftCollapse() {
+            $("#divChartContainer").width($(document).width() - 50);
+            ReflowChart();
+        }
+        function LeftExpand() {
+            $("#divChartContainer").width($(document).width() - 450);
+            ReflowChart();
+        }
+        function ReflowChart() {
+            var HChart = $("#divChart").highcharts();
+            HChart.reflow();
+        }
+    </script>
+}
+
+
+<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="height:45px">
+    <table style="height:100%;">
+        <tr>
+            <td>测站：</td>
+			<td>
+				<input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+				<div id="tb11">
+					<input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+				</div>
+			</td>
+
+            <td>查询方式:</td>
+            <td id="td2">
+                <label for="radioDay">
+                    <input id="radioDay" type="radio" name="searchType" value="0"  />多日
+                </label>
+
+                <label for="radioMonth">
+                    <input id="radioMonth" type="radio" name="searchType" value="1"   />旬月
+                </label>
+
+                <label for="radioYear">
+                    <input id="radioYear" type="radio" name="searchType" value="2" checked="checked"   />年
+                </label>
+            </td>
+
+            <td style="width:300px;">
+                <div class="date-select day" style="display:none;">
+                    <input type="text" id="sdate" name="sdate" class="Wdate" value="@sdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />-
+
+                    <input type="text" id="edate" name="edate" class="Wdate" value="@edate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+                </div>
+                <div class="date-select month" style="display:none;" >
+                    <input type="text" id="smonth" name="smonth" class="Wdate" value="@smonth" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM'})" />-
+                    <input type="text" id="emonth" name="emonth" class="Wdate" value="@emonth" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM'})" />
+                </div>
+                <div class="date-select year" >
+                    <input type="text" id="year" name="year" class="Wdate" value="@year" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy'})" />
+                </div>
+            </td>
+
+            <td><a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch()">查询</a></td>
+            <td></td>
+            <td><a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'" >导出</a></td>
+        </tr>
+    </table>
+</div>
+
+<div id="gridContainer" data-options="region:'west',split:false,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:450px;">
+    <table id="dgGrid" style="height:100%;width:100%;"></table>
+</div>
+
+<div id="divC" data-options="region:'center',split:false,border:false,title:''">
+    <div style="width:100%;height:100%;overflow-x:hidden;" id="divChartContainer">
+        <div id="divChart" style="width:100%;height:100%;">
+        </div>
+
+        <table id="yeardgGrid" style="display:none;"></table>
+
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,65 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "雨情分析条件";
+}
+<div style="margin:5px 10px;">
+    起始：<input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /> 
+</div>
+<div style="margin:5px 10px;">
+    结束：<input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" />
+</div>
+<div style="margin:5px 10px;">
+    <input type="radio" name="surfacetype" value="1" checked />等值面
+    <input type="radio" name="surfacetype" value="0"  />等值线
+</div>
+<div style="margin:5px 10px;">
+    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+</div>
+
+<div style="margin:50px 10px;">
+    <a href="#" id="btnTW" class="easyui-linkbutton">24小时</a>
+    <a href="#" id="btnCurDay" class="easyui-linkbutton">当日</a>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            InitCondition();
+            //绑定查询按钮到事件
+            $("#btnSearch").click(DoSearch);
+            DoSearch();
+            $("#btnTW").click(function () {
+                var mapWnd = parent.frames['mainMap'];
+
+                mapWnd.ShowSurface(moment().add(-24, 'hour').format("YYYY-MM-DD hh:mm"), moment().format("YYYY-MM-DD hh:mm"), $("input[name='surfacetype']:checked").val(), 0);
+            });
+            $("#btnCurDay").click(function () {
+                var mapWnd = parent.frames['mainMap'];
+
+                mapWnd.ShowSurface(moment().format("YYYY-MM-DD 00:00"), moment().format("YYYY-MM-DD 23:59"), $("input[name='surfacetype']:checked").val(),0);
+            });
+        });
+        /**
+         * 初始化时间条件 
+         * add by SUN
+         * Date:2019-05-29 15:00
+         * */
+        function InitCondition() {
+            
+            $("#edate").val(moment().format("YYYY-MM-DD hh:00"));
+            $("#sdate").val(moment().add(-7, 'Day').format("YYYY-MM-DD hh:00"));
+            
+        }
+
+        /**
+         * 执行查询
+         * add by SUN
+         * Date:2019-05-29 15:00
+         * */
+        function DoSearch() {
+            var mapWnd = parent.frames['mainMap'];
+            
+            mapWnd.ShowSurface($("#sdate").val(), $("#edate").val(), $("input[name='surfacetype']:checked").val(),0);
+        }
+    </script>
+    
+}

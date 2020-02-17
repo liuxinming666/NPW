@@ -1,0 +1,237 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "首页水库水情过程线";
+}
+@section Css{
+    <style type="text/css">
+        .layout-body {
+            overflow: hidden;
+        }
+    </style>
+}
+
+<div data-options="region:'west',split:true,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:410px;">
+    <table id="dgGrid" style="height:100%;width:100%;overflow-x:hidden;"></table>
+</div>
+<div id="divC" data-options="region:'center',split:true,title:' ',border:false">
+    <div style="width:100%;height:100%;overflow:hidden;" id="divLineContainer">
+        <div id="divLine" style="width:100%;height:100%;">
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+
+        $(function () {
+
+            Highcharts.setOptions({
+                lang: {
+                    months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+                    downloadJPEG: "导出JPEG图片",
+                    downloadPDF: "导出PDF",
+                    downloadPNG: "导出PNG图片",
+                    downloadSVG: "导出SVG图片",
+                    printChart: "打印图表",
+                    resetZoom: "重置"
+                }
+            });
+            Search();
+
+        });
+
+        function ShowTable(d, stnm) {
+
+
+            $('#dgGrid').datagrid({
+                title: stnm + "水库水位流量过程",
+                striped: true,
+                singleSelect: true,
+                collapsible: true,
+                rownumbers: true,
+                nowrap: false,
+                remoteSort: false,
+                loadMsg: '',
+                data:d,
+                columns: [
+                    [
+                        { field: 'TM', title: '时间', width: '20%', rowspan: 1, align: 'center', formatter: com.formatTimemm },
+                        { field: 'RZ', title: '库水位', width: '20%', rowspan: 1, halign: 'center', align: 'right', formatter: changevalue },
+                        { field: 'W', title: '蓄水量', width: '20%', rowspan: 1, halign: 'center', align: 'right', formatter: changevalue },
+                        { field: 'INQ', title: '入库流量', width: '20%', rowspan: 1, halign: 'center', align: 'right', formatter: changevalue },
+                        { field: 'OTQ', title: '出库流量', width: '20%', rowspan: 1, halign: 'center', align: 'right', formatter: changevalue }
+                    ]
+                ]
+            });
+        }
+
+        //查询数据
+        function Search() {
+            var stcd = '@ViewData["stcd"]';
+            var stnm = '';
+            var sdate = '';
+            var edate = '@ViewData["endDate"]';
+            com.ajax({
+                type: 'get',
+                url: '/RealData/Rsvr/GetRsvrLineEight/',
+                data: { "stcd": stcd, "startDate": sdate, "endDate": edate },
+                success: function (d) {
+
+                    if (d.total > 0) {
+                        sdate = d.rows[d.total - 1].TM;
+                        stnm = d.rows[0].STNM;
+                        ShowTable(d, stnm);
+                        DrawLine(d, stnm, sdate);
+
+                    } else {
+                        ShowTable(d, stnm);
+                        DrawLine(d, stnm, sdate);
+
+                    }
+                }
+            });
+
+        }
+        //绘制水位蓄量过程线
+        function DrawLine(d, title, sdate) {
+            var isMinLableShow = false;
+            var isMaxLableShow = false;
+            var HChart = new Highcharts.Chart('divLine', {
+                chart: {
+                    zoomType: 'x',
+                    marginRight: 100
+                },
+                title: {
+                    //text: $('#staList').combogrid('getText') + '水位流量过程'
+                    text: title + '水库水位蓄水量过程线'//decodeURI($.getUrlParam("stnm")) + '水位流量过程线'
+                },
+                credits: {
+                    enabled: false
+                },
+                subtitle: {
+                    @*text: '@ViewData["startDate"]' + "至" + '@ViewData["endDate"]'*@
+                    text: sdate + "至" + '@ViewData["endDate"]'
+                },
+                plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: false
+                        },
+                        turboThreshold: 50000//性能阈值，如果传入的数据非[xx,xx]和数字时，会限制渲染默认1000条
+                    },
+                    line: {
+                        cropThreshold: 50000
+                    }
+                },
+                xAxis: {
+                    type: "datetime",
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%m-%d %H', this.value);
+                        }
+                    },
+                    crosshair: {
+                        color: 'green'
+                    },
+                    tickmarkPlacement: 'on'
+                },
+                yAxis: [{
+                    title: {
+                        text: '库水位(m)'
+
+                    },
+                    lineWidth: 2,
+                    lineColor: '#000',
+                    labels: {
+                        formatter: function () {
+                            return changevalue(this.value, 2);
+                        }
+                    }
+                },
+                {
+                    title: {
+                        text: '蓄水量(百万m³)'
+                    },
+                    lineWidth: 2,
+                    lineColor: '#000',
+                    labels: {
+                        formatter: function () {
+                            return SaveThreeN(this.value, 3);//Number(this.value).keepValidNum(3);
+                        }
+                    },
+                    opposite: true
+                }
+                ],
+                tooltip: {
+                    valueSuffix: '',
+                    headerFormat: '<span style="font-size:16px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0" nowrap>{series.name}: </td>' +
+                        '<td style="padding:0" nowrap><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    followPointer: true,
+                    shared: true,
+                    useHTML: true,
+                    xDateFormat: '%Y-%m-%d %H:%M'
+                },
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    borderWidth: 0
+                },
+                series: GetSearies(d)
+            });
+        }
+
+        function GetSearies(d) {
+            var arrSeries = [];
+            var objSeriesZ = {
+                name: '库水位',
+                color: '#f00',
+                data: [],
+                lineWidth: 1
+            }
+            var objSeriesQ = {
+                name: '蓄水量',
+                data: [],
+                color: '#00f',
+                yAxis: 1,
+                lineWidth: 1
+            }
+            $.each(d.rows.reverse(), function (i, item) {
+                if (item["RZ"]) {
+                    objSeriesZ.data.push([com.ToUTC(item["TM"]), Number(item["RZ"])]);
+                }
+
+                if (item["W"]) {
+
+                    objSeriesQ.data.push([com.ToUTC(item["TM"]), item["W"]]);
+
+                }
+
+            });
+            arrSeries.push(objSeriesZ);
+            arrSeries.push(objSeriesQ);
+            return arrSeries;
+        }
+
+        function LeftCollapse() {
+            $("#divLineContainer").width($(document).width() - 50);
+            ReflowChart();
+        }
+
+        function LeftExpand() {
+
+            $("#divLineContainer").width($(document).width() - 430);
+            ReflowChart();
+        }
+        function ReflowChart() {
+            var HChart = $("#divLine").highcharts();
+            HChart.reflow();
+        }
+
+    </script>
+
+}

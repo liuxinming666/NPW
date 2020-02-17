@@ -1,0 +1,145 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = ViewBag.IP;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>中游水文局智慧管理系统--登录</title>
+    <link rel="icon" type="images/ico" href="/zgsw.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/css/jcj_login.css" />
+    @*<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui.css" />*@
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css" />
+    <style type="text/css">
+        .panel-body {
+            font-size: 14px;
+        }
+
+        .panel-header {
+            background: #9be2fd;
+            filter: "";
+        }
+
+        .panel-title {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            color: #251C1F;
+        }
+    </style>
+</head>
+<body>
+    <section class="fl_container">
+        <img src="~/images/j_llogo.png" class="fl_timg" />
+        <article class="fl_main">
+            <!-- 输入框组                      开始     -->
+            <form id="loginForm" class="bs-example bs-example-form fl_form1" role="form">
+                <div class="input-group">
+                    <span class="input-group-addon j_lcon">
+                        <img src="~/images/j_name.png" />
+                    </span>
+                    <input id="username" name="username" type="text" class="form-control j_rinput1" placeholder="请输入用户名">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon j_lcon">
+                        <img src="~/images/j_key.png" />
+                    </span>
+                    <input id="userpwd" name="userpwd" type="password" class="form-control j_rinput1" placeholder="请输入密码">
+                </div>
+                <br />
+                @*<div class="fl_check1">
+                        <label class="checkbox-inline">
+                            <input name="isRmbPwd" type="checkbox" value="option1"> 记住密码
+                        </label>
+                    </div>*@
+                <p class="j_btncon">
+                    <button type="button" class="btn fl_btn1">重置</button>
+                    <button type="button" id="btnLogin" class="btn fl_btn1">登录</button>
+                </p>
+            </form>
+            <!-- 输入框组                      结束      -->
+        </article>
+    </section>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/js/core/common.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            if (window != top)
+                top.location.href = location.href;
+        }
+        $('.j_btncon>button:nth-child(1)').on('click', function () {
+            $('.j_rinput1').val('');
+        });
+        //从Cookie获取到用户名
+        $('input[name="username"]').val('@ViewBag.username');
+        $('input[name="userpwd"]').val('@ViewBag.upwd');
+        @*var username1 = '@ViewBag.username';
+        if (username1 == null) {
+            $('input[name="username"]').val("");
+            $('input[name="userpwd"]').val("");
+            //$('input[name=isRmbPwd]:checkbox').prop('checked', false);
+        }
+        else {
+            //获取对应的密码,并把用户名,密码赋值给表单
+            var password1 = '@ViewBag.upwd';
+            $('input[name="username"]').val(username1);
+            $('input[name="userpwd"]').val(password1);
+            //$('[name=isRmbPwd]:checkbox').prop('checked', true);
+        }*@
+        $('#btnLogin').on('click', function () {
+            var username = $("#username").val();
+            var password = $("#userpwd").val();
+            if (username.length == 0) {
+                //alert("用户名不能为空!");
+                $.messager.alert('系统提示', '用户名不能为空！', 'warning');
+                return false;
+            }
+            if (password.length == 0) {
+                //alert("密码不能为空!");
+                $.messager.alert('系统提示', '密码不能为空！', 'warning');
+                return false;
+            }
+            if (username.length > parseInt('@ViewBag.NameLen')) {
+                //aler("用户名超过'@ViewBag.NameLen'个字符限定长度!");
+                $.messager.alert('系统提示', "用户名超过'@ViewBag.NameLen'个字符限定长度!", 'warning');
+                return false;
+            }
+            var objParam = { username: username, userpwd: password };
+            com.ajax({
+                url: '/Access/SignIn',
+                async: true,
+                dataType: "text",
+                data: { 'username': username, 'userpwd': password },
+                success: function (msg) {
+                    if (msg == "success") {
+                        window.location.href = '/Home/Index';
+                    }
+                    else
+                        $.messager.alert('系统提示', msg, 'warning');
+                }, error: function (msg) {
+                    $.messager.alert('系统提示', msg, 'warning');
+                }
+            });
+            return false;
+
+
+        });
+        $("body").keydown(function (event) {
+            if (event.keyCode == 13) {
+                $("#btnLogin").click();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+

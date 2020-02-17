@@ -1,0 +1,323 @@
+﻿@{
+	ViewBag.Title = "历史资料维护";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	var sdate = System.DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
+	var edate = System.DateTime.Now.ToString("yyyy-MM-dd");
+}
+@section Scripts{
+	<script type="text/javascript">
+		$(function () {
+			//doSearch();
+			bindAreaDataGrid();
+			bindAreaDataGrid2();
+
+
+			doSearch();
+		});
+
+
+		function bindAreaDataGrid() {
+			var option_default = {
+				panelWidth: 300,
+				multiple: false,
+				idField: 'CODE',
+				textField: 'KEYNAME',
+				url: "/RealData/River/GetStaByKeywords/",
+				queryParams: { "sttp": "'ZZ','ZQ'", "q": "" },
+				columns: [[
+					{ field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+					{ field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+					{ field: 'TYPE', width: '30%', title: '站类', align: 'center', formatter: changesttp }
+
+				]],
+				onLoadSuccess: function (dd) {
+					if ($('#areastcd').combogrid('getValues').length <= 0) {
+						$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+					}
+				}
+			};
+
+			
+			$('#areastcd').combogrid(option_default);
+		}
+		function doSearchSta(value, name) {
+			var grid = $("#areastcd").combogrid('grid');
+
+			$.getJSON("/RealData/River/GetStaByKeywords/", { "sttp": "'ZZ','ZQ'", "q": value }, function (jsondata) {
+				grid.datagrid("loadData", jsondata);
+			});
+		}
+
+		function bindAreaDataGrid2() {
+			var option_default = {
+				panelWidth: 300,
+				multiple: false,
+				idField: 'CODE',
+				textField: 'KEYNAME',
+				url: "/RealData/River/GetStaByKeywords/",
+				queryParams: { "sttp": "'ZZ','ZQ'", "q": "" },
+				columns: [[
+					{ field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+					{ field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+					{ field: 'TYPE', width: '30%', title: '站类', align: 'center', formatter: changesttp }
+
+				]]
+			};
+			
+			$('#cbgSTCD').combogrid(option_default);
+		}
+		function doSearchSta2(value, name) {
+			var grid = $("#cbgSTCD").combogrid('grid');
+
+			$.getJSON("/RealData/River/GetStaByKeywords/", { "sttp": "'ZZ','ZQ'","q": value }, function (jsondata) {
+				grid.datagrid("loadData", jsondata);
+			});
+		}
+
+
+		function doSearch() {
+			var stcd = $('#areastcd').combogrid("getValue");
+			var avgtype = $('#avgType').val();
+
+			var params = { stcd: stcd, avgType: avgtype };
+			bindGrid(params);
+		}
+		function bindGrid(params) {
+			$('#dgGrid').datagrid({
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: true,
+				pagePosition: 'bottom',
+				pageSize: 20,
+				url: '/HistoryInfo/RvavManage/GetPageData',
+				queryParams: params,
+				//loadMsg: '数据加载中,请稍后……',
+				columns: [[
+					{ field: 'STNM', title: '站名', width: '15%', align: 'center' },
+					{ field: 'STCD', title: '站码', width: '15%', align: 'center' },
+					{ field: 'STTDRCD', title: '统计时段标志', width: '15%', align: 'center', formatter: formatSTTDRCD },
+					{ field: 'IDTM', title: '统计时间', width: '15%', align: 'center'},
+					{ field: 'AVZ', title: '平均水位', width: '10%', align: 'center' },
+					{ field: 'AVQ', title: '平均流量', width: '10%', align: 'center' },
+					{ field: 'operate', title: '操作', width: '20%', align: 'center', formatter: formatOper }
+				]]
+			});
+		}
+		function formatOper(val, row, index) {
+			var rolwcode = row["RoleCode"];
+			var edit = '<a href="#" onclick="editData(' + index + ')">修改</a>';
+			var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+			return edit + " " + del ;
+		}
+		function formatSTTDRCD(val) {
+			var result = "";
+			switch (val) {
+				case "1":
+					result = "一日";
+					break;
+				case "2":
+					result = "一侯";
+					break;
+				case "3":
+					result = "一周";
+					break;
+				case "4":
+					result = "一旬";
+				case "5":
+					result = "一月";
+					break;
+				case "6":
+					result = "一年";
+					break;
+				default:
+					result= "";
+					break;
+			}
+			return result;
+		}
+
+
+		function addData() {
+			$('#dlg').dialog('open').dialog('setTitle', '水情均值信息维护');
+			$('#cbgSTCD').combogrid('readonly', false);
+			$('#STTDRCD').combobox('readonly', false);
+			$("#IDTM").prop('disabled', false);
+
+			$('#fm').form('clear');
+			url = "/HistoryInfo/RvavManage/Add";
+		}
+		function editData(index) {
+			$('#dgGrid').datagrid('selectRow', index);// 关键在这里
+			var row = $('#dgGrid').datagrid('getSelected');
+			if (row) {
+				$('#cbgSTCD').combogrid('setValue', row.STCD);
+				$('#STTDRCD').combobox('setValue', row.STTDRCD);
+				$("#IDTM").val(row.IDTM).prop('disabled', true);
+				$('#cbgSTCD').combogrid('readonly', true);
+				$('#STTDRCD').combobox('readonly', true);
+				
+				$("#AVZ").textbox('setValue', row.AVZ);
+				$("#AVQ").textbox('setValue', row.AVQ);
+
+				$('#dlg').dialog('open').dialog('setTitle', '水情均值信息维护');
+				url = '/HistoryInfo/RvavManage/Edit';
+			}
+			else {
+				$.messager.alert('提示', '请先选择行', 'info')
+			}
+		}
+		function saveData() {
+			var stcd = $('#cbgSTCD').combogrid('getValue');
+			var stnm = $('#cbgSTCD').combogrid('getText');
+
+			$("#STCD").val(stcd);
+			$("#STNM").val(stnm);
+			$("#IDTM").prop('disabled', false);
+			
+			$('#fm').form('submit', {
+				url: url,
+				onSubmit: function () {
+					return $(this).form('validate');
+				},
+				success: function (result) {
+					var result = eval('(' + result + ')');
+					if (result.state==="error") {
+						$("#IDTM").prop('disabled', true);
+						$.messager.alert("提示错误",result.message,"error");
+					} else {
+						$('#dlg').dialog('close'); 	// close the dialog
+						$('#dgGrid').datagrid('reload'); // reload the resourcedirc data
+					}
+				}
+			});
+		}
+		function deleteData(index) {
+			$('#dgGrid').datagrid('selectRow', index);
+			var row = $('#dgGrid').datagrid('getSelected');
+			var para = { STCD: row.STCD, IDTM: row.IDTM, STTDRCD: row.STTDRCD };
+
+			if (!row) {
+				$.messager.alert('提示', '请先选择记录', 'info');
+				return;
+
+			}
+			
+			$.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+				if (r) {
+					$.post('/HistoryInfo/RvavManage/Delete', para, function (ren) {
+						if (ren.state === "success") {
+							$('#dgGrid').datagrid('reload'); // reload the user data
+						} else {
+							$.messager.alert('提示', ren.message, 'info');
+						}
+					}, 'json');
+				}
+			});
+		}
+	</script>
+}
+    
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+            <table style="height:100%;width:100%">
+                <tr>
+                    <td style="text-align:right;width:50px;">测站：</td>
+                    <td style="width:160px;">
+                        <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                        <div id="tb11">
+                            <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                        </div>
+                    </td>
+                    <td style="text-align:right;width:60px;">统计类型：</td>
+                    <td style="width:130px;">
+                        <select id="avgType" name="avgType" class="easyui-combobox" style="width:120px;">
+                            <option value="" selected="selected">-请选择-</option>
+                            <option value="1">日均值</option>
+                            <option value="2">侯均值</option>
+                            <option value="3">周均值</option>
+                            <option value="4">旬均值</option>
+                            <option value="5">月均值</option>
+                            <option value="6">年均值</option>
+                        </select>
+                    </td>
+                    <td style="text-align:right;width:80px;">时间段：</td>
+                    <td style="width:350px;">
+                        <div class="date-select day">
+                            <input type="text" id="sdate" name="sdate" class="Wdate" value="@sdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />-
+
+                            <input type="text" id="edate" name="edate" class="Wdate" value="@edate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+
+                            <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+                        </div>
+                    </td>
+                    @*<td style="text-align:left;width:80px;">
+                        <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+                    </td>*@
+                    <td style="text-align:right;width:120px;"><a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">添加</a></td>
+                </tr>
+            </table>
+        </div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+            <table id="dgGrid" style="width:100%;height:100%"></table>
+        </div>
+
+<div id="dlg" class="easyui-dialog" style="width:500px;height:300px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+            <form id="fm" method="post">
+                <input type="hidden" name="STNM" id="STNM" />
+                <input type="hidden" name="STCD" id="STCD" />
+                <div data-options="region:'center'" style="padding:10px;">
+                    <table cellpadding="5">
+                        <tr>
+                            <td style="text-align:right">测站：</td>
+                            <td>
+                                <input id="cbgSTCD" class="easyui-combogrid" style="width:150px" toolbar="#tb12" />
+                                <div id="tb12">
+                                    <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta2" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right">统计标志：</td>
+                            <td>
+                                <select id="STTDRCD" name="STTDRCD" class="easyui-combobox">
+                                    <option value="1" selected>日均值</option>
+                                    <option value="2">侯均值</option>
+                                    <option value="3">周均值</option>
+                                    <option value="4">旬均值</option>
+                                    <option value="5">月均值</option>
+                                    <option value="6">年均值</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:right">统计时间：</td>
+                            <td>
+                                <input id="IDTM" name="IDTM" type="text" class="Wdate" style="width:150px" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd 08:00'})" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align:right">平均水位：</td>
+                            <td>
+                                <input id="AVZ" name="AVZ" type="text" class="easyui-textbox " number style="width:120px" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align:right">平均流量：</td>
+                            <td>
+                                <input id="AVQ" name="AVQ" type="text" class="easyui-textbox " number style="width:120px" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+            <div id="dlg-buttons">
+                <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+                <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+            </div>
+        </div>
+
+

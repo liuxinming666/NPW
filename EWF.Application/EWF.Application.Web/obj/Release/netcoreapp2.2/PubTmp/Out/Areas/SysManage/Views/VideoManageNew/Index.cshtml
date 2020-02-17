@@ -1,0 +1,308 @@
+﻿
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section CSS{
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+            bindAreaDataGrid();
+            bindGrid("");
+        })
+        //绑定站点列表
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 450,
+                multiple: false,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '25%', title: '站类', align: 'center', formatter: changesttp }
+                ]]
+            });
+        }
+        function bindGrid(name) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/VideoManageNew/GetCameraData/',
+                queryParams: { 'name': name },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'ID', title: '编码', align: 'center', hidden: true },
+                    //{ field: 'MAINPAGE', title: '首页显示', align: 'center', hidden: true },
+                    { field: 'STCD', title: '站点编码', width: '10%', align: 'center' },
+                    { field: 'SNAME', title: '摄像头名称', width: '14%', align: 'center' },
+                    { field: 'SIP', title: 'IP', width: '10%', align: 'center' },
+                    { field: 'SPORT', title: '端口号', width: '6%', align: 'center' },
+                    { field: 'USERNAME', title: '用户名', width: '6%', align: 'center' },
+                    { field: 'PASSWAY', title: '视频通道', width: '14%', align: 'center' },
+                    { field: 'LINETYPE', title: '厂商', width: '10%', align: 'center', formatter: deviceName },
+                    { field: 'REMARKS', title: '备注', width: '10%', align: 'center' },                    
+                    { field: 'operate', title: '操作', width: '20%', align: 'center', formatter: formatOper }
+                ]]
+            });
+        }
+
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value }, function (jsondata) {
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            return edit + "&nbsp;&nbsp;&nbsp;&nbsp;" + del + "&nbsp;&nbsp;&nbsp;&nbsp;" + detail;
+        }
+        function deviceName(val, row, index) {
+            if (val == "DHPT") {
+                return "大华";
+            }
+            else if (val == "HKPT") {
+                return "海康";
+            }
+            else {
+                return "";
+            }
+        }
+        function addData() {
+            $('#fm').form('clear');
+            state = "Add";
+            $('#SEBLONG').combobox("setValue", 'zyj');
+            $("#LINETYPE").combobox('setValue', '0');
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '添加视频摄像头信息');
+        }
+        function editData(row) {            
+            $('#fm').form('clear');
+            state = "Edit";
+            $('#ID').val(row.ID);
+           
+            $('#SNAME').textbox('setValue', row.SNAME);
+            $('#SIP').textbox('setValue', row.SIP);
+            $('#SPORT').textbox('setValue', row.SPORT);
+            $('#USERNAME').textbox('setValue', row.USERNAME);
+            $('#PASSWORD').passwordbox('setValue', row.PASSWORD);
+            $('#PASSWAY').textbox('setValue', row.PASSWAY);
+            $('#LINETYPE').combobox('setValue', row.LINETYPE);
+            $('#SEBLONG').combobox('setValue', row.SEBLONG);
+            $('#REMARKS').textbox('setValue', row.REMARKS);
+            $('#areastcd').combogrid('setValue', row.STCD);           
+            //if (row.MAINPAGE) {
+            //    $("input[name='MAINPAGE'][value='1']").attr("checked", true);
+            //}
+            //else
+            //    $("input[name='MAINPAGE'][value='0']").attr("checked", true);
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '修改视频摄像头信息');
+        }
+        function detailData(row) {
+            $('#fm').form('clear');
+            $('#ID').val(row.ID);
+            $('#SNAME').textbox('setValue', row.SNAME);
+            $('#SIP').textbox('setValue', row.SIP);
+            $('#SPORT').textbox('setValue', row.SPORT);
+            $('#USERNAME').textbox('setValue', row.USERNAME);
+            $('#PASSWORD').passwordbox('setValue', row.PASSWORD);
+            $('#PASSWAY').textbox('setValue', row.PASSWAY);
+            $('#LINETYPE').combobox('setValue', row.LINETYPE);
+            $('#SEBLONG').combobox('setValue', row.SEBLONG);
+            $('#REMARKS').textbox('setValue', row.REMARKS);
+            $('#areastcd').combogrid('setValue', row.STCD);
+            
+            //if (row.MAINPAGE) {
+            //    $("input[name='MAINPAGE'][value='1']").attr("checked", true);
+            //}
+            //else
+            //    $("input[name='MAINPAGE'][value='0']").attr("checked", true);
+            
+            $('#dlg').dialog('open').dialog('setTitle', '查看视频摄像头信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+        }
+        function deleteData(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/VideoManageNew/DeleteCameraInfo', { ID: row.ID }, function (ren) {
+                            if (ren.result == "success")
+                                $('#dgGrid').datagrid('reload');
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function doSearch() {
+            var name = $('#name').val();
+            bindGrid(name);
+        }
+        function saveData() {            
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/VideoManageNew/AddCameraInfo';
+                    break;
+                case "Edit":
+                    url = '/SysManage/VideoManageNew/EditCameraInfo';
+                    break;
+            }
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function (param) {
+                    param.STCD = $('#areastcd').combogrid('getValue');
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;
+                },
+                success: function (result) {
+                    var result = eval('(' + result + ')');
+                    if (result.errorMsg != undefined) {
+                        $.messager.show({
+                            title: '提示错误',
+                            msg: result.msg,
+                            showType: null,
+                            style: {
+                            }
+                        });
+                    } else {
+                        $.messager.show({
+                            title: '成功弹窗',
+                            msg: result.msg,
+                            showType: 'success',
+                            style: {
+                            }
+                        });
+                        $('#dlg').dialog('close');
+                        $('#dgGrid').datagrid('reload');
+                    }
+                }
+            });
+        }
+    </script>
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                摄像头：<input id="name" name="name" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+            <td style="text-align:right"><a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">添加</a></td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+@*<form id="fm" method="post">*@
+    <div id="dlg" class="easyui-dialog" style="width:680px;height:400px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+        <form id="fm" method="post">
+        <input id="ID" name="ID" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">站点：</td>
+                    <td>
+                        <input id="areastcd" class="easyui-combogrid" style="width:200px" required toolbar="#tb11" />
+                        <div id="tb11">
+                            <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                        </div>
+                    </td>
+                    <td style="text-align:right">摄像头名称：</td>
+                    <td>
+                        <input id="SNAME" name="SNAME" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">IP：</td>
+                    <td>
+                        <input id="SIP" name="SIP" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">端口号：</td>
+                    <td>
+                        <input id="SPORT" name="SPORT" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">用户名：</td>
+                    <td>
+                        <input id="USERNAME" name="USERNAME" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">密码：</td>
+                    <td>
+                        <input id="PASSWORD" name="PASSWORD" type="text" class="easyui-passwordbox" prompt="Password" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">视频通道：</td>
+                    <td>
+                        <input id="PASSWAY" name="PASSWAY" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">厂商类型：</td>
+                    <td>
+                        <select id="LINETYPE" name="LINETYPE" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="0">请选择</option>
+                            <option value="DHPT">大华</option>
+                            <option value="HKPT">海康</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">所属部门：</td>
+                    <td>
+                        <select id="SEBLONG" name="SEBLONG" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="zyj">黄委中游局</option>
+                            <option value="nmj">宁蒙水文局</option>
+                            <option value="hnj">河南局</option>
+                            <option value="sdj">山东局</option>
+                            <option value="syj">上游局</option>
+                            <option value="smj">三门局</option>
+                        </select>
+                    </td>
+                    <td style="text-align:right">备注：</td>
+                    <td>
+                        <input id="REMARKS" name="REMARKS" type="text" class="easyui-textbox" data-options="multiline:true" style="height:100px;width:200px" />
+                    </td>
+                </tr>
+                @*<tr>
+                    <td style="text-align:left">首页显示：</td>
+                    <td colspan="3">
+                        <input class="easyui-radio" type="radio" name="MAINPAGE" value="0" data-options="required:true" checked /> 否
+                        <input class="easyui-radio" type="radio" name="MAINPAGE" value="1" data-options="required:true" /> 是
+                    </td>
+                </tr>*@
+            </table>
+        </div>
+        </form>
+        <div id="dlg-buttons">
+            <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+            <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+        </div>
+    </div>
+@*</form>*@

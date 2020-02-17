@@ -1,0 +1,283 @@
+﻿
+@{
+    ViewData["Title"] = "CesMapsIndex";
+    Layout = null;
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>三维窗口</title>
+    <script src="~/lib/Cesium-1.39/Build/CesiumUnminified/Cesium.js"></script>
+    <link href="~/lib/Cesium-1.39/Build/Cesium/Widgets/widgets.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/kriging.js-master/kriging.js"></script>
+    <script type="text/javascript" src="~/lib/turf5.1.6/turf.min.js"></script>
+</head>
+<body>
+    <div id="cesiumContainer" style="width:100%;height:100%"></div>
+    <script type="text/javascript">
+        let params = {
+            mapCenter: [113.65113410245, 34.76626768096],
+            maxValue: 200,
+            krigingModel: 'exponential',//model还可选'gaussian','spherical'
+            krigingSigma2: 0,
+            krigingAlpha: 100,
+            canvasAlpha: 1,//canvas图层透明度
+            //colors: ["#006837", "#1a9850", "#66bd63", "#a6d96a", "#d9ef8b", "#ffffbf",
+            //    "#fee08b", "#fdae61", "#f46d43", "#d73027", "#a50026"],
+            colors: ["#A5F78C", "#31A600", '#63BEFF', '#0000FF', '#FF00FF','#FF0000'],
+            levels:[[0,10],[10,25],[25,50],[50,100],[100,250],[250,9999]]
+        };
+
+        var g_viewer = new Cesium.Viewer('cesiumContainer', {
+            imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+                url: "http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=3b6e1ded5e34e4a985ce9167106c62a0",
+                // "https://t0.tianditu.gov.cn/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=3b6e1ded5e34e4a985ce9167106c62a0",
+                //"http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={x}&TILECOL={y}&tk=3b6e1ded5e34e4a985ce9167106c62a0",
+
+                layer: "tdtVecBasicLayer",//"tdtBasicLayer",
+                style: "default",
+                format: "image/jpeg",
+                tileMatrixSetID: "GoogleMapsCompatible",
+                minimumLevel: 1,
+                maximumLevel: 18,
+                show: false
+            }),
+            geocoder: true,
+            baseLayerPicker: false,
+            fullscreenButton: false,
+            homeButton: false,
+            infoBox: false,
+            selectionIndicator: false,
+            timeline: false,
+            navigationHelpButton: false,
+            navigationInstructionsInitiallyVisible: false,
+            animation: false,
+            sceneMode: Cesium.SceneMode.SCENE2D//SCENE2D
+        });
+
+        g_viewer.camera.flyTo({
+            //destination: Cesium.Cartesian3.fromDegrees(91.12361187, 29.66866794,20000)//113.65113410245, 34.76626768096-郑州
+            destination: Cesium.Cartesian3.fromDegrees(108.56211031535, 37.35117012468, 1200000)//(108.56211031535, 37.35117012468, 2000000)
+        });
+
+        //InitTree();
+        InitBoundary();
+        //边界
+        function InitBoundary() {
+            $.getJSON("/Home/LoadZYJBoundary", {}, reInitBoundary);
+
+            //var redPolygon = g_viewer.entities.add({
+            //    name: 'Red polygon on surface',
+            //    polygon: {
+            //        hierarchy: Cesium.Cartesian3.fromDegreesArray([-115.0, 37.0,
+            //        -115.0, 32.0,
+            //        -107.0, 33.0,
+            //        -102.0, 31.0,
+            //        -102.0, 35.0]),
+            //        material: new Cesium.ImageMaterialProperty({
+            //            image: drawCanvasImage(),
+            //            transparent: true
+            //        })
+            //    }
+            //});
+
+            //var west = 108.039249104705;
+            //var south = 35.6496999823203;
+            //var east = 112.677459145649;
+            //var north = 40.5969022844123;
+            //var rectangle = Cesium.Rectangle.fromDegrees(west, south, east, north);
+            //g_viewer.entities.add({
+            //    rectangle: {
+            //        coordinates: rectangle,
+            //        fill: true,
+            //        outline: true,
+            //        outlineColor: Cesium.Color.RED,
+            //        material: new Cesium.ImageMaterialProperty({
+            //            image: drawCanvasImage(),
+            //            transparent: true
+            //        })
+            //    }
+            //});
+        }
+
+        function drawCanvasImage() {
+            var bbox = [108.039249104705, 35.6496999823203, 112.677459145649, 40.5969022844123];
+
+            var points = turf.randomPoint(500, { bbox: bbox })
+
+            let values = [], lngs = [], lats = [];
+            for (let i = 0; i < points.features.length; i++) {
+                var sVal = Math.round(Math.random() * params.maxValue);
+                lngs.push(points.features[i].geometry.coordinates[0]);
+                lats.push(points.features[i].geometry.coordinates[1]);
+                values.push(sVal);
+
+                var labelEntity = g_viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(points.features[i].geometry.coordinates[0], points.features[i].geometry.coordinates[1]),
+                    point: {
+                        pixelSize: 5,
+                        color: Cesium.Color.YELLOW
+                    },
+                    label: {
+                        text: sVal.toString(),
+                        fillColor: Cesium.Color.BLACK,
+                        scale:0.8
+                    }
+                });
+            }
+
+            let variogram = kriging.train(values, lngs, lats,
+                params.krigingModel, params.krigingSigma2, params.krigingAlpha);
+
+            let polygons = [];
+            polygons.push([[bbox[0], bbox[1]], [bbox[0], bbox[3]],
+                [bbox[2], bbox[3]], [bbox[2], bbox[1]]]);
+            let grid = kriging.grid(polygons, variogram, (bbox[2] - bbox[0]) / 200);
+
+            let canvas = document.createElement('canvas');
+
+            var leftBot = Cesium.Cartesian3.fromDegrees(108.039249104705, 35.6496999823203);
+            screen_leftBot = Cesium.SceneTransforms.wgs84ToWindowCoordinates(g_viewer.scene, leftBot);
+
+            var rightTop = Cesium.Cartesian3.fromDegrees(112.677459145649, 40.5969022844123);
+            screen_rightTop = Cesium.SceneTransforms.wgs84ToWindowCoordinates(g_viewer.scene, rightTop);
+
+            canvas.width = screen_rightTop.x - screen_leftBot.x;
+            canvas.height = screen_rightTop.y - screen_leftBot.y;
+
+            canvas.style.display = 'block';
+
+            //canvas.getContext('2d').globalAlpha = params.canvasAlpha;
+            canvas.getContext('2d').globalAlpha = 1;
+            kriging.plot2(canvas, grid,
+                [bbox[0], bbox[2]], [bbox[1], bbox[3]], params.colors, params.levels);
+            //kriging.plot(canvas, grid,
+            //    [bbox[0], bbox[2]], [bbox[1], bbox[3]], params.colors);
+
+            return canvas;
+        }
+
+        var elevationRamp = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
+        var slopeRamp = [0.0, 0.29, 0.5, Math.sqrt(2) / 2, 0.87, 0.91, 1.0];
+        var aspectRamp = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 1.0];
+        function getColorRamp() {
+            var ramp = document.createElement('canvas');
+            ramp.width = 300;
+            ramp.height = 400;
+            var ctx = ramp.getContext('2d');
+
+            var values = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
+
+            var grd = ctx.createLinearGradient(0, 0, 100, 0);
+            grd.addColorStop(values[0], '#000000'); //black
+            grd.addColorStop(values[1], '#2747E0'); //blue
+            grd.addColorStop(values[2], '#D33B7D'); //pink
+            grd.addColorStop(values[3], '#D33038'); //red
+            grd.addColorStop(values[4], '#FF9742'); //orange
+            grd.addColorStop(values[5], '#ffd700'); //yellow
+            grd.addColorStop(values[6], '#ffffff'); //white
+
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 300, 400);
+
+            return ramp;
+        }
+
+        function reInitBoundary(d) {
+            var coordAry = d.features[0].geometry.coordinates;
+            var ptAry = new Array();
+            for (let i = 0; i < coordAry.length; i++) {
+                ptAry.push(coordAry[i][0]);
+                ptAry.push(coordAry[i][1]);
+            }
+
+            var redPolygon = g_viewer.entities.add({
+                name: '多边形等值面',
+                polygon: {
+                    hierarchy: Cesium.Cartesian3.fromDegreesArray(ptAry),
+                    material: new Cesium.ImageMaterialProperty({
+                        image: drawCanvasImage(),
+                        transparent: true
+                    })
+                }
+            });
+        }
+
+        function InitTree() {
+            $.getJSON("/StationInfo/Details/GetStationList", { "stcds": "" }, reInitTree);
+        }
+
+        function reInitTree(data) {
+            var ddc = new Cesium.DistanceDisplayCondition(10, 4000000)
+            var lableddc = new Cesium.DistanceDisplayCondition(10, 4000000 / 85);
+            for (var i = 0; i < data.length; i++) {
+                g_viewer.entities.add({
+                    id: data[i].STCD,
+                    name: data[i].STNM,
+                    description: data[i].STNM,
+                    sttp: data[i].STTP,
+                    show: true,
+                    position: Cesium.Cartesian3.fromDegrees(data[i].LGTD, data[i].LTTD, 0),
+                    label: {
+                        text: data[i].STNM,
+                        scale: 1,
+                        font: '14px sans-serif',
+                        fillColor: Cesium.Color.AQUA,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        outlineWidth: 2,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM, //垂直方向以底部来计算标签的位置
+                        pixelOffset: new Cesium.Cartesian2(0, -9)
+                        //distanceDisplayCondition: lableddc
+                    },
+                    billboard: {
+                        image: getHomeUrl() + "/images/prm/rain1.png",
+                        width: 12,
+                        height: 12
+                        //distanceDisplayCondition: ddc
+                    }
+                });
+            }
+
+            g_viewer.dataSourceDisplay.defaultDataSource.clustering.enabled = true;
+            g_viewer.dataSourceDisplay.defaultDataSource.clustering.pixelRange = 100;
+            g_viewer.dataSourceDisplay.defaultDataSource.clustering.minimumClusterSize = 1;
+
+            g_viewer.dataSourceDisplay.defaultDataSource.clustering.clusterEvent.addEventListener(function (entities, cluster) {
+                cluster.label.show = true;
+                cluster.billboard.show = true;
+                //cluster.label.text = entities.length.toLocaleString();
+                cluster.label.text = entities[0].name + '\r\n07-29 08:00\r\n水位:806.494\r\n流量:335';
+                cluster.label.scale = 1;
+                cluster.label.font = '14px sans-serif';
+                cluster.label.fillColor = Cesium.Color.BLACK;
+                cluster.label.style = Cesium.LabelStyle.FILL;
+                cluster.label.showBackground = true;
+                cluster.label.backgroundColor = new Cesium.Color(1, 1, 1, 0.7);//new Cesium.Color(99/255, 182/255,250/255, 1),
+                cluster.label.horizontalOrigin = Cesium.HorizontalOrigin.LEFT;
+                cluster.label.verticalOrigin = Cesium.VerticalOrigin.CENTER;//Cesium.VerticalOrigin.BOTTOM, 垂直方向以底部来计算标签的位置
+                cluster.label.pixelOffset = new Cesium.Cartesian2(12, 0);   //偏移量
+
+                cluster.billboard.image = getHomeUrl() + "/images/prm/sw.png";
+                cluster.billboard.width = 12;
+                cluster.billboard.height = 12;
+            });
+        }
+
+        
+
+        function getHomeUrl() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+            return prePath;
+        }
+    </script>
+</body>
+</html>

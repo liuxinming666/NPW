@@ -1,0 +1,110 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "雨量站信息";
+}
+@section CSS {
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size: 16px;
+            color: #333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+
+            table.gridtable th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #dedede;
+            }
+
+            table.gridtable td {
+                text-align: center;
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #ffffff;
+                height: 20px;
+            }
+    </style>
+}
+
+@section Scripts {
+<script type="text/javascript">
+    $(window).load(function () {
+        initTable();
+    });
+
+    function initTable() {
+        var stcd = $.getUrlParam("stcd");
+        $.getJSON("/StationInfo/Details/GetRainStationInfo", { "stcd": stcd }, reInitTable);
+    }
+
+    function reInitTable(data) {
+        $('#tdStnm').html(data[0].STNM);
+        $('#tdStcd').html(data[0].STCD);
+        $('#tdHnnm').html(data[0].HNNM);
+        $('#tdRvnm').html(data[0].RVNM);
+        $('#tdEsstym').html(data[0].ESSTYM);
+        $('#tdLgtd').html(data[0].LGTD);
+        $('#tdLttd').html(data[0].LTTD);
+        $('#tdStlc').html(data[0].STLC);
+
+    }
+</script>
+}
+
+<div style="height:100%;width:98%; margin:5px;">
+    <table style="width:100%;" class="gridtable">
+        <tr>
+            <td style="width:12.5%">测站名称</td>
+            <td id="tdStnm" style="width:12.5%"></td>
+            <td style="width:12.5%">测站编码</td>
+            <td id="tdStcd" style="width:12.5%"></td>
+            <td style="width:12.5%">水系</td>
+            <td id="tdHnnm" style="width:12.5%"></td>
+            <td style="width:12.5%">河流</td>
+            <td id="tdRvnm" style="width:12.5%"></td>
+        </tr>
+        <tr>
+            <td colspan="2">建站年月</td>
+            <td id="tdEsstym" colspan="2"></td>
+            <td>东经</td>
+            <td id="tdLgtd"></td>
+            <td>北纬</td>
+            <td id="tdLttd"></td>
+        </tr>
+        <tr>
+            <td colspan="2">地址</td>
+            <td id="tdStlc" colspan="6"></td>
+        </tr>
+        <tr>
+            <td rowspan="2" colspan="2">
+                雨量观测设备
+            </td>
+            <td colspan="3">名称和型号</td>
+            <td colspan="3">器口高程及安装高度</td>
+        </tr>
+        <tr>
+            <td colspan="3"></td>
+            <td colspan="3"></td>
+        </tr>
+        @*<tr>
+            <td rowspan="2" colspan="2">水文特征值</td>
+            <td colspan="2">多年平均降水量(mm)</td>
+            <td colspan="2">年最大降水量(mm)</td>
+            <td colspan="2">年最小降水量(mm)</td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+            <td colspan="2"></td>
+        </tr>*@
+    </table>
+</div>
+

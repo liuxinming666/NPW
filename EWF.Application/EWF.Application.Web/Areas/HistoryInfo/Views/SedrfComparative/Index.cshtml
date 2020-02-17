@@ -1,0 +1,560 @@
+﻿@{
+	Layout = "~/Views/Shared/_LayoutH6.cshtml";
+	ViewData["Title"] = "实时水情";
+	var sdate = System.DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
+	var edate = System.DateTime.Now.ToString("yyyy-MM-dd");
+	var smonth = System.DateTime.Now.ToString("yyyy-01");
+	var emonth = System.DateTime.Now.AddMonths(-1).ToString("yyyy-MM");
+
+	var year = System.DateTime.Now.AddYears(-1).ToString("yyyy");
+}
+
+@section CSS {
+	<style>
+		.panel-body {
+			font-size: 14px;
+		}
+
+		.panel-title {
+			font-size: 10px;
+		}
+
+		.panel-header {
+			/*background-color: #DAE3E0;*/
+			/*background: #DAE3E0;*/
+			/*background:url("../../Content/images/panelheaderbg.png") repeat-x;*/
+			filter: "";
+		}
+
+		.panel-tool {
+			height: 26px;
+		}
+
+		.datagrid-row-alt {
+			background: #dce8f3;
+		}
+
+		.datagrid-row-selected {
+			background: #0081c2;
+		}
+
+
+		.datagrid-header .datagrid-cell span {
+			font-size: 14px;
+		}
+
+		.datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {
+			font-size: 14px;
+		}
+
+		.combobox-item, .combobox-group, .combobox-stick {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-prompt {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-text {
+			font-size: 14px;
+		}
+
+		.tabs-title {
+			font-size: 14px;
+		}
+	</style>
+}
+
+@section Scripts {
+	<script src="~/lib/highcharts/7.1.1/modules/drilldown.js"></script>
+	<script type="text/javascript">
+        /*
+            1、#badcf7
+            2、#9ed2fa
+            3、#75bff8
+            4、#59b4fa
+            5、#3da8fa
+            6、#2a9cf4
+            7、#068dec
+            8、#1783dd
+            9、#1979c9
+            10、#0d6cba
+            11、#0a60a8
+            12、#035294
+            */
+
+        var colors = ['#035294', '#0a60a8', '#0d6cba', '#1979c9', '#1783dd', '#068dec', '#2a9cf4', '#3da8fa', '#59b4fa', '#75bff8', '#9ed2fa', '#badcf7'];
+		var year_fx, year_comparative;
+
+        window.onload  = function () {
+			//初始化控件
+			initControl();
+		}
+
+
+		function initControl() {
+
+			$('input:radio[name="searchType"]').on("click", function () {
+				var checkValue = $('input:radio[name="searchType"]:checked').val();
+				$(".date-select").hide();
+
+				if (checkValue === "0") { //启用时段
+					$(".day").show();
+				}
+				if (checkValue === "1") {//启用旬月
+					$(".month").show();
+				}
+				if (checkValue === "2") { //启用年
+					$(".year").show();
+				}
+			});
+
+			bindAreaDataGrid();
+		}
+
+		function bindAreaDataGrid() {
+			$('#areastcd').combogrid({
+				panelWidth: 300,
+				multiple: false,
+				idField: 'CODE',
+				textField: 'KEYNAME',
+				url: "/RealData/River/GetStaByKeywords/",
+				queryParams: { "sttp": "'ZZ','ZQ'", "q": "" },
+				columns: [[
+					{ field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+					{ field: 'KEYNAME', width: '35%', title: '站名', align: 'center' },
+					{ field: 'TYPE', width: '35%', title: '站类', align: 'center', formatter: changesttp }
+
+				]],
+				onLoadSuccess: function (dd) {
+					$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+					//加载默认数据
+					doSearch();
+				}
+			});
+		}
+		function doSearchSta(value, name) {
+			var ele = $("#areastcd");
+			var grid = ele.combogrid('grid');
+
+			$.getJSON("/RealData/River/GetStaByKeywords/", { "sttp": "'ZZ','ZQ'","q": value }, function (jsondata) {
+
+				grid.datagrid("loadData", jsondata);
+			});
+		}
+		
+		function doSearch() {
+			var stcd = $('#areastcd').combogrid('getValue');
+			var stnm = $('#areastcd').combogrid('getText');
+
+			var sdate = $('#sdate').val();
+			var edate = $('#edate').val();
+			var smonth = $('#smonth').val();
+			var emonth = $('#emonth').val();
+			var year = $('#year').val();
+			var searchType = $('input:radio[name="searchType"]:checked').val();
+
+            year_fx = moment(sdate).format("YYYY");
+            year_comparative = year;
+            
+			if (searchType === "0") { //时段
+
+				if (moment(sdate).add(1, 'months').isBefore(edate)) {
+					alert("时段不能超过一个月");
+					return;
+                }
+                loadDayData(stcd, sdate, edate, year);
+			}
+			if (searchType === "1") {//旬月
+				if (moment(smonth).add(1, 'years').isBefore(emonth)) {
+					alert("旬月查询不能超过一个年");
+					return;
+				}
+				loadMonthData(stcd, smonth, emonth);
+			}
+			if (searchType === "2") { //年
+				$("body").layout("hidden", "west");
+				$("#yeardgGrid").show();
+				loadYearData(stcd, year);
+			}
+		}
+
+
+        function loadDayData(stcd, sdate, edate, year) {
+			com.ajax({
+				type: 'get',
+                url: '/HistoryInfo/SedrfComparative/GetDayData',
+				data: {
+					STCD: stcd,
+					sdate: sdate,
+                    edate: edate,
+                    year: year
+				},
+                success: function (result) {
+                    if (!!result.state ) {
+                        if (result.state === "error") {
+                            alert(result.message);
+                            return;
+                        }
+                    }
+
+					//加载列表数据
+                    initDayTable(result);
+					var subTitle = getSubTitle(result.datasrc);
+					initDayChart(result.rows, subTitle);
+
+				}
+			});
+		}
+
+		function loadMonthData(stcd, smonth, emonth) {
+			com.ajax({
+				type: 'get',
+				url: '/HistoryInfo/Pstat/GetData_MMonth',
+				data: {
+					STCD: stcd,
+					smonth: smonth,
+					emonth: emonth
+				},
+				success: function (result) {
+					//加载列表数据
+					initMonthTable(result);
+					var subTitle = getSubTitle(result.datasrc);
+					initMonthChart(result.xData, result.yData, subTitle);
+				}
+			});
+		}
+        
+
+        function initDayChart(dataArray, subTitle) {
+
+            var nameArray = [year_fx, year_comparative];
+            var yValueArray = [];
+
+            
+            $.each(dataArray, function (index, item) {
+                var obj = {};
+                obj.name = moment(item.IDTM).format("M-D");
+
+                obj.data = [item.WRNF, item.WRNF_Comparative];
+                obj.color = colors[index];
+
+                yValueArray.push(obj);
+            });
+            
+            console.log(nameArray);
+            console.log(yValueArray);
+
+           
+            var option = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                colors: colors ,
+                chart: {
+                    type: 'column',
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: '多日径流量对比分析--柱状图'
+                },
+                subtitle: {
+                    text: subTitle
+                },
+                xAxis: {
+                    categories: nameArray
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '径流量(百万m³)',
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    x: -30,
+                    verticalAlign: 'top',
+                    y: 25,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y + '<br/>' +
+                            '累计径流量: ' + this.point.stackTotal;
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                textOutline: '1px 1px black'
+                            }
+                        }
+                    }
+                },
+                series: yValueArray
+            }
+            
+			$('#divChart').highcharts(option);
+		}
+		function initDayTable(rowsData) {
+			var grid = $('#dgGrid').datagrid({
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: false,
+				//data: rowsData,
+				columns: [[
+					{
+                        field: 'IDTM', title: '时间', width: '35%', align: 'center', formatter: function (value) {
+							var date = new Date(value);
+							var y = date.getFullYear();
+							var m = date.getMonth() + 1;
+							var d = date.getDate();
+							return m + '-' + d;
+						}
+                    },
+                    { field: 'WRNF', title: year_fx, width: '30%', align: 'right' },
+                    { field: 'WRNF_Comparative', title: year_comparative, width: '30%', align: 'right' }
+				]]
+			});
+
+            grid.datagrid({ data: rowsData });
+
+
+
+		}
+
+		function initMonthChart(nameArray, yValueArray, subTitle) {
+			var option = {
+				credits: {
+					enabled: false // 禁用版权信息
+				},
+				chart: {
+					type: 'column',
+					zoomType: 'xy'
+				},
+				title: {
+					text: '多月累计雨量--柱状图'
+				},
+				subtitle: {
+					text:  subTitle
+				},
+				xAxis: {
+					categories: nameArray
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '降水量(mm)',
+					},
+					stackLabels: {  // 堆叠数据标签
+						enabled: true,
+						style: {
+							fontWeight: 'bold',
+							color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+						}
+					}
+				},
+				legend: {
+					align: 'right',
+					x: -30,
+					verticalAlign: 'top',
+					y: 25,
+					floating: true,
+					backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+					borderColor: '#CCC',
+					borderWidth: 1,
+					shadow: false
+				},
+				tooltip: {
+					formatter: function () {
+						return '<b>' + this.x + '</b><br/>' +
+							this.series.name + ': ' + this.y + '<br/>' +
+							'累计降水: ' + this.point.stackTotal;
+					}
+				},
+				plotOptions: {
+					column: {
+						stacking: 'normal',
+						dataLabels: {
+							enabled: true,
+							color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+							style: {
+								// 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+								textOutline: '1px 1px black'
+							}
+						}
+					}
+				},
+				series: yValueArray
+			}
+
+			$('#divChart').highcharts(option);
+		}
+		function initMonthTable(rowsData) {
+			var grid = $('#dgGrid').datagrid({
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: false,
+				data: rowsData,
+				//loadMsg: '数据加载中,请稍后……',
+				columns: [[
+					{ field: 'STNM', title: '站名', width: '20%', align: 'center' },
+					{
+						field: 'Month', title: '月份', width: '12%', align: 'center', formatter: function (value) {
+							var date = new Date(value+"-01");
+							var y = date.getFullYear();
+							var m = date.getMonth() + 1;
+							var d = date.getDate();
+							return m;
+						}},
+					{ field: 'MonSum', title: '整月', width: '17%', align: 'right' },
+					{ field: 'SXun', title: '上旬', width: '17%', align: 'right' },
+					{ field: 'ZXun', title: '中旬', width: '17%', align: 'right' },
+					{ field: 'XXun', title: '下旬', width: '17%', align: 'right' }
+				]]
+			});
+		}
+        
+	</script>
+	<script type="text/javascript">
+		function getSubTitle(datasrc) {
+			if (datasrc === "history") return "数据来自历史库整编数据";
+            if (datasrc === "real") return "数据来自实时库，由系统计算统计";
+            return datasrc;
+		}
+		function getmax(vmax, vmin) {
+			if (vmax == 0) {
+				return 5;
+			}
+			var maxvalue = vmax;
+			var minvalue = vmin;
+			if (vmax <= vmin) {
+				vmax = vmin + 1;
+			}
+			var dy = vmax - vmin;
+			var dt = 1;
+			while (dy <= 1) {
+				dy = dy * 10;
+				dt = dt * 0.1;
+			}
+			while (dy > 10) {
+				dy = dy * 0.1;
+				dt = dt * 10;
+			}
+			while (dy > 8) {
+				dy = dy * 0.5;
+				dt = dt * 2;
+			}
+			while (dy < 3) {
+				dy = dy * 2;
+				dt = dt * 0.5;
+			}
+			var temy = Math.round(vmax / dt); //取整
+			if (temy >= vmax / dt) { maxvalue = temy * dt; }
+			else { maxvalue = (temy + 1) * dt; }
+			temy = Math.round(vmin / dt); //取整
+			if (temy <= vmin / dt) {
+				minvalue = temy * dt;
+			}
+			else {
+				minvalue = (temy - 1) * dt;
+			}
+			return maxvalue;
+		}
+		function LeftCollapse() {
+			$("#divChartContainer").width($(document).width() - 50);
+			ReflowChart();
+		}
+		function LeftExpand() {
+			$("#divChartContainer").width($(document).width() - 450);
+			ReflowChart();
+		}
+		function ReflowChart() {
+			var HChart = $("#divChart").highcharts();
+			HChart.reflow();
+		}
+	</script>
+}
+
+
+<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="height:45px">
+	<table style="height:100%;" >
+        <tr>
+            <td>测站：</td>
+			<td>
+				<input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+				<div id="tb11">
+					<input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+				</div>
+			</td>
+
+            <td>分析时段:</td>
+            <td id="td2" style="display:none;">
+                <label for="radioDay">
+                    <input id="radioDay" type="radio" name="searchType" value="0" checked="checked" />多日
+                </label>
+
+                <label for="radioMonth">
+                    <input id="radioMonth" type="radio" name="searchType" value="1" />旬月
+                </label>
+
+            </td>
+
+            <td style="width:280px;">
+                <div class="date-select day">
+                    <input type="text" id="sdate" name="sdate" class="Wdate" value="@sdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />-
+
+                    <input type="text" id="edate" name="edate" class="Wdate" value="@edate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+                </div>
+            </td>
+
+            <td>对比年份:</td>
+            <td class="date-select year">
+                <input type="text" id="year" name="year" class="Wdate" value="@year" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy'})" />
+            </td>
+
+            <td><a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'"  onclick="doSearch()">查询</a></td>
+            <td></td>
+            <td><a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a></td>
+
+          
+        </tr>
+	</table>
+</div>
+
+<div id="gridContainer" data-options="region:'west',split:true,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:400px;">
+	<table id="dgGrid" style="height:100%;width:100%;"></table>
+</div>
+
+<div id="divC" data-options="region:'center',split:true,border:false,title:' '">
+	<div style="width:100%;height:100%;overflow-x:hidden;" id="divChartContainer">
+		<div id="divChart" style="width:100%;height:100%;">
+		</div>
+			
+	</div>
+</div>
+
+
+
+

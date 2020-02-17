@@ -1,0 +1,399 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "videoDHPTNew";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>大华平台</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=5">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="Expires" content="0" />
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="~/js/core/common.js"></script>
+</head>
+<body scroll=no oncontextmenu="ShowControlWnd();return false;" onload="InitVideo();" onunload="LogoutVideo();" style="margin-bottom:0px; margin-left:0px; margin-right:0px; margin-top:0px;">
+    <form id="form1" runat="server">
+        <table style="height:100%;width:100%;margin-bottom:0px; margin-left:0px; margin-right:0px; margin-top:0px;background-color:#dcdde1;">
+            <tr>
+                <td style="margin-bottom:0px; margin-left:0px; margin-right:0px; margin-top:0px; width:80%; height: 100%;">
+                    <div id="divPlugin" class="plugin"><object id="DPSDK_OCX" classid="CLSID:D3E383B6-765D-448D-9476-DFD8B499926D" style="width: 100%; height: 100%"></object></div>
+                </td>
+                <td id="tdControl" style=" height: 100%; width:20%;" valign="top" align="left">
+                    <table>
+                        <tr>
+                            <td valign="top">
+                                <span>方向控制:</span>
+                            </td>
+                            <td>
+                                <table style=" background-image:url(/images/Video/bkground.png); height:170px; width:170px;">
+                                    <tr>
+                                        <td style=" width:33%;"></td>
+                                        <td align="center">
+                                            <img onmousedown="mouseDownPTZControl(1)" onmouseup="mouseUpPTZControl();" style="cursor:hand;" src="~/images/Video/top.png" />
+                                        </td>
+                                        <td style=" width:33%;"></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="center" style=" width:33%;">
+                                            <img onmousedown="mouseDownPTZControl(3)" onmouseup="mouseUpPTZControl();" style="cursor:hand;" src="~/images/Video/left.png" />
+                                        </td>
+                                        <td align="center"></td>
+                                        <td align="center" style=" width:33%;">
+                                            <img onmousedown="mouseDownPTZControl(4)" onmouseup="mouseUpPTZControl();" style="cursor:hand;" src="~/images/Video/right.png" />
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td></td>
+                                        <td align="center">
+                                            <img onmousedown="mouseDownPTZControl(2)" onmouseup="mouseUpPTZControl();" style="cursor:hand;" src="~/images/Video/bottom.png" />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+
+
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr style="height:10px;">
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span>云台速度:</span>
+                            </td>
+                            <td>
+                                <select id="selSpeed" onchange="onChangeSel(this.options[this.options.selectedIndex].text)" style="width: 50px;">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option selected="selected">4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr style="height:10px;">
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span>变倍:</span>
+                            </td>
+                            <td>
+                                <table style="height:100%; width:100%;">
+                                    <tr>
+                                        <td style="width:33%;">
+                                            <img onmousedown="PTZZoomIn()" onmouseup="PTZZoomStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/bja.png" />
+                                        </td>
+                                        <td></td>
+                                        <td align="left" style="width:33%;">
+                                            <img onmousedown="PTZZoomout()" onmouseup="PTZZoomStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/bjn.png" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr style="height:10px;">
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span>变焦:</span>
+                            </td>
+                            <td>
+                                <table style="height:100%; width:100%;">
+                                    <tr>
+                                        <td style="width:33%;">
+                                            <img onmousedown="PTZFocusIn()" onmouseup="PTZFoucusStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/jja.png" />
+                                        </td>
+                                        <td></td>
+                                        <td align="left" style="width:33%;">
+                                            <img onmousedown="PTZFoucusOut()" onmouseup="PTZFoucusStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/jjn.png" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr style="height:10px;">
+                            <td colspan="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <span>光圈:</span>
+                            </td>
+                            <td>
+                                <table style="height:100%; width:100%;">
+                                    <tr>
+                                        <td style="width:33%;">
+                                            <img onmousedown="PTZIrisIn()" onmouseup="PTZIrisStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/gja.png" />
+                                        </td>
+                                        <td></td>
+                                        <td align="left" style="width:33%;">
+                                            <img onmousedown="PTZIrisOut()" onmouseup="PTZIrisStop()" style="height:20px; width:20px;cursor:hand;" src="~/images/Video/gjn.png" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+<script type="text/javascript">
+    var strCap = "";
+    var szIp;
+    var nPort;
+    var szUsername;
+    var szPassword;
+    var szCameraId;
+    var bCW = false;    //控制窗口是否打开
+    var curSpeed = 4;       //当前云台的速度
+    var curIPTZIndex;       //当前控制的方向或镜头控制代码
+
+    function ShowControlWnd() {
+        /*_$SGCreateSGWorldObj();
+        var popWnd = SGW.Window.GetPopupByCaption(strCap);
+        if(bCW == false)
+        {
+            popWnd.Width = popWnd.Width + 200;
+            document.getElementById("tdControl").style.display = "";
+            bCW = true;
+        }
+        else
+        {
+            popWnd.Width = popWnd.Width - 200;
+            document.getElementById("tdControl").style.display = "none";
+            bCW = false;
+        }*/
+    }
+
+    //云台控制速度选择发生变化
+    function onChangeSel(strSpeed) {
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+    }
+
+    function InitVideo() {        
+        //检测控件是否注册
+        try {
+            var objTemp = new ActiveXObject("DPSDK_OCX.DPSDK_OCXCtrl.1");
+        }
+        catch (e) {
+            alert("控件需要安装,请点击下载安装，安装过程中请关闭浏览器，安装完成之后请重启浏览器！");
+            window.open(getRootPath()+"/VideoPlugin/dh.rar", "_self");//getRootPath()
+            return;
+        }
+
+        //初始化控件
+        var obj = document.getElementById("DPSDK_OCX");
+        gWndId = obj.DPSDK_CreateSmartWnd(0, 0, 100, 100);
+        obj.DPSDK_SetWndCount(gWndId, 1);
+        obj.DPSDK_SetSelWnd(gWndId, 0);
+        obj.DPSDK_SetLog(2, "C:\\DPSDK_OCX_log", false, false); //初始化后设置日志路径
+
+        obj.DPSDK_SetToolBtnVisible(0, false);
+        obj.DPSDK_SetToolBtnVisible(7, false);
+        obj.DPSDK_SetToolBtnVisible(9, false);
+        obj.DPSDK_SetControlButtonShowMode(1, 0);
+        obj.DPSDK_SetControlButtonShowMode(2, 0);
+
+        //登陆
+        //var szIp = "10.4.1.95";
+        //var nPort = "9000";
+        //var szUsername = "admin";
+        //var szPassword = "admin123";
+
+        var szIp = GetURLParameter("sip");
+        var nPort = GetURLParameter("sport");
+        var szUsername = GetURLParameter("username");
+        var szPassword = GetURLParameter("userpassword");
+        strCap = GetURLParameter("cap");
+        strCap = "包头水尺";
+        var nRet = obj.DPSDK_Login(szIp, nPort, szUsername, szPassword);
+        nRet = obj.DPSDK_LoadDGroupInfo();
+
+        //播放视频
+        //var szCameraId = "1000001@003$1$0$4";
+        var szCameraId = GetURLParameter("passway");
+        var nStreamType = "2";
+        var nMediaType = "1";
+        var nTransType = "1";
+
+        var nWndNo = obj.DPSDK_GetSelWnd(gWndId);
+        var nRet = obj.DPSDK_StartRealplayByWndNo(gWndId, nWndNo, szCameraId, nStreamType, nMediaType, nTransType);
+        //ShowCallRetInfo(nRet, "播放视频");
+        //	if(nRet == 0)
+        //	{
+        //		//insertRealplayHistory(szCameraId);
+        //		ShowCallRetInfo(obj.DPSDK_SetIvsShowFlagByWndNo(gWndId, nWndNo, 1, bIVS),"规则线显示");//打开规则线显示
+        //		ShowCallRetInfo(obj.DPSDK_SetIvsShowFlagByWndNo(gWndId, nWndNo, 2, bIVS),"目标框显示");//打开目标框显示
+        //		ShowCallRetInfo(obj.DPSDK_SetIvsShowFlagByWndNo(gWndId, nWndNo, 3, bIVS),"轨迹线显示");//打开轨迹线显示
+        //	}
+        //var obj = document.getElementById("DPSDK_OCX");
+        //ShowCallRetInfo(obj.DPSDK_Login("172.7.123.123", 9000, "1", "1"), "登录");
+        //ShowCallRetInfo(obj.DPSDK_AsyncLoadDGroupInfo(), "异步加载组织结构");
+        //var nWndNo = obj.DPSDK_GetSelWnd(gWndId);
+        //ShowCallRetInfo(obj.DPSDK_DirectRealplayByWndNo(gWndId, nWndNo, "1000001$1$0$0", 1, 1, 1), "直接实时播放");
+        //	for(var i=1;i<=4;i++)
+        //	    obj.DPSDK_SetToolBtnVisible(i, false);
+        //	obj.DPSDK_SetToolBtnVisible(7, false);
+        //	obj.DPSDK_SetToolBtnVisible(9, false);
+        //	obj.DPSDK_SetControlButtonShowMode(1, 0);
+        //	obj.DPSDK_SetControlButtonShowMode(2, 0);
+    }
+    function getRootPath() {
+        var strFullPath = window.document.location.href;
+        var strPath = window.document.location.pathname;
+        var pos = strFullPath.indexOf(strPath);
+        var prePath = strFullPath.substring(0, pos);
+        var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+        return prePath;
+    }
+    function ShowCallRetInfo(nRet, strInfo) {
+        var str = "";
+        if (nRet == 0) {
+            str = strInfo + " 成功！";
+        }
+        else {
+            str = strInfo + "失败！错误码：" + nRet;
+            if (nRet == 19 || nRet == 20) {
+                str += "，请先加载组织结构！";
+            }
+        }
+    }
+
+    // PTZ控制 9为自动，1,2,3,4,5,6,7,8为方向PTZ
+    function mouseDownPTZControl(iPTZIndex) {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curIPTZIndex = iPTZIndex;
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        obj.DPSDK_PtzDirection(szCameraId, iPTZIndex, curSpeed, 0);
+        //ShowCallRetInfo(obj.DPSDK_PtzDirection(szCameraId,iPTZIndex,curSpeed,0),"方向控制");
+        //alert(ret);
+    }
+
+    //停止对云台的控制
+    function mouseUpPTZControl() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        obj.DPSDK_PtzDirection(szCameraId, curIPTZIndex, curSpeed, 1);
+        //ShowCallRetInfo(obj.DPSDK_PtzDirection(szCameraId,curIPTZIndex,curSpeed,1),"方向控制");
+    }
+
+    //变倍放大
+    function PTZZoomIn() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 0;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 0, curSpeed, 0);
+    }
+
+    //变倍缩小
+    function PTZZoomout() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 3;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 3, curSpeed, 0);
+    }
+
+    //变倍停止
+    function PTZZoomStop() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        obj.DPSDK_PtzCameraOperation(szCameraId, curIPTZIndex, curSpeed, 1);
+    }
+
+    //变焦加
+    function PTZFocusIn() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 1;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 1, curSpeed, 0);
+    }
+
+    //变焦减
+    function PTZFoucusOut() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 4;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 4, curSpeed, 0);
+    }
+
+    //变焦停止
+    function PTZFoucusStop() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        obj.DPSDK_PtzCameraOperation(szCameraId, curIPTZIndex, curSpeed, 1);
+    }
+
+    //光圈加
+    function PTZIrisIn() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 2;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 2, curSpeed, 0);
+    }
+
+    //光圈减
+    function PTZIrisOut() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        curIPTZIndex = 5;
+        obj.DPSDK_PtzCameraOperation(szCameraId, 5, curSpeed, 0);
+    }
+
+    //光圈停止
+    function PTZIrisStop() {
+        var obj = document.getElementById("DPSDK_OCX");
+        var sel = document.getElementById("selSpeed");
+        curSpeed = sel.options[sel.options.selectedIndex].text;
+        obj.DPSDK_PtzCameraOperation(szCameraId, curIPTZIndex, curSpeed, 1);
+    }
+
+    //检测控件是否注册
+    function ActiveXCtr() {
+
+    }
+
+    //退出视频
+    function LogoutVideo() {
+        try {
+            var objTemp = new ActiveXObject("DPSDK_OCX.DPSDK_OCXCtrl.1");
+        }
+        catch (e) {
+            return;
+        }
+        var obj = document.getElementById("DPSDK_OCX");
+        obj.DPSDK_Logout();
+    }
+</script>
+</html>
+

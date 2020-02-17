@@ -1,0 +1,209 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "站点信息树";
+}
+
+@section CSS {
+<style type="text/css">
+    html, body {
+        height: 99%;
+        width: 100%;
+        min-width: 100%;
+        overflow-x: auto;
+    }
+    .panel-body {
+        overflow-y: hidden;
+    }
+</style>
+}
+@section Scripts {
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript">
+        var g_treeData = new Array();   //图层树数据
+        var g_mapWnd;    //三维地图窗口对象
+        //初始化地图窗口
+        function initMapWnd() {
+            //var mapWnd = parent.frames['mainMap'];
+            //隐藏实时信息和预警信息浮动窗口
+            g_mapWnd.$('.bo_lpopcon').hide();
+            g_mapWnd.$('.bo_tabcon1').hide(); 
+            //隐藏地图上查询的实时信息
+            g_mapWnd.showRealDataLabel(false);
+            //初始化图层信息
+            g_mapWnd.initTree();
+            g_mapWnd.LoadAreaBoundary();
+            g_mapWnd.LoadLine_GL();
+            g_mapWnd.LoadLine_line1();
+        }
+
+        $(window).load(function () {
+            g_mapWnd = parent.frames['mainMap'];
+
+            initMapWnd();
+
+            //初始化添加窗口页面
+            //站码输入框
+            $('#selName').combobox({
+                editable: true,
+                hasDownArrow: false,
+                mode: 'remote',
+                valueField: 'CODE',
+                textField: 'KEYNAME',
+                url: '/StationInfo/Details/GetSearchKeywords',
+                prompt: '名称、简拼或站码'
+            });
+
+            setTimeout('InitTree()', 1000);
+        });
+
+        function InitTree() {
+            $.getJSON("/StationInfo/Details/GetStationList", { "stcds": "" }, reInitTree);
+        }
+
+        function reInitTree(data) {
+            var length = data.length;
+            g_treeData = [{ "id": -1, "text": "水文局", "iconCls": "icon-areap", "state": "open", "children": [] }];
+
+            g_treeData[0].children = [{ "id": 1, "text": "水文站", "iconCls": "icon-areap", "state": "close", "children": [] }, { "id": 2, "text": "水位站", "iconCls": "icon-areap", "state": "close", "children": [] }, { "id": 1, "text": "雨量站", "iconCls": "icon-areap", "state": "close", "children": [] }];
+
+            var nZ = 0;
+            var nQ = 0;
+            var nP = 0;
+            for (var i = 0; i < length; i++) {
+                var objTmp = {};
+                objTmp.id = data[i].STCD;
+                objTmp.text = $.trim(data[i].STNM);
+                objTmp.attributes = { 'lgtd': data[i].LGTD, 'lttd': data[i].LTTD, 'sttp': data[i].STTP };
+                if (data[i].STTP == "ZQ") {
+                    //水文站
+                    objTmp.checked = true;
+                    objTmp.iconCls = 'icon-hydro';
+                    g_treeData[0].children[0].children.push(objTmp);
+                    nQ = nQ + 1;
+                    //在地图上显示该站点
+                    g_mapWnd.showEintity(objTmp.id,true);
+                }
+                else if (data[i].STTP == "ZZ") {
+                    //水位站
+                    objTmp.iconCls = 'icon-water';
+                    g_treeData[0].children[1].children.push(objTmp);
+                    nZ = nZ + 1;
+                }
+                else if (data[i].STTP == "PP") {
+                    //雨量站
+                    objTmp.iconCls = 'icon-rain';
+                    g_treeData[0].children[2].children.push(objTmp);
+                    nP = nP + 1;
+                }
+            }
+
+            g_treeData[0].children[0].text = "水文站(" + nQ + ")";
+            g_treeData[0].children[1].text = "水位站(" + nZ + ")";
+            g_treeData[0].children[2].text = "雨量站(" + nP + ")";
+
+            $('#infoTree').tree({
+                data: g_treeData,
+                checkbox: true,
+                formatter: function (node) {
+                    var imgUrl = getHomeUrl() + "/images/info.png";
+                    var s;
+                    if (node.children == null) {
+                        if (node.attributes.sttp == "ZQ" || node.attributes.sttp == "PP") {
+                            s = "<font size='2'>" + node.text + "</font>&nbsp;<img title='查看信息' style='height:10px;' onclick='onClickTreeImg(" + node.id + ",\"" + node.attributes.sttp + "\");' src='" + imgUrl + "' />";
+                        }
+                        else {
+                            s = '<font size="2">' + node.text + '</font><img />';
+                        }
+                    }
+                    else {
+                        s = '<font size="2">' + node.text + '</font><img />';
+                    }
+                    return s;
+                },
+                onClick: function (node) {
+                    if (node.children == null) {
+                        g_mapWnd.flyToEntity(node.id);
+                    }
+                },
+                onCheck: function (node, checked) {
+                    g_mapWnd.onTreeNodeCheckedChange(node, checked);
+                }
+            });
+
+            $('#infoTree').tree('collapseAll');
+            var rooNode = $("#infoTree").tree('getRoot');
+            $("#infoTree").tree('expand', rooNode.target);
+        }
+
+        function onClickTreeImg(sStcd, sSttp) {
+            if (sSttp == 'ZQ') {
+                var index = $.modalOpenMax({
+                    id: "Details",
+                    title: "查看站点信息",
+                    url: "/StationInfo/Details/index?stcd=" + sStcd,
+                    width: "1200px",
+                    height: "800px",
+                    btn: null
+                });
+            }
+            else if (sSttp == 'PP') {
+                var index = $.modalOpenMax({
+                    id: "Details",
+                    title: "查看站点信息",
+                    url: "/StationInfo/Details/rainStationInfo?stcd=" + sStcd,
+                    width: "1200px",
+                    height: "800px",
+                    btn: null
+                });
+            }
+            
+        }
+
+        function getHomeUrl() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+            return prePath;
+        }
+
+        //点击站点选择按钮
+        function onClickSelNameBtn() {
+            var stcd = $('#selName').combobox('getValue');
+
+            var node = $('#infoTree').tree('find', stcd);
+            var mapWnd = parent.frames['mainMap'];
+            mapWnd.onClickTreeNode(node);
+        }
+    </script>
+}
+
+<div style="width:100%;height:98%;padding:5px;margin:0px;overflow-y:auto;overflow-x:hidden;">
+    @*<div>
+            <select class="easyui-combobox" data-options="onChange:function(newValue,oldValue){onComboBoxChange(newValue, oldValue)}" style="width:150px;">
+                <option value="ALL" selected>测站属性</option>
+                <option value="PP">国家重要站</option>
+                <option value="PP">省级重要站</option>
+                <option value="ZQ">大河控制站</option>
+                <option value="ZZ">区域代表站</option>
+                <option value="PP">小河站</option>
+                <option value="PP">基本站</option>
+                <option value="PP">枢纽站</option>
+                <option value="PP">专用站</option>
+                <option value="PP">试验站</option>
+            </select>
+        </div>*@
+
+    <div style="margin-top:10px;">
+        <select id="selName" class="easyui-combobox" style="width:185px;"
+                data-options="onClickButton:function(){onClickSelNameBtn()},buttonText:'查询',buttonIcon:'icon-search',prompt:'测站名称/编码'"></select>
+    </div>
+
+    <div style="margin-top:20px; margin-left:10px;">
+        <ul style="letter-spacing: 3px; font-weight:bold;" id="infoTree" class="easyui-tree"></ul>
+    </div>
+</div>
+

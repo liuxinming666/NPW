@@ -1,0 +1,429 @@
+﻿@{
+    ViewBag.Title = "单位管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    <link rel="stylesheet" href="~/js/wdtree/tree.css" />
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript" src="~/js/wdtree/tree.js"></script>
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+            bindGrid("");
+        })
+        function bindGrid(UCode, UnitName) {
+            $('#dgGrid').treegrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                idField: 'UNITID',
+                treeField: 'FULLNAME',
+                url: '/SysManage/Unit/GetUnitList/',
+                queryParams: { 'UCode': UCode, 'UnitName': UnitName },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'UNITID', title: '单位编码', align: 'center', hidden: true },
+                    { field: 'FULLNAME', title: '单位名称', width: '15%', align: 'center' },
+                    { field: 'SHORTNAME', title: '单位简称', width: '10%', align: 'center' },
+                    { field: 'CONTACT', title: '联系人', width: '7%', align: 'center' },
+                    { field: 'PHONE', title: '联系电话', width: '10%', align: 'center' },
+                    { field: 'EMAIL', title: '邮件', width: '13%', align: 'center' },
+                    { field: 'ADDRESS', title: '单位地址', width: '22%', align: 'center' },
+                    { field: 'operate', title: '操作', width: '23%', align: 'center', formatter: formatOper }
+                ]],
+                onLoadSuccess: function () {
+                    mergeCellsByField("dgGrid", "UACCOUNT");
+                }
+            });
+        }
+        function isenable(val) {
+            if (val == 1) {
+                return "启用";
+            }
+            else {
+                return "停用";
+            }
+        }
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            var addz = "<a href='#' onclick='addzData(" + JSON.stringify(row) + ")'>录入子单位</a>";
+            var adddp = "<a href='#' onclick='adddpData(" + JSON.stringify(row) + ")'>录入部门</a>";
+            return edit + " " + del + " " + detail + " " + addz + " " + adddp;
+        }
+        function addData() {
+            state = "Add";
+            $('#dlg').dialog('open').dialog('setTitle', '添加单位信息');
+            $('#fm').form('clear');
+            $("#ISENABLED").combobox('setValue', 1);
+        }
+        function addzData(row) {
+            state = "Addz";
+            $('#fm').form('clear');
+            $('#UNITID').val(row.UNITID);
+            $("#ISENABLED").combobox('setValue', 1);
+            $('#dlg').dialog('open').dialog('setTitle', '录入子单位');
+        }
+        function adddpData(row) {
+            state = "Adddp";
+            $('#fmDepartment').form('clear');
+            $('#DUNITID').val(row.UNITID);
+            $("#DISENABLED").combobox('setValue', 1);
+            $('#dlgDepartment').dialog('open').dialog('setTitle', '录入部门信息');
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            state = "Edit";
+            $('#UNITID').val(row.UNITID);
+            $('#UCODE').textbox('setValue', row.UCODE);
+            $('#FULLNAME').textbox('setValue', row.FULLNAME);
+            $('#SHORTNAME').textbox('setValue', row.SHORTNAME);
+            $('#MANAGER').textbox('setValue', row.MANAGER);
+            $('#PHONE').textbox('setValue', row.PHONE);
+            $('#CONTACT').textbox('setValue', row.CONTACT);
+            $('#FAX').textbox('setValue', row.FAX);
+            $('#EMAIL').textbox('setValue', row.EMAIL);
+            $('#ADDRESS').textbox('setValue', row.ADDRESS);
+            $('#POSTALCODE').textbox('setValue', row.POSTALCODE);
+            $('#REMARK').textbox('setValue', row.REMARK);
+            $('#SORTCODE').textbox('setValue', row.SORTCODE);
+            $('#ISENABLED').textbox('setValue', isenable(row.ISENABLED));
+            $('#dlg').dialog('open').dialog('setTitle', '编辑单位信息');
+        }
+        function detailData(row) {
+            $('#fm').form('clear');
+            $('#UNITID').val(row.UNITID);
+            $('#UCODE').textbox('setValue', row.UCODE);
+            $('#FULLNAME').textbox('setValue', row.FULLNAME);
+            $('#SHORTNAME').textbox('setValue', row.SHORTNAME);
+            $('#MANAGER').textbox('setValue', row.MANAGER);
+            $('#PHONE').textbox('setValue', row.PHONE);
+            $('#CONTACT').textbox('setValue', row.CONTACT);
+            $('#FAX').textbox('setValue', row.FAX);
+            $('#EMAIL').textbox('setValue', row.EMAIL);
+            $('#ADDRESS').textbox('setValue', row.ADDRESS);
+            $('#POSTALCODE').textbox('setValue', row.POSTALCODE);
+            $('#REMARK').textbox('setValue', row.REMARK);
+            $('#SORTCODE').textbox('setValue', row.SORTCODE);
+            $('#ISENABLED').textbox('setValue', isenable(row.ISENABLED));
+            $('#dlg').dialog('open').dialog('setTitle', '查看单位信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+        }
+
+        function deleteData(index) {
+            $('#dgGrid').treegrid('selectRow', index);
+            var row = $('#dgGrid').treegrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/unit/DeleteUnitInfo', { Id: row.UNITID }, function (ren) {
+                            if (ren.indexOf('成功') > -1)
+                                $('#dgGrid').treegrid('reload'); // reload the user data
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function doSearch() {
+            var uCode = $("#ucode").val();
+            var unitName = $("#fullname").val();
+            bindGrid(uCode, unitName);
+        }
+        function saveData() {
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/Unit/AddUnitInfo';
+                    break;
+                case "Edit":
+                    url = '/SysManage/Unit/EditUnitInfo';
+                    break;
+                case "Addz":
+                    url = '/SysManage/Unit/AddZUnitInfo';
+                    break;
+            }
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;//$(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlg').dialog('close'); 	// close the dialog
+                    alert(result);
+                    $('#dgGrid').treegrid('reload');
+                }
+            });
+        }
+
+        function saveDepart() {
+            var url = "";
+            switch (state) {
+                case "Adddp":
+                    url = '/SysManage/Unit/AddDepartmentInfo';
+                    break;
+            }
+            $('#fmDepartment').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;//$(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlgDepartment').dialog('close'); 	// close the dialog
+                    $('#dgGrid').treegrid('reload');
+                }
+            });
+        }
+    </script>
+
+
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                单位编码：<input id="ucode" name="ucode" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                单位名称：<input id="fullname" name="fullname" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>&nbsp;&nbsp;
+                <a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">录入顶级单位</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" class="easyui-treegrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:680px;height:450px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="UNITID" name="UNITID" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">单位编码：</td>
+                    <td>
+                        <input id="UCODE" name="UCODE" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">单位名称：</td>
+                    <td>
+                        <input id="FULLNAME" name="FULLNAME" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">单位简称：</td>
+                    <td>
+                        <input id="SHORTNAME" name="SHORTNAME" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">负责人：</td>
+                    <td>
+                        <input id="MANAGER" name="MANAGER" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">联系人：</td>
+                    <td>
+                        <input id="CONTACT" name="CONTACT" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">联系电话：</td>
+                    <td>
+                        <input id="PHONE" name="PHONE" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">单位传真：</td>
+                    <td>
+                        <input id="FAX" name="FAX" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">单位邮件：</td>
+                    <td>
+                        <input id="EMAIL" name="EMAIL" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">单位地址：</td>
+                    <td>
+                        <input id="ADDRESS" name="ADDRESS" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">邮政编码：</td>
+                    <td>
+                        <input id="POSTALCODE" name="POSTALCODE" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">排序码：</td>
+                    <td>
+                        <input id="SORTCODE" name="SORTCODE" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">是否启用：</td>
+                    <td>
+                        <select id="ISENABLED" name="ISENABLED" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="1">启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">备注：</td>
+                    <td colspan="3">
+                        <input id="REMARK" name="REMARK" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+<div id="dlgDepartment" class="easyui-dialog" style="width:680px;height:450px;padding:10px 20px;display:none" closed="true" buttons="#dlgdepart-buttons">
+    <form id="fmDepartment" method="post">
+        <input id="DUNITID" name="DUNITID" type="hidden" />
+        @*<div data-options="region:'center'" style="padding:10px;">
+                <table cellpadding="5">
+                    <tr>
+                        <td style="text-align:right">单位编码：</td>
+                        <td>
+                            <input id="DUCODE" name="DUCODE" type="text" class="easyui-textbox" style="width:200px" required />
+                        </td>
+                        <td style="text-align:right">单位名称：</td>
+                        <td>
+                            <input id="DFULLNAME" name="DFULLNAME" type="text" class="easyui-textbox" style="width:200px" required />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">单位简称：</td>
+                        <td>
+                            <input id="DSHORTNAME" name="DSHORTNAME" class="easyui-textbox" style="width:200px" />
+                        </td>
+                        <td style="text-align:right">负责人：</td>
+                        <td>
+                            <input id="DMANAGER" name="DMANAGER" class="easyui-textbox" style="width:200px" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">联系人：</td>
+                        <td>
+                            <input id="DCONTACT" name="DCONTACT" class="easyui-textbox" style="width:200px" />
+                        </td>
+                        <td style="text-align:right">联系电话：</td>
+                        <td>
+                            <input id="DPHONE" name="DPHONE" class="easyui-textbox" style="width:200px" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">单位传真：</td>
+                        <td>
+                            <input id="DFAX" name="DFAX" type="text" class="easyui-textbox" style="width:200px" />
+                        </td>
+                        <td style="text-align:right">单位邮件：</td>
+                        <td>
+                            <input id="DEMAIL" name="DEMAIL" type="text" class="easyui-textbox" style="width:200px" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:right">单位地址：</td>
+                        <td>
+                            <input id="DADDRESS" name="DADDRESS" type="text" class="easyui-textbox" style="width:200px" />
+                        </td>
+                        <td style="text-align:right">邮政编码：</td>
+                        <td>
+                            <input id="DPOSTALCODE" name="DPOSTALCODE" type="text" class="easyui-textbox" style="width:200px" />
+                        </td>
+                    </tr>
+                </table>
+        </div>*@
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">部门编码：</td>
+                    <td>
+                        <input id="DDCODE" name="DDCODE" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">部门名称：</td>
+                    <td>
+                        <input id="DFULLNAME" name="DFULLNAME" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">部门简称：</td>
+                    <td>
+                        <input id="DSHORTNAME" name="DSHORTNAME" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">所属单位：</td>
+                    <td>
+                        <input id="DUnitName" name="DUnitName" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">负责人：</td>
+                    <td>
+                        <input id="DMANAGER" name="DMANAGER" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">联系电话：</td>
+                    <td>
+                        <input id="DPHONE" name="DPHONE" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">部门传真：</td>
+                    <td>
+                        <input id="DFAX" name="DFAX" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">部门邮件：</td>
+                    <td>
+                        <input id="DEMAIL" name="DEMAIL" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">排序码：</td>
+                    <td>
+                        <input id="DSORTCODE" name="DSORTCODE" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">是否启用：</td>
+                    <td>
+                        <select id="DISENABLED" name="DISENABLED" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="1">启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">备注：</td>
+                    <td colspan="3">
+                        <input id="DREMARK" name="DREMARK" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlgdepart-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveDepart()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlgDepartment').dialog('close')">取消</a>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+

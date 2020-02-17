@@ -1,0 +1,61 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "首页降雨统计数量明细";
+
+}
+<div id="gridContainer" data-options="region:'center',split:false,title:'',border:false" style="width:600px;height:100%;overflow:hidden;">
+    <table id="dgGrid" style="height:100%;width:100%;"></table>
+</div>
+@section CSS {
+    <style>
+        #divChartContainer .panel {
+            width:600px !important;
+            margin: 0 35px;
+        }
+        .panel-body {
+            font-size: 12px;
+        }
+        .datagrid-header{
+            width:600px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        var tm = '@ViewData["tm"]';
+        var slevel = '@Html.Raw(ViewData["slevel"])';
+        $.ajax({
+            url: "/RealData/Rain/GetRainStaticDetailData",
+            data: { 'tm': tm, 'slevel': slevel },
+            dataType: "json",
+            success: function (data, status, xhr) {
+                $('#dgGrid').datagrid({
+                    singleSelect: true,
+                    collapsible: true,
+                    striped: true,
+                    rownumbers: false,
+                    pagination: false,
+                    data: data,
+                    emptyMsg: "<div style='font-weight:bold;margin-top:20px;font-size:20px;color:red'>查无数据</div>",
+                    //loadMsg: '数据加载中,请稍后……',
+                    columns: [[
+                        { field: 'rvnm', title: '河名', width: '33%', align: 'center' },
+                        { field: 'stnm', title: '站名', width: '33%', align: 'center' },
+                        { field: 'drp', title: '降雨量(mm)', width: '34%', halign: 'center', align: 'right' }
+                    ]],
+                    onLoadSuccess: function () {
+                    }
+                });
+            }
+        });
+
+    </script>
+}
+
+
+
+
+
+
+

@@ -1,0 +1,469 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "设施设备";
+}
+@section CSS {
+    <style type="text/css">
+        .rowEvenCss {
+            COLOR: black;
+            BACKGROUND-COLOR: white;
+            font-size: 15px;
+            font-family: '微软雅黑';
+        }
+
+        .rowOddCss {
+            COLOR: black;
+            BACKGROUND-COLOR: #DDE9F3;
+            font-size: 15px;
+            font-family: '微软雅黑';
+        }
+
+        .headerCss {
+            text-align: left;
+            font-family: '微软雅黑';
+        }
+
+        .titleCss {
+            text-align: left;
+            font-size: 15px;
+            font-family: '微软雅黑';
+        }
+
+        .hasDatepicker {
+            width: 100px;
+            text-align: center;
+        }
+
+        .ui-datepicker * {
+            font-family: 'Helvetica Neue Light', 'Open Sans', Helvetica;
+            font-size: 14px;
+            font-weight: 300 !important;
+        }
+    </style>
+}
+<form id="form1" runat="server">
+    <div data-options="region:'west',title:'类别',split:true,collapsible:false" style="width:160px;">
+        <ul id="infoTree" class="easyui-tree"></ul>
+    </div>
+    <div data-options="region:'center'" style="padding:5px;background:#eee; overflow:auto;" id="content">
+        <table id="dgGrid" style="height:100%;overflow:auto;"></table>
+    </div>
+</form>
+@section Scripts {
+    <script language="javascript" type="text/javascript">
+        var g_stcd;
+        var g_tableName;
+        var g_treeData = new Array();   //图层树数据
+        $(function () {
+            g_stcd = $.getUrlParam("stcd");// '40105150';//
+            InitTree();
+        });
+        //加载树形数据
+        function InitTree() {
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/FacEq/GetFacEqTreeData/',
+                //data: { "test":  ""},
+                success: function (d) {
+                    firC = d.Table;;
+                    secC = d.Table1;
+                    g_treeData = [{ "id": -1, "text": "设施设备", "state": "open", "children": [] }];
+
+                    for (var i = 0; i < firC.length; i++) {
+                        var objTmp = {};
+                        objTmp.text = firC[i].FIRNAME;
+                        objTmp.id = firC[i].FIRCLASS;
+                        objTmp.children = new Array();
+                        if (trim(firC[i].TABLENAME) != '') {
+                            objTmp.state = 'closed';
+                            objTmp.attributes = { 'TABLENAME': firC[i].TABLENAME };
+                        }
+                        else {
+                            objTmp.state = 'closed';
+                        }
+                        for (var j = 0; j < secC.length; j++) {
+                            var objTmp2 = {};
+
+                            if (firC[i].FIRCLASS.substr(0, 2) == secC[j].FIRCLASS.substr(0, 2)) {
+                                objTmp2.id = secC[j].FIRCLASS;
+                                objTmp2.text = secC[j].FIRNAME;
+                                objTmp2.attributes = { 'TABLENAME': secC[j].TABLENAME };
+                                objTmp.children.push(objTmp2);
+                            }
+                        }
+                        g_treeData[0].children.push(objTmp);
+                    }
+
+                    $('#infoTree').tree({
+                        data: g_treeData,
+                        checkbox: false,
+                        onClick: function (node) {
+                           if (node.attributes['TABLENAME'] != null && node.attributes['TABLENAME'] != "") {
+                                g_tableName = node.attributes['TABLENAME'];
+                                GetFieldsAndData(g_stcd, node.attributes['TABLENAME']);
+                            }
+                        }
+                    });
+                }
+            });
+
+
+
+        }
+        //去空
+        function trim(val) {
+            if (val != null && val != "" && val != undefined)
+                return val.toString().replace(/(^\s*)|(\s*$)/g, "");
+        }
+        function GetFieldsAndData(stcd, tableName) {
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/FacEq/GetFacEqFieldsAndData/',
+                data: { "stcd": stcd, "tableName": tableName },
+                success: function (data) {
+                    if (data == null) {
+                        return;
+                    }
+
+                    var t1 = data.Table;
+                    var t2 = data.Table1;
+
+                    //表列自动生成
+                    var fields = new Array();
+                   
+                    for (var i = 0; i < t1.length; i++) {
+                        var fieldType = trim(t1[i].DATA_TYPE);
+                        if (i < 2) {
+                            fields.push({ field: t1[i].COLUMN_NAME, title: t1[i].COMMENTS, hidden: true });
+                        }
+                        else {
+                            var retVal = filterField(g_tableName, t1[i].COLUMN_NAME, t1[i].COMMENTS);
+                            if (false == retVal) {
+                                //if (fieldType == "number" || fieldType == "numeric")
+                                //    fields.push({ field: t1[i].COLUMN_NAME, title: t1[i].COMMENTS });
+                                if (fieldType == "datetime")
+                                    fields.push({ field: t1[i].COLUMN_NAME, title: t1[i].COMMENTS, formatter: changeTM });
+                                else
+                                    fields.push({ field: t1[i].COLUMN_NAME, title: t1[i].COMMENTS });
+                            }
+                            else {
+                                fields.push(retVal);
+                            }
+                        }
+                    }
+                    
+                    var aryTmp = new Array();
+                    for (var j = 0; j < t2.length; j++) {
+                        var objTmp = new Object();
+                        for (var k = 0; k < t1.length; k++) {
+                            objTmp[t1[k].COLUMN_NAME] = ZeroToNull(t2[j][t1[k].COLUMN_NAME]);
+                        }
+                        aryTmp.push(objTmp);
+                    }
+                    InitJSGrid(fields, aryTmp);
+                }
+            });
+
+        }
+        //字段过滤器
+        function filterField(tableName, fieldName, fieldContent) {
+            var objVal = new Object();
+           //基线数据表
+            if (tableName == 'TO_BASELINEINFO') {
+                if ('LOCATION' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent, sorting: true,
+                        formatter: function (val, row, index) {
+                           
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "左岸";
+                                    break;
+                                case "2":
+                                    title = "右岸";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            if (tableName == 'TO_SECINFO') {
+                if ('SDTYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent, sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "标志桩";
+                                    break;
+                                case "2":
+                                    title = "标志牌";
+                                    break;
+                                case "3":
+                                    title = "标志杆";
+                                    break;
+                                case "4":
+                                    title = "钢标";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            if (tableName == 'TO_CABLEWAYINFO') {
+                if ('STYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent, sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "吊箱主缆道";
+                                    break;
+                                case "2":
+                                    title = "吊箱副缆道";
+                                    break;
+                                case "3":
+                                    title = "吊船缆道";
+                                    break;
+                                case "4":
+                                    title = "铅鱼缆道";
+                                    break;
+                                case "5":
+                                    title = "浮标缆道";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            if (tableName == 'TO_EQ_HANGINGBOX') {
+                if ('LIFTINGMODE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent, sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "电动";
+                                    break;
+                                case "2":
+                                    title = "人工";
+                                    break;
+                                case "3":
+                                    title = "电动+人工";
+                                    break;
+                               default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            if (tableName == 'TO_EQ_DRAFT') {
+                if ('STYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent,sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "直立式";
+                                    break;
+                                case "2":
+                                    title = "倾斜式";
+                                    break;
+                                case "3":
+                                    title = "矮桩式";
+                                    break;
+                                case "4":
+                                    title = "悬垂式";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            //自己水位计
+            if (tableName == 'TO_EQ_WLG') {
+                if ('STYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent,  sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "雷达水位计";
+                                    break;
+                                case "2":
+                                    title = "超声波水位计";
+                                    break;
+                                case "3":
+                                    title = "浮子式水位计";
+                                    break;
+                                case "4":
+                                    title = "压力式水位计";
+                                    break;
+                                case "5":
+                                    title = "电子水尺";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            //雨量器（计）
+            if (tableName == 'TO_EQ_RAINGAUGE') {
+                if ('STYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent,  sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "翻斗式";
+                                    break;
+                                case "2":
+                                    title = "称重式";
+                                    break;
+                                case "3":
+                                    title = "虹吸式";
+                                    break;
+                                default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            //测量仪器
+            if (tableName == 'TO_EQ_SURVEY') {
+                if ('STYPE' == fieldName) {
+                    objVal = {
+                        field: fieldName, title: fieldContent,  sorting: true,
+                        formatter: function (val, row, index) {
+
+                            var title = val;
+                            switch (title) {
+                                case "1":
+                                    title = "六分仪";
+                                    break;
+                                case "2":
+                                    title = "水准仪";
+                                    break;
+                                case "3":
+                                    title = "经纬仪";
+                                    break;
+                                case "4":
+                                    title = "全站仪";
+                                    break;
+                                case "5":
+                                    title = "定位仪（GPS/GIS/测距仪）";
+                                    break;
+                               default:
+                                    title = title;
+                            }
+                            return title;
+                        }
+                    };
+                }
+            }
+
+            if (objVal.field != null) {
+                return objVal;
+            }
+            else {
+                return false;
+            }
+        }
+
+        function changeTM(val, row, index) {
+            return utils.formatDate(val, 'yyyy-MM-dd');
+        }
+        function InitJSGrid(fields, data) {
+           $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+               fitColumns: false,
+                rownumbers: true,
+                pagination: false,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                data: data,
+                loadMsg: '数据加载中,请稍后……',
+                columns: GetColumns(fields),
+                onLoadSuccess: function () {
+                  
+                    //if (data.length == 0) {
+                    //    //添加一个新数据行，第一列的值为你需要的提示信息，然后将其他列合并到第一列来，注意修改colspan参数为你columns配置的总列数
+                    //    //$(this).datagrid('appendRow', { itemid: '<div style="text-align:center;color:red">没有相关记录！</div>' }).datagrid('mergeCells', { index: 0, field: 'itemid', colspan: 4 })
+                    //    //隐藏分页导航条，这个需要熟悉datagrid的html结构，直接用jquery操作DOM对象，easyui datagrid没有提供相关方法隐藏导航条
+                    //    $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').hide();
+                    //}
+                    ////如果通过调用reload方法重新加载数据有数据时显示出分页导航容器
+                    //else $(this).closest('div.datagrid-wrap').find('div.datagrid-pager').show();
+                }
+            });
+
+        }
+        function GetColumns(r) { 
+            var columns = [];
+            var content = [];
+            var cnt = 0;
+            if (r.length > 0) {
+                    for (var i = 0; i < r.length; i++) {
+                        content.push(r[i]);
+                    }
+                   
+                }
+            columns.push(content);
+            return columns;
+
+        }
+        function ZeroToNull(sValue) {
+            if (sValue == "0") {
+                return "";
+            }
+            else {
+                return sValue
+            }
+        }
+    </script>
+
+}
+
+

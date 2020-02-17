@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="lib/Cesium-1.39/Build/Cesium/Cesium.js" language="javascript" type="text/javascript"></script>
+
+    <script type="text/javascript" src="lib/jquery/dist/jquery-1.10.2.min.js"></script>
+   
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" src="lib/bootstrap/js/bootstrap.min.js"></script>
+
+    <link href="lib/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+
+    <link href="css/Cesium/style.css" rel="stylesheet" />
+    <link href="css/Cesium/view.css" rel="stylesheet" />
+    <link href="css/Cesium/mars3d.css" rel="stylesheet" />
+    <link href="css/Cesium/bootstrap.css" rel="stylesheet" />
+    <link href="css/Cesium/layer2.css" rel="stylesheet" />
+    <link href="css/Cesium/layer.css" rel="stylesheet" />
+    <link href="css/Cesium/widget-win.css" rel="stylesheet" />
+</head>
+<body style="padding:5px;text-align:center" title="提示：单击按钮激活对应功能,在地图上单击开始，绘制中单击增加点、双击结束。">
+    <script type="text/javascript">
+        var g_viewer = parent.g_viewer;
+
+        function onClickMLBtn()
+        {
+            clearMeasureResult();
+            window.parent.g_bMeasure_Length = true;
+            window.parent.g_measureLength = 0;
+            $("#lbl_measure_result").html("");
+        }
+
+        //点击测量面积按钮
+        function onClickMABtn()
+        {
+            clearMeasureResult();
+            window.parent.g_bMeasure_Area = true;
+            $("#lbl_measure_result").html("");
+        }
+
+        function clearMeasureResult()
+        {
+            window.parent.g_bMeasure_Length = false;  //不测量了
+            window.parent.g_bMeasure_Area = false;
+            //清除测量的实体对象、数组、线的点数组对象,测量点的个数
+            clearEntites(window.parent.g_measureEntites_Ary);
+            window.parent.g_measureEntites_Ary.splice(0, window.parent.g_measureEntites_Ary.length);
+            window.parent.g_measureLinePts_Ary.splice(0, window.parent.g_measureLinePts_Ary.length);
+            window.parent.g_measurePolygonPts_Ary.splice(0, window.parent.g_measurePolygonPts_Ary.length);
+            window.parent.g_measureLength = 0;
+            window.parent.g_measurePtNum = 0;
+            $("#lbl_measure_result").html("");
+        }
+
+        function clearEntites(entityAry)
+        {
+            var length = entityAry.length;
+            for (var i = 0; i < length;i++)
+            {
+                g_viewer.entities.remove(entityAry[i]);
+            }
+        }
+
+        function setMeasureResult(sShow)
+        {
+            $("#lbl_measure_result").html(sShow);
+        }
+    </script>
+    <div class="btn-group" role="group">
+        <button id="btn_measure_length" onclick="onClickMLBtn();" style="background: rgba(24, 80, 118, 0.3);" type="button" class="btn btn-primary btn-sm">
+            <span class="fa fa-line-chart" aria-hidden="true"></span> 长度</button> 
+        <button id="btn_measure_area" onclick="onClickMABtn();" style="background: rgba(24, 80, 118, 0.3);" type="button" class="btn btn-primary btn-sm">
+            <span class="fa fa-area-chart" aria-hidden="true"></span> 面积</button> 
+        <!--<button id="btn_measure_supHeight" style="background: rgba(24, 80, 118, 0.3);" type="button" class="btn btn-primary btn-sm">
+            <span class="fa fa-height-chart" aria-hidden="true"></span> 高度</button>--> 
+        <button id="btn_measure_clear" onclick="clearMeasureResult();" style="background: rgba(255, 73, 73, 0.3);" type="button" class="btn btn-danger btn-sm">
+            <span class="fa fa-trash" aria-hidden="true"></span> 清除</button>
+    </div>
+    <!--<div style="margin-top:5px">
+        <span style="font-size:16px;padding-right:10px">单位</span>
+        <select id="measure_length_danwei" class="form-control" style="width:140px;">
+            <option value="auto">自动</option>
+            <option value="m">米</option>
+            <option value="km">公里</option>
+            <option value="mile">海里</option>
+            <option value="zhang">丈</option>
+        </select>
+    <select id="measure_area_danwei" class="form-control" style="width:140px;display:none">
+        <option value="auto">自动</option>
+        <option value="m">平方米</option>
+        <option value="km">平方公里</option>
+        <option value="mu">亩</option>
+        <option value="ha">公顷</option>
+    </select>
+    </div>-->
+    <div style="margin-top:20px">
+        <span id="lbl_measure_result" style="font-size:20px;color:white;"></span>
+    </div>
+</body>
+</html>

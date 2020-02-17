@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "操作日志";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(function () {
+            bindGrid("");
+        })
+        function bindGrid(logtype) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/LoginLog/GetLoginLogData/',
+                queryParams: { 'logtype': logtype },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'SLID', title: '主键', align: 'center', hidden: true },
+                    { field: 'SLOPERATORName', title: '用户名', width: '10%', align: 'center' },
+                    { field: 'SLTYPE', title: '日志类型', width: '15%', align: 'center' },
+                    { field: 'SLMODULAR', title: '操作模块', width: '15%', align: 'center' },
+                    { field: 'SLURL', title: '菜单名称', width: '15%', align: 'center' },
+                    { field: 'SLMESSAGE', title: '结果信息', width: '15%', align: 'center' },
+                    { field: 'SLDATETIME', title: '操作时间', width: '15%', align: 'center' },
+                    { field: 'SLUSERIP', title: 'IP地址', width: '15%', align: 'center' },
+                    //{ field: 'operate', title: '操作', width: '10%', align: 'center', formatter: formatOper }
+                ]],
+                onLoadSuccess: function () {
+                    
+                }
+            });
+        }
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            return detail;
+        }        
+        function detailData(row) {
+            $('#fm').form('clear');
+            $('#SLID').val(row.SLID);
+            $('#SLOPERATORName').textbox('setValue', row.SLOPERATORName);
+            $('#SLTYPE').textbox('setValue', row.SLTYPE);
+            $('#SLMODULAR').textbox('setValue', row.SLMODULAR);
+            $('#SLURL').textbox('setValue', row.SLURL);
+            $('#SLUSERIP').textbox('setValue', row.SLUSERIP);
+            $('#SLDATETIME').textbox('setValue', row.SLDATETIME);
+            $('#SLMESSAGE').textbox('setValue', row.SLMESSAGE);
+            $('#dlg').dialog('open').dialog('setTitle', '查看日志信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+        }
+        function doSearch() {
+            var logtype = $('#logtype').val();
+            bindGrid(logtype);
+        }
+    </script>
+
+
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                日志类型：<input id="logtype" name="logtype" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:400px;height:350px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="SLID" name="SLID" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">用户名：</td>
+                    <td>
+                        <input id="SLOPERATORName" name="SLOPERATORName" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">日志类型：</td>
+                    <td>
+                        <input id="SLTYPE" name="SLTYPE" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">操作模块：</td>
+                    <td>
+                        <input id="SLMODULAR" name="SLMODULAR" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">菜单：</td>
+                    <td>
+                        <input id="SLURL" name="SLURL" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">IP地址：</td>
+                    <td>
+                        <input id="SLUSERIP" name="SLUSERIP" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">操作时间：</td>
+                    <td>
+                        <input id="SLDATETIME" name="SLDATETIME" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">操作信息：</td>
+                    <td>
+                        <input id="SLMESSAGE" name="SLMESSAGE" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    @*<div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>*@
+</div>
+
+
+
+
+
+
+
+
+
+

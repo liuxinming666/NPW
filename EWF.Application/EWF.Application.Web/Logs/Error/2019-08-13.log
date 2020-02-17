@@ -1,0 +1,19 @@
+2019-08-13 15:52:43,171 [11] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: The operation has timed out.
+堆栈:    at System.Net.HttpWebRequest.GetResponse()
+   at EWF.Services.WeatherService.GetLastImg(String surl, String ecode, String strTag) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\WeatherService.cs:line 45
+   at EWF.Services.WeatherService.GetShowWeather(String sType, String url, String encode, String strTag) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\WeatherService.cs:line 33
+   at EWF.Application.Web.Controllers.HomeController.GetWeatherImage(String sType) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\HomeController.cs:line 77
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Net.Requests
+--------------------------------------------
+

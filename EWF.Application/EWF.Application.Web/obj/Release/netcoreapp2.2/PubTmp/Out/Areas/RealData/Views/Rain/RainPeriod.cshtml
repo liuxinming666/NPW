@@ -1,0 +1,249 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "时段雨量查询";
+}
+
+<div class="easyui-layout" fit="true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+        <table>
+            <tr>
+                <td>选择测站:</td>
+                <td>
+                    <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </td>
+                <td>开始日期:</td>
+                <td><input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:00'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:00' })" /></td>
+                <td>突出显示：</td>
+                <td>
+                    大于<input type="text" id="in_rainV" value="25" style="width:50px;"/><img src="~/images/Rain/licon1.gif" />
+                    <br />
+                    大于<input type="text" id="in_rainV2" value="50" style="width:50px;" /><img src="~/images/Rain/licon2.gif" />
+                </td>
+                @*<td>查询类型:</td>
+                    <td>
+                        <select id="queryType" class="easyui-combobox" name="dept" style="width:100px;">
+                            <option value="0">1小时</option>
+                            <option value="1">2小时</option>
+                            <option value="2">6小时</option>
+                        </select>
+                    </td>*@
+
+                <td align="left">
+                    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                    <a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;height:100%;overflow:hidden;">
+        <table id="dgGrid" style="height:100%;overflow:auto;"></table>        
+    </div>
+
+   
+    
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        var g_stcds;//测站，多个以逗号隔开
+        var g_startDate;//查询开始时间
+        var g_endDate;//查询结束时间
+
+        $(function () {
+            InitCondition();
+            $("#btnSearch").click(DoSearch);
+            //DoSearch();
+        });
+
+        /**
+         * 初始化条件
+         * */
+        function InitCondition() {
+            var curdate = new Date();
+            var newDate = DateAdd("dd", -1, new Date());
+            $("#edate").val(utils.formatDate(curdate, 'yyyy-MM-dd 08:00'));
+            $("#sdate").val(utils.formatDate(newDate, 'yyyy-MM-dd 08:00'));
+
+            bindAreaDataGrid();
+        }
+
+       //查询方法
+        function DoSearch() {
+            ShowRainPeriodGrid();
+        }
+        //分页显示时段雨量数据
+        function ShowRainPeriodGrid() {
+
+            var arrStcd = $('#areastcd').combogrid('getValues');
+            if (arrStcd.length > 0) {
+                g_stcds = "'" + arrStcd.join("','") + "'";
+            } else {
+                g_stcds = "";
+            }
+            
+            g_startDate = $("#sdate").val();
+            g_endDate = $("#edate").val();
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true, 
+                //loadMsg: '数据加载中,请稍后……',
+                columns: GetColumns(g_startDate)
+            });
+            com.ajax({
+                type: 'get',
+                url: '/RealData/Rain/GetRainDataPeriodNew',
+                data: {
+                    "stcds": g_stcds, "startDate": g_startDate, "endDate": g_endDate, "rainValue": $("#in_rainV").val(), "rainValue2": $("#in_rainV2").val()
+                },
+                success: function (d) {
+                    $('#dgGrid').datagrid("loadData",d);
+                }
+            });
+            /*$('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                showFooter: true,
+                pageSize: 20,
+                url: '/RealData/Rain/GetRainDataPeriod',
+                queryParams: { 'stcds': g_stcds, 'startDate': g_startDate, 'endDate': g_endDate },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'RVNM', title: '河名', width: '15%', align: 'center' },
+                    { field: 'STNM', title: '站名', width: '15%', align: 'center' },
+                    { field: 'STCD', title: '站码', hidden: 'true' },
+                    {
+                        field: 'STDT', title: '开始时间', width: '20%', align: 'center', formatter: function () {
+                            return g_startDate;
+                        }
+                    },
+                    {
+                        field: 'ENTDT', title: '结束时间', width: '20%', align: 'center', formatter: function () {
+                            return g_endDate;
+                        }
+                    },
+                    {
+                        field: 'VALUE', title: '雨量(mm)', width: '10%', halign: 'center', align: 'right', formatter: function (item) {
+                            return Round1New(item);
+                        }
+                    },
+                    { field:"_operate", title:'操作', width:"20%" ,align:"center", formatter:formatOper1 }
+
+                ]],
+                onLoadSuccess: function () {
+                }
+            });*/
+
+        }
+        function GetColumns(stdate) {
+            var cols = [];
+            var colNames = [];
+            colNames.push({ field: 'RVNM', title: '河名', width: '6%', align: 'center' });
+            colNames.push({ field: 'STNM', title: '站名', width: '6%', align: 'center' });
+            colNames.push({ field: 'TM', title: '时间', width: '6%', align: 'center' });
+            
+            var startHour = moment(stdate).hour();
+            if (startHour % 2 != 0) {
+                startHour += 1;
+            }
+            else {
+                startHour += 2;
+            }
+            var i_col;
+            for (var i = 0; i < 12; i++)
+            {
+                i_col = (startHour + i * 2) % 24;
+                colNames.push({ field: i_col + "时", title: i_col + "时", width: '6%', halign: 'center',align:'right' }); 
+            }
+            colNames.push({ field: 'Total', title: '累计雨量', width: '6%', halign: 'center', align: 'right' });
+            colNames.push({ field: 'DYP', title: '日雨量', width: '6%', halign: 'center', align: 'right' });
+            cols.push(colNames);
+            return cols;
+        }
+        //自定义操作列
+        function formatOper1(val, row, index) {
+            //var mody = "<a href='#' onclick='doDetail(" + row.STCD + ',\'' + row.STNM + ',' + row.STDT + ',' + row.ENTDT + ")'>详情</a>";
+            if (row.STNM != "面平均") {
+                var stnm = row.STNM;
+                var mody = "<a href='#' onclick='doDetail(\"" + row.STCD + "\")'>详情</a>";
+                return mody;
+            }
+            return "";
+        }
+      
+        function doDetail(stcd) {
+            
+            //com.ajax({
+            //    type: 'get',
+            //    url: '/RealData/Rain/GetRainDataPeriodDetail',
+            //    data: { 'stcd': stcd, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+            //    success: function (d) {                    
+            //        ShowTable(d);
+            //        DrawZLine(d.rows);
+            //    }
+            //});
+
+            top.$.modalOpen({
+                id: "RainPeriodDetail",
+                title: "测站详情",
+                url: '/RealData/Rain/RainPeriodDetail?stcd=' + stcd + '&sdate=' + g_startDate + "&edate=" + g_endDate,
+                width: "1200px",
+                height: "1000px",
+                maxmin: true,
+                btn: null
+            });
+            
+        }
+
+       
+        
+
+
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": " 'PP','ZZ','ZQ'" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '100px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    //$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+                    DoSearch();
+                }
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": " 'PP','ZZ','ZQ'" }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+    </script>
+
+}
+

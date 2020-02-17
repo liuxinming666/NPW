@@ -1,0 +1,124 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "历史特征值";
+}
+<div id="p"  style="width:100%;height:100%;padding:0px;overflow-y:no-display;" data-options="noheader:true">
+    <div style="margin-top:0px;height:5%;">
+        @*<a href="javascript:void(0);" onclick="openfile('1')" style="cursor:hand;">测洪方案</a><a href="javascript:void(0);" onclick="openfile('2')" style="cursor:hand;">测站任务书</a>*@
+        <a href="javascript:void(0);" onclick="openfile('1')" style="cursor:hand;"><span id="c1" class="documentItemTitleSelect selCss">测洪方案</span></a>
+        <a href="javascript:void(0);" onclick="openfile('2')" style="cursor:hand;"><span  id="c2" class="documentItemTitle selCss">测站任务书</span></a>
+
+    </div>
+    <div style="height:95%;">
+        <div id="cnt" style="width:100%;height:100%;"></div>
+    </div>
+</div>
+    @section CSS {
+        <link href="~/lib/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .documentItem {
+                height: 52px;
+                line-height: 52px;
+                border: solid 1px #066DAB;
+                margin: 2px;
+                vertical-align: middle;
+                overflow: hidden;
+                border-radius: 4px;
+                -o-border-radius: 4px;
+                -moz-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                clear: both;
+            }
+
+            .documentItemTitle {
+                height: 30px;
+                line-height: 30px;
+                color: #0066CC;
+                font-family: "微软雅黑";
+                font-size: 16px;
+                padding-left: 5px;
+                padding-right: 5px;
+                overflow: hidden;
+            }
+
+            .documentItemTitleSelect {
+                height: 30px;
+                line-height: 30px;
+                color: red;
+                font-family: "微软雅黑";
+                font-size: 16px;
+                padding-left: 5px;
+                padding-right: 5px;
+                overflow: hidden;
+            }
+
+            .documentItemSummary {
+                height: 20px;
+                line-height: 20px;
+                font-family: "微软雅黑";
+                font-size: 12px;
+                padding-left: 5px;
+                padding-right: 5px;
+                overflow: hidden;
+            }
+
+            .divTabCss {
+                font-family: "微软雅黑";
+                color: #45A9FF;
+            }
+        </style>
+    }
+    @section Scripts {
+
+        <script src="~/js/pdfobject.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                var objTmp = document.getElementById('p').children[0];
+                openfile("1")
+            })
+            function getRootPath() {
+                var strFullPath = window.document.location.href;
+                var strPath = window.document.location.pathname;
+                var pos = strFullPath.indexOf(strPath);
+                var prePath = strFullPath.substring(0, pos);
+                var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+                return prePath;
+            }
+            function openfile(id) {
+                var src = "";
+                if (id == "1") {
+                    $('#c1').removeClass("documentItemTitle");
+                    $('#c1').addClass("documentItemTitleSelect");
+                    $('#c2').removeClass("documentItemTitleSelect");
+                    $('#c2').addClass("documentItemTitle");
+                    src = getRootPath() + '@ViewBag.file_url1';
+                }
+                else {
+                    $('#c2').addClass("documentItemTitleSelect");
+                    $('#c2').removeClass("documentItemTitle");
+                    $('#c1').removeClass("documentItemTitleSelect");
+                    $('#c1').addClass("documentItemTitle");
+                    src = getRootPath() + '@ViewBag.file_url2';
+                }
+                //var stcd = $.getUrlParam("stcd")
+                //var sStcd = stcd; //'40105150';
+                //var sFN = stcd + "-" + id;// '40105150-' + id;
+                //var src = getRootPath() + "/stationDoc/" + sStcd + "/" + sFN + ".pdf";
+                PDFObject.embed(src, "#cnt");
+                
+               
+                //if (stcd == "40105150")//暂时用花园口的
+                //{
+                //    PDFObject.embed(src, "#cnt");
+                //}
+                //else {
+                //    document.getElementById('cnt').innerHTML = "暂无数据！";
+                //}
+
+            }
+
+        </script>
+    }
+
+
+

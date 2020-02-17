@@ -1,0 +1,460 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "Index";
+}
+<!doctype html>
+<html>
+<head>
+    <title>海康平台</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="Expires" content="0" />
+    <style type="text/css">
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            overflow: hidden;
+        }
+
+        .left {
+            float: left;
+        }
+        /*插件*/
+        .plugin {
+            width: 780px;
+            height: 480px;
+        }
+
+        fieldset {
+            display: block;
+        }
+
+        .ui-layout-east {
+            padding-left: 10px;
+            float: left;
+            overflow: hidden;
+            position: absolute;
+            top: 64px;
+            right: 85px;
+        }
+        /*云台*/
+        .ptz {
+            width: 243px;
+            padding: 10px;
+            margin-left: 10px;
+            border: 1px solid #7F9DB9;
+        }
+
+            .ptz .ptz-control td {
+                text-align: center;
+            }
+
+            .ptz .btn {
+                width: 67px;
+                margin-bottom: 5px;
+                font-size: 20px;
+            }
+
+            .ptz legend {
+                font-size: 25px;
+            }
+
+        img#id1 {
+            position: relative;
+            top: 0;
+            left: 5px;
+            width: 170px;
+            height: 170px;
+            display: block;
+        }
+
+        img#id2 {
+            position: absolute;
+            top: 75px;
+            right: 150px;
+            display: block;
+            cursor: pointer;
+        }
+
+        img#id3 {
+            position: absolute;
+            top: 75px;
+            right: 35px;
+            display: block;
+            cursor: pointer;
+        }
+
+        img#id4 {
+            position: absolute;
+            top: 135px;
+            right: 90px;
+            display: block;
+            cursor: pointer;
+        }
+
+        img#id5 {
+            position: absolute;
+            top: 15px;
+            right: 90px;
+            display: block;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui-layout" id="layout" style="height: 100%; width: 100%; overflow: hidden;">
+        <div id="dwn" style="display:none;">
+            <a href="~/VideoPlugin/WebComponentsKit.rar">点击下载视频插件</a>
+        </div>
+        <div>
+            <div id="divPlugin" class="plugin">
+            </div>
+        </div>
+        <div class="ui-layout-east" style="background-color: #DCDDE1; top: 0px; right: 0px;
+            width: 190px; height: 100%;">
+            <img id="id1" src="~/images/Video/bkground.png" />
+            <img id="id2" src="~/images/Video/left.png" alt="向左转" onmousedown="mouseDownPTZControl(3);"
+                 onmouseup="mouseUpPTZControl();" />
+            <img id="id3" src="~/images/Video/right.png" alt="向右转" onmousedown="mouseDownPTZControl(4);"
+                 onmouseup="mouseUpPTZControl();" />
+            <img id="id4" src="~/images/Video/bottom.png" alt="向下转" onmousedown="mouseDownPTZControl(2);"
+                 onmouseup="mouseUpPTZControl();" />
+            <img id="id5" src="~/images/Video/top.png" alt="向上转" onmousedown="mouseDownPTZControl(1)"
+                 onmouseup="mouseUpPTZControl();" />
+            <div style="margin-top: 20px; width: 100%; font-size: 13px; text-align: center; font-family: 微软雅黑;">
+                云台速度：<select id="ptzspeed" class="form-control" style="width: 50px; height: 28px;
+                    font-size: 16px;">
+                    <option>1</option>
+                    <option selected="selected">2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                </select>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px; width: 100%; float: left;">
+                <div style="margin-left: 20px; float: left">
+                    <img id="id6" title="变倍+" alt="变倍+" src="~/images/Video/bja.png" onmousedown="PTZZoomIn()"
+                         onmouseup="PTZZoomStop()" />
+                </div>
+                <div style="float: right; margin-right: 20px;">
+                    <img id="id7" title="变倍-" alt="变倍-" src="~/images/Video/bjn.png" onmousedown="PTZZoomOut()"
+                         onmouseup="PTZZoomStop()" />
+                </div>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px; width: 100%; float: left;">
+                <div style="margin-left: 20px; position: static; float: left">
+                    <img id="id8" title="变焦+" alt="变焦+" src="~/images/Video/jja.png" onmousedown="PTZFocusIn()"
+                         onmouseup="PTZFoucusStop()" />
+                </div>
+                <div style="float: right; margin-right: 20px;">
+                    <img id="id9" title="变焦-" alt="变焦-" src="~/images/Video/jjn.png" onmousedown="PTZFoucusOut()"
+                         onmouseup="PTZFoucusStop()" />
+                </div>
+            </div>
+            <div style="margin-top: 10px; margin-bottom: 10px; width: 100%; float: left;">
+                <div style="margin-left: 20px; position: static; float: left">
+                    <img id="id10" title="光圈+" alt="光圈+" src="~/images/Video/gja.png" onmousedown="PTZIrisIn()"
+                         onmouseup="PTZIrisStop()" />
+                </div>
+                <div style="float: right; margin-right: 20px;">
+                    <img id="id11" title="光圈-" alt="光圈-" src="~/images/Video/gjn.png" onmousedown="PTZIrisOut()"
+                         onmouseup="PTZIrisStop()" />
+                </div>
+            </div>            
+        </div>
+    </div>
+</body>
+<script src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+<script src="~/js/Video/webVideoCtrl.js"></script>
+<script type="text/javascript" src="~/js/core/common.js"></script>
+<script type="text/javascript">
+    // 全局保存当前选中窗口
+    var g_iWndIndex = 0; //可以不用设置这个变量，有窗口参数的接口中，不用传值，开发包会默认使用当前选择窗口
+    var oLiveView;
+    var szIp = GetURLParameter("sip");//"218.28.106.62"
+    var nPort = GetURLParameter("sport");//"80"
+    var szUsername = GetURLParameter("username");//"admin"
+    var szPassword = GetURLParameter("userpassword");//"admin123"
+    var szCameraId = GetURLParameter("passway");//1
+    $(function () {
+        // 检查插件是否已经安装过
+        var iRet = WebVideoCtrl.I_CheckPluginInstall();
+        if (-2 == iRet) {
+            alert("您的Chrome浏览器版本过高，不支持NPAPI插件！");
+            return;
+        } else if (-1 == iRet) {
+            alert("您还未安装过插件，请下载WebComponentsKit.exe进行安装！");
+            $('#dwn').css("display", "");
+            return;
+        }
+
+        var oPlugin = {
+            iWidth: 800, 		// plugin width
+            iHeight: 510			// plugin height
+        };
+        //debugger;
+        // 初始化插件参数及插入插件
+        WebVideoCtrl.I_InitPlugin(oPlugin.iWidth, oPlugin.iHeight, {
+            bWndFull: true, //是否支持单窗口双击全屏，默认支持 true:支持 false:不支持
+            iWndowType: 1,
+            cbSelWnd: function (xmlDoc) {
+                g_iWndIndex = $(xmlDoc).find("SelectWnd").eq(0).text();
+            }
+        });
+        WebVideoCtrl.I_InsertOBJECTPlugin("divPlugin");
+
+        // 检查插件是否最新
+        if (-1 == WebVideoCtrl.I_CheckPluginVersion()) {
+            alert("检测到新的插件版本，请下载WebComponentsKit.exe升级！");
+            $('#dwn').css("display", "");
+            return;
+        }
+        oLiveView = {
+            iProtocol: 1, 		// protocol 1：http, 2:https
+            szIP: szIp,         // protocol ip
+            szPort: nPort,		// protocol port
+            szUsername: szUsername,// device username
+            szPassword: szPassword,// device password
+            iStreamType: 1, 		// stream 1：main stream  2：sub-stream  3：third stream  4：transcode stream
+            iChannelID: szCameraId,		// channel no
+            bZeroChannel: false		// zero channel
+        };
+        // 登录设备
+        WebVideoCtrl.I_Login(oLiveView.szIP, oLiveView.iProtocol, oLiveView.szPort, oLiveView.szUsername, oLiveView.szPassword, {
+            success: function (xmlDoc) {
+                // 开始预览
+                WebVideoCtrl.I_StartRealPlay(oLiveView.szIP, {
+                    iStreamType: oLiveView.iStreamType,
+                    iChannelID: oLiveView.iChannelID,
+                    bZeroChannel: oLiveView.bZeroChannel
+                });
+            }
+        });
+        // 关闭浏览器
+        $(window).unload(function () {
+            WebVideoCtrl.I_Stop();
+        });
+
+        function startRealPlay(data) {
+            
+            // 开始预览
+            WebVideoCtrl.I_StartRealPlay(data.IP, {
+                iStreamType: data.StreamType,
+                iChannelID: data.ChannelID,
+                bZeroChannel: data.bZeroChannel
+            });
+        }
+
+        // 全屏
+        function clickFullScreen() {
+            WebVideoCtrl.I_FullScreen(true);
+        }
+    });
+
+    // PTZ控制 9为自动，1,2,3,4,5,6,7,8为方向PTZ
+    var g_bPTZAuto = false;
+    function mouseDownPTZControl(iPTZIndex) {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex),
+        		        bZeroChannel = oLiveView.bZeroChannel,
+        		        iPTZSpeed = $("#ptzspeed").val();
+        //bStop = false;
+        if (bZeroChannel) {// 零通道不支持云台
+            return;
+        }
+
+        if (oWndInfo != null) {
+            if (9 == iPTZIndex && g_bPTZAuto) {
+                iPTZSpeed = 0; // 自动开启后，速度置为0可以关闭自动
+                //bStop = true;
+            } else {
+                g_bPTZAuto = false; // 点击其他方向，自动肯定会被关闭
+                //bStop = false;
+            }
+
+            WebVideoCtrl.I_PTZControl(iPTZIndex, false, {
+                iPTZSpeed: iPTZSpeed,
+                success: function (xmlDoc) {
+                    if (9 == iPTZIndex) {
+                        g_bPTZAuto = !g_bPTZAuto;
+                    }
+                    showOPInfo(oWndInfo.szIP + " 开启云台成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + " 开启云台失败！");
+                }
+            });
+        }
+    }
+
+    // 方向PTZ停止
+    function mouseUpPTZControl() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(1, true, {
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 停止云台成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + " 停止云台失败！");
+                }
+            });
+        }
+    }
+
+    function PTZZoomIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(10, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 调焦+成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  调焦+失败！");
+                }
+            });
+        }
+    }
+
+    function PTZZoomOut() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(11, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 调焦-成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  调焦-失败！");
+                }
+            });
+        }
+    }
+
+    function PTZZoomStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(11, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 调焦停止成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  调焦停止失败！");
+                }
+            });
+        }
+    }
+
+    function PTZFocusIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(12, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 聚焦+成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  聚焦+失败！");
+                }
+            });
+        }
+    }
+
+    function PTZFoucusOut() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(13, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 聚焦-成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  聚焦-失败！");
+                }
+            });
+        }
+    }
+
+    function PTZFoucusStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(12, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 聚焦停止成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  聚焦停止失败！");
+                }
+            });
+        }
+    }
+
+    function PTZIrisIn() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(14, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 光圈+成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  光圈+失败！");
+                }
+            });
+        }
+    }
+
+    function PTZIrisOut() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(15, false, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 光圈-成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  光圈-失败！");
+                }
+            });
+        }
+    }
+
+    function PTZIrisStop() {
+        var oWndInfo = WebVideoCtrl.I_GetWindowStatus(g_iWndIndex);
+
+        if (oWndInfo != null) {
+            WebVideoCtrl.I_PTZControl(14, true, {
+                iWndIndex: g_iWndIndex,
+                success: function (xmlDoc) {
+                    showOPInfo(oWndInfo.szIP + " 光圈停止成功！");
+                },
+                error: function () {
+                    showOPInfo(oWndInfo.szIP + "  光圈停止失败！");
+                }
+            });
+        }
+    }
+
+    function showOPInfo(text) {
+        //alert(text);
+    }
+</script>
+</html>
+

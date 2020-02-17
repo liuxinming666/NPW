@@ -1,0 +1,134 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "最新水库水情";
+}
+<div class="easyui-layout" fit="true">
+    @*<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+        <table>
+            <tr>
+                <td>开始日期:</td>
+                <td><input id="sdate" class="Wdate" style="width:140px" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="edate" class="Wdate" style="width:140px" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+                <td align="left">
+                    <a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+                    <a id="btnExportRiverData" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>
+
+                </td>
+            </tr>
+
+        </table>
+    </div>*@
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:40px;padding:5px 10px;line-height:40px">
+        <input type="checkbox" value="1" id="ckb_refresh" name="ckb_refresh" checked="checked">自动刷新
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;">
+        <table id="dgGrid" style="height:100%;"></table>
+    </div>
+
+</div>
+@section Scripts{
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript">
+        var dataSource;
+        $(function () {
+            //InitCondition();
+            //$("#btnSearch").click(DoSearch);
+            if ($("#ckb_refresh").prop("checked")) {
+                StartPushData();
+            }
+            DoSearch();
+        });
+
+        /**
+       * 初始化条件
+       * */
+        function InitCondition() {
+            var curdate = new Date();
+            var newDate = DateAdd("hh", 1, curdate);
+            $("#edate").val(utils.formatDate(curdate, 'yyyy-MM-dd hh:mm'));
+            //$("#sdate").val(utils.formatDate(newDate, 'yyyy-MM-dd 00:00'));
+            $("#sdate").val(utils.formatDate(DateAdd('d', -1, newDate), 'yyyy-MM-dd hh:mm'));
+        }
+
+        function StartPushData() {
+            interval = setInterval(function () {
+
+                DoSearch();
+            }, 180000);
+        }
+
+        /**
+         * 查询
+         * add by lw
+         * Date:2019-05-23 14:00
+         * */
+        function DoSearch() {
+            ShowLatestRsvrGrid();
+        }
+
+        /**
+         * 表格显示最新水情
+         * add by lw
+         * Date:2019-05-23 14:00
+         * */
+        function ShowLatestRsvrGrid() {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                url: '/RealData/Rsvr/GetLatestRsvrData',
+                //queryParams: { 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'RVNM', title: '河名', width: '10%', align: 'center' },
+                    {
+                        field: 'STNM', title: '站名', width: '10%', align: 'center',
+                        formatter: function (v, rowData, rowIndex) {
+                            return "<a href='#' onclick='OpenLine(\"" + rowData.STCD + "\",\"" + rowData.TM + "\")'>" + v + "</a>";
+                        }
+                    },
+                    { field: 'TM', title: '时间', width: '12%', align: 'center', formatter: com.formatTimemm },
+                    { field: 'INQ', title: '入库流量', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'AVINQ', title: '日均入库流量', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'RZ', title: '库水位', width: '10%', halign: 'center', align: 'right' },
+                    {
+                        field: 'RWPTN', title: '水势', width: '8%', align: 'center', formatter: function (v) {
+                            if (v == 4) {
+                                return '<font color=green>落</font>';
+                            }
+                            if (v == 5) {
+                                return '<font color=red>涨</font>';
+                            }
+
+                            if (v == 6) {
+                                return '平';
+                            }
+
+                            return '';
+                        }
+                    },
+                    { field: 'W', title: '蓄水量', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'SOTQ', title: '出库流量', width: '10%', halign: 'center', align: 'right' },
+                    { field: 'AVOTQ', title: '日均出库流量', width: '10%', halign: 'center', align: 'right' }
+                ]],
+                onLoadSuccess: function () {
+                }
+            });
+
+        }
+        function OpenLine(stcd, tm) {
+            $.modalOpen({
+                id: "Form",
+                title: "水位蓄水量变化过程",
+                //url: "/RealData/Rsvr/ChartRsvr?stcd=" + stcd + "&sdate=&edate=" + tm,
+                url: "/RealData/Rsvr/ChartRsvr?stcd=" + stcd + "&edate=" + tm,
+                width: "1000px",
+                height: "610px",
+                btn: null
+            });
+        }
+    </script>
+}

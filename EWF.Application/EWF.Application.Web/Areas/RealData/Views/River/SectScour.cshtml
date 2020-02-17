@@ -1,0 +1,142 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "断面冲淤变化";
+}
+
+<div class="easyui-layout" fit="true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:50px;">
+
+    </div>
+    <div data-options="region:'west',split:false" style="width:160px;padding:10px;">
+        高程：<input type="text" id="txtGC" style="width:80px" />
+
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;height:100%;overflow:hidden;">
+        <div id="sectChart" style="width:100%;height:100%">
+            
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript" src="~/js/chartcomponents/SectScour.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            Highcharts.setOptions({
+                lang: {
+                    resetZoom: "重置"
+                }
+            });
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/Details/GetGLDMInfo/',
+                data: { "stcd": '40105150', "stnm": 'cs34', "year": 2016, "sDt": "2,3" },
+                success: function (d) {
+                    DrawLine(d);
+
+                   
+                }
+            });
+
+           
+        });
+        /**
+         * 绘制断面冲淤变化图
+         * add by SUN
+         * Date:2019-06-06 17:00
+         * param jsondata
+         */
+        function DrawLine(jsondata) {
+            Highcharts.chart('sectChart', {
+                chart: { 
+                    zoomType: 'x'
+                },
+                title: {
+                    text: '断面',
+                    x: 0
+                },
+                xAxis: {
+                    labels: {
+                        format: '{value}'
+                    }
+                },
+                legend: {
+                    enabled: true,
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'top',
+                    y:50
+                },
+                yAxis: [{
+                    title: {
+                        text: '高程(m)'
+                    }
+                }],
+                tooltip: {
+                    valueSuffix: '',
+                    headerFormat: '<table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0" nowrap>起点距：</td><td style="padding:0"><b>{point.x}</b></td><tr><td style="color:{series.color};padding:0" nowrap>{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                series: GetDMData(jsondata)
+            });
+            $("#sectChart").bind('mousemove touchmove touchstart', function (e) {
+                $("#txtGC").val("");
+                var chart, point, i, event;
+
+                try {
+                    for (i = 0; i < Highcharts.charts.length; i = i + 1) {
+
+                        chart = Highcharts.charts[i];
+                        event = chart.pointer.normalize(e.originalEvent); // Find coordinates within the chart
+                        
+                        var yv = chart.yAxis[0].toValue(event.chartY, false);
+
+                        //point = chart.series[0].searchPoint(event, true); // Get the hovered point
+                        var yAxisExtremes = chart.yAxis[0].getExtremes();
+                        if (yv < yAxisExtremes.dataMin || yv > yAxisExtremes.dataMax) {
+                            return false;
+                        }
+                        var xAxisExtremes = chart.xAxis[0].getExtremes();
+                        var xv = chart.xAxis[0].toValue(event.chartX, false);
+                        if (xv < xAxisExtremes.dataMin || xv > xAxisExtremes.dataMax) {
+                            return false;
+                        }
+
+                        $("#txtGC").val(yv.toFixed(1));
+                        
+                    }
+                } catch (e) { }
+            });
+        }
+        //组织断面数据序列，画图使用
+        function GetDMData(jsonData) {
+            var result = [];
+            var tm = "";
+            var obj = {};
+            $.each(jsonData, function (i, item) {
+                if (item.SCSJ != tm) {
+                    tm = item.SCSJ;
+                    var objSearies = {
+                        name: item.SCSJ,
+                        data: []
+                    }
+                    obj[item.SCSJ] = objSearies
+                   
+                }  
+
+                obj[item.SCSJ].data.push([item["QDJ"], Number(item["GC"])]);
+
+
+            });
+            for (var key in obj) {
+                result.push(obj[key]);
+            }
+            
+            return result;
+        }
+    </script>
+    
+}

@@ -1,0 +1,144 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "Index";
+}
+<!doctype html>
+<html>
+<head>
+    <title>视频平台</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+    <meta http-equiv="Expires" content="0" />
+    <style>
+        html, body {
+            height:100%;
+        }
+        body {
+            font: 12px/20px Open Sans,宋体, Helvetica, Arial, sans-serif;
+            background: #F9F9F9;
+            margin: 0;
+            padding: 0;
+            color: #555555;
+            min-width: 1000px
+        }
+
+        a {
+            color: #111111;
+            text-decoration: none;
+            -webkit-transition: color 0.2s linear;
+            -moz-transition: color 0.2s linear;
+            -o-transition: color 0.2s linear;
+            transition: color 0.2s linear
+        }
+
+            a:focus, a:link, a:active {
+                outline: none
+            }
+
+            a:hover {
+                color: #F30
+            }
+
+        ol, ul, li {
+            list-style: none
+        }
+
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        .table_card {
+            width: 100%;
+            margin: 0 auto;
+            margin-top: 0px
+        }
+
+            .table_card .tab {
+                height: 40px;
+                font-size: 14px;
+                border-bottom: 1px #e1e1e1 solid
+            }
+
+                .table_card .tab li {
+                    float: left;
+                    height: 40px;
+                    line-height: 40px;
+                    padding: 0 25px;
+                    margin-right: 0px;
+                    background: #f0f0f0;
+                    border-top: 1px #e1e1e1 solid;
+                    border-left: 1px #e1e1e1 solid;
+                    border-right: 1px #e1e1e1 solid;
+                }
+
+                    .table_card .tab li:hover {
+                        height: 40px;
+                        background: #fff;
+                        color: #333;
+                        cursor: pointer
+                    }
+
+            .table_card .activ {
+                height: 40px !important;
+                background: #fff !important;
+                color: #333
+            }
+
+            .table_card .tabCon {
+                background: #fff;
+                height: 100%;
+                width: 100%;
+                padding: 0px;
+                border-bottom: 1px #e1e1e1 solid;
+                border-left: 1px #e1e1e1 solid;
+                border-right: 1px #e1e1e1 solid;
+            }
+
+                .table_card .tabCon div {
+                    display: none
+                }
+
+                .table_card .tabCon .on {
+                    display: block
+                }
+        
+    </style>
+</head>
+<body>
+    <form id="form1" style="height:100%; width:100%;">
+        <table style="height:100%; width:100%;">
+            <tr>
+                <td valign="top">
+                    <div class="warpbox">
+                        <div class="table_card">
+                            <ul class="tab">
+                                @foreach (var item in ViewBag.VideoList)
+                                {
+                                    <li onclick="ChangeVideo('@item');" style="cursor:hand;" class="activ">@item</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr style="height:100%;">
+                <td>
+                    <iframe id="frmVideo" width="100%" height="100%" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+<script src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+<script type="text/javascript">
+    var fvideo = '@Html.Raw(ViewBag.VideoList[0])';
+    document.getElementById("frmVideo").src = "@ViewBag.VideoUrl/video/?vid=" + fvideo + "";
+    function ChangeVideo(nType) {
+        document.getElementById("frmVideo").src = "@ViewBag.VideoUrl/video/?vid=" + nType + "";
+    }
+</script>
+</html>
+

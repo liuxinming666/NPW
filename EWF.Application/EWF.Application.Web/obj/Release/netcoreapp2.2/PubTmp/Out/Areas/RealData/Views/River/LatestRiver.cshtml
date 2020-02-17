@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "最新水情";
+}
+<div  class="easyui-layout" fit="true"> 
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="overflow:hidden; height:40px;padding:5px 10px;line-height:40px">
+        <input type="checkbox" value="1" id="ckb_refresh" name="ckb_refresh" checked="checked">自动刷新
+    </div>
+    <div id="div_table" data-options="region:'center',split:false,title:'',border:false" style="width:100%;">
+        <table id="dgGrid" style="height:100%;"></table>
+    </div>
+
+</div>
+@section Scripts{
+    <script src="~/js/core/framework-ui.js"></script>
+    <script type="text/javascript">
+        var dataSource;
+        $(function () {
+            //自动刷新
+            if ($("#ckb_refresh").prop("checked")) {
+                StartPushData();
+            }
+            DoSearch();
+
+        });
+
+        function StartPushData() {
+            interval = setInterval(function () {
+
+                DoSearch();
+            }, 180000);
+        }
+
+        /**
+         * 查询
+         * add by SUN
+         * Date:2019-05-23 14:00
+         * */
+        function DoSearch() {
+            ShowLatestRiverGrid();
+        }
+
+        /**
+         * 表格显示最新水情
+         * add by SUN
+         * Date:2019-05-23 14:00
+         * */
+        function ShowLatestRiverGrid() {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                url: '/RealData/River/GetLatestRiverData',
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'RVNM', title: '河名', width: '15%', align: 'center' },
+                    {
+                        field: 'STNM', title: '站名', width: '15%', align: 'center', formatter: function (v, rowData, rowIndex) {
+                            return "<a href='#' onclick='OpenLine(\"" + rowData.STCD + "\",\"" + rowData.TM + "\")'>" + v + "</a>";
+                        }
+                    },
+                    { field: 'TM', title: '时间', width: '15%', align: 'center', formatter: com.formatTimemm },
+                    {
+                        field: 'Z', title: '水位', width: '13%', halign: 'center', align: 'right', formatter: function (v) {
+                            return toDecimal(v, 2);
+                        }
+                    },
+                    {
+                        field: 'WPTN', title: '水势', width: '14%', align: 'center', formatter: function (v) {
+                            if (v == 4) {
+                                return '<font color=green>落</font>';
+                            }
+                            if (v == 5) {
+                                return '<font color=red>涨</font>';
+                            }
+
+                            if (v == 6) {
+                                return '平';
+                            }
+
+                            return '';
+                        }
+                    },
+                    {
+                        field: 'Q', title: '流量', width: '14%', halign: 'center', align: 'right', formatter: function (v) {
+                            return SaveThreeN(v, 3);
+                        }
+                    },
+                    { field: 'S', title: '含沙量', width: '14%', halign: 'center', align: 'right' }
+
+                ]],
+                onLoadSuccess: function () {
+                }
+            });
+
+        }
+        function OpenLine(stcd, tm) {
+            $.modalOpen({
+                id: "Form",
+                title: "最新水位变化过程",
+                //url: "/RealData/River/ChartRiver?stcd=" + stcd + "&sdate=&edate=" + tm,
+                url: "/RealData/River/ChartRiver?stcd=" + stcd + "&edate=" + tm +"&stype=0",
+                width: "1000px",
+                height: "610px",
+                btn: null
+            });
+        }
+    </script>
+}

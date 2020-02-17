@@ -1,0 +1,21 @@
+﻿body{
+ 		padding-left: 26%;
+ 		background-image: url(bg2.png);
+ 		background-size: 300px 300px;
+ 	}
+ 	.g_title1{
+ 		font-weight: bold;
+ 		margin: 10px 0px;
+ 		display: inline-block;
+ 	}
+ 	.g_title1_1{
+ 		font-weight: bold;
+ 		display: inline-block;
+ 	}
+ 	.g_tr1{
+ 		background-color: #d9ebfb;
+ 	}
+ 	.trTitle{
+ 		font-weight: bold;
+ 		background-color: #d9ebfb;
+ 	}

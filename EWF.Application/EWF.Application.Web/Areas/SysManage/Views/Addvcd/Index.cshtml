@@ -1,0 +1,415 @@
+﻿@{
+    ViewBag.Title = "分区管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    <link rel="stylesheet" href="~/js/wdtree/tree.css" />
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript" src="~/js/wdtree/tree.js"></script>
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+             bindGrid('@ViewBag.addvcd', "", '@ViewBag.type');
+            @*if (!!'@ViewBag.addvcd') {
+                $("#fenqu").hide();
+                bindGrid('@ViewBag.addvcd', "", '@ViewBag.type');
+            }
+            else {
+                $("#fenqu").show();
+                bindGrid("", "", 0)
+            }*@
+        })
+        function bindGrid(Addvcd, Addvnm,Type) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/Addvcd/GetAddvcdData/',
+                queryParams: { 'Addvcd': Addvcd, 'Addvnm': Addvnm, "Type": Type },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'ADDVCD', title: '分区编码', width: '20%', align: 'center' },
+                    { field: 'ADDVNM', title: '分区名称', width: '30%', align: 'center' },
+                    {
+                        field: 'TYPE', title: '分区类型', width: '20%', align: 'center', formatter: function (value, row, index) {
+                            if (row.TYPE == 1) {
+                                return "行政分区";
+                            } else {
+                                return "流域分区";
+                            }
+                        }
+                    },
+                    { field: 'operate', title: '操作', width: '30%', align: 'center', formatter: formatOper }
+                ]],
+                onLoadSuccess: function () {
+                    mergeCellsByField("dgGrid", "UACCOUNT");
+
+                }
+            });
+        }
+        function isenable(val) {
+            if (val == 1) {
+                return "行政分区";
+            }
+            else {
+                return "流域分区";
+            }
+        }
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            var setpoints = "<a href='#' onclick='setpoint(" + JSON.stringify(row) + ")'>配置站点</a>";
+            var mapoints = "<a href='#' onclick='mapoint(" + JSON.stringify(row) + ")'>管理站点</a>";
+            return edit + " " + del + " " + detail + " " + setpoints + " " + mapoints;
+        }
+
+        function formatPoint(val, row, index) {
+            var delPoint = '<a href="#" onclick="deletepoint(' + index + ')">删除</a>';
+            return delPoint;
+        }
+        function addData() {
+            state = "Add";
+            $('#dlg').dialog('open').dialog('setTitle', '录入分区信息');
+            $('#fm').form('clear');
+            if (!!'@ViewBag.type') {
+                $("#TYPE").combobox('setValue', '@ViewBag.type');
+            }
+            else {
+                $("#TYPE").combobox('setValue', 1);
+            }
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            state = "Edit";
+            $('#ADDVCD').textbox('setValue', row.ADDVCD);
+            $('#UAddvcd').val(row.ADDVCD);
+            $('#ADDVNM').textbox('setValue', row.ADDVNM);
+            $('#COMMENTS').textbox('setValue', row.COMMENTS);
+            $('#TYPE').textbox('setValue', isenable(row.TYPE));
+            $('#dlg').dialog('open').dialog('setTitle', '编辑分区信息');
+            //$("#dlg-buttons").show();
+            document.getElementById("dlg-buttons").style.visibility = "visible";//显示
+        }
+
+        //管理分区站点信息
+        function mapoint(row) {
+            $('#dlgmapoint').dialog('open').dialog('setTitle', row.ADDVNM + '分区站点');
+            $('#AddvcdPoint').val(row.ADDVCD);
+            var stnm = $("#StnmPoint").val();
+            bindAreaPointDataGrid(row.ADDVCD, stnm);
+        }
+
+        function detailData(row) {
+            $('#fm').form('clear');
+            $('#ADDVCD').textbox('setValue', row.ADDVCD);
+            $('#ADDVNM').textbox('setValue', row.ADDVNM);
+            $('#COMMENTS').textbox('setValue', row.COMMENTS);
+            $('#TYPE').textbox('setValue', isenable(row.TYPE));
+            $('#dlg').dialog('open').dialog('setTitle', '查看分区信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+            //$("#dlg-buttons").hide();
+        }
+        //配置分区站点
+        function setpoint(row) {
+            //state = "Add";
+            $('#dlgsetpoint').dialog('open').dialog('setTitle', '配置分区站点');
+            $('#UAddvcd').val(row.ADDVCD);
+            $('#SAddvcd').val(row.ADDVCD);
+            $("#STYPE").val(row.TYPE);
+            bindAreaDataGrid('', '', row.ADDVCD, row.TYPE);
+        }
+
+        function deleteData(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/Addvcd/DeleteAddvcdInfo', { Id: row.ADDVCD }, function (ren) {
+                            if (ren.indexOf('成功') > -1)
+                                $('#dgGrid').datagrid('reload'); // reload the user data
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+
+
+        function doSearch() {
+            var Addvcd = $("#Addvcd").val();
+            var Addvnm = $("#Addvnm").val();
+            var Type = $("#ATYPE").combobox("getValue");
+            bindGrid(Addvcd, Addvnm,Type);
+        }
+        function saveData() {
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/Addvcd/AddAddvcdInfo';
+                    break;
+                case "Edit":
+                    url = '/SysManage/Addvcd/EditAddvcdInfo';
+                    break;
+            }
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;//$(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlg').dialog('close'); 	// close the dialog
+                    alert(result);
+                    $('#dgGrid').datagrid('reload');
+                }
+            });
+        }
+
+
+
+        function doStcdSearch() {
+            var Stcd = $("#StcdAPoint").val();
+            var Stnm = $("#StnmAPoint").val();
+            var addvcd= $('#SAddvcd').val();
+            var type= $("#STYPE").val();
+            bindAreaDataGrid(Stcd, Stnm, addvcd, type);
+        }
+
+        function bindAreaDataGrid(Stcd, Stnm, Addvcd, Type) {
+            $('#dgGridpoint').datagrid({
+                singleSelect: false,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: "/SysManage/AddvcdPoint/GetStcdData/",
+                queryParams: { 'Stcd': Stcd, 'Stnm': Stnm },
+                columns: [[
+                    { field: 'ck', width: '30%', checkbox: 'true', align: 'center' },
+                    { field: 'STCD', width: '35%', title: '站点编码', align: 'center' },
+                    { field: 'STNM', width: '30%', title: '站名名称', align: 'center' },
+                    { field: 'STTP', width: '30%', title: '站类分类', align: 'center' }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    //$('#dgGridpoint').datagrid('setValue', dd.rows[0].CODE);
+                    $("#dgGridpoint").parent().find("div .datagrid-header-check").children("input[type=\"checkbox\"]").eq(0).attr("style", "display:none;");
+                },
+                onSelect: function (index, row) {
+                    saveAreaPoint(Addvcd, row.STCD, Type);
+                },
+                onUnselect: function (index, row) {
+                    deleteAreaPoint(Addvcd, row.STCD);
+                }
+            });
+        }
+
+        //保持配置站点
+        function saveAreaPoint(addvcd, stcd, type) {
+            $.post('/SysManage/AddvcdPoint/AddAddvcdPointInfo', { Addvcd: addvcd, Stcd: stcd, Type: type }, function (ren) {
+                if (ren.indexOf('成功') > -1)
+                    //$('#dgGridmapoint').datagrid('reload'); // reload the user data
+                    alert(stcd + "站点配置成功！");
+                else
+                    //$.messager.alert('提示', ren, 'info');
+                    alert(stcd + "站点在本区域已存在！");
+            });
+        }
+        //移除配置的站点
+        function deleteAreaPoint(addvcd, stcd) {
+            $.post('/SysManage/AddvcdPoint/DeleteAddvcdPointInfo', { Addvcd: addvcd, Stcd: stcd }, function (ren) {
+                if (ren.indexOf('成功') > -1)
+                    //$('#dgGridmapoint').datagrid('reload'); // reload the user data
+                    alert("本站点已成功从本区域移除！");
+                else
+                    $.messager.alert('提示', ren, 'info');
+            });
+        }
+
+        function doPointSearch() {
+            var Addvcd = $("#AddvcdPoint").val();
+            var Stnm = $("#StnmPoint").val();
+            bindAreaPointDataGrid(Addvcd, Stnm);
+        }
+
+        function bindAreaPointDataGrid(Addvcd, Stnm) {
+            $('#dgGridmapoint').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: "/SysManage/AddvcdPoint/GetAddPointData/",
+                queryParams: { 'Addvcd': Addvcd, 'Stnm': Stnm },
+                columns: [[
+                    { field: 'stcd', width: '20%', title: '站点编码', align: 'center' },
+                    { field: 'stnm', width: '30%', title: '站点名称', align: 'center' },
+                    {
+                        field: 'TYPE', title: '分区类型', width: '20%', align: 'center', formatter: function (value, row, index) {
+                            if (row.TYPE == 1) {
+                                return "行政分区";
+                            } else {
+                                return "流域分区";
+                            }
+                        }
+                    },
+                    { field: 'operate', title: '操作', width: '30%', align: 'center', formatter: formatPoint }
+                ]],
+                onLoadSuccess: function () {
+                    mergeCellsByField("dgGridmapoint", "UACCOUNT");
+                }
+            });
+        }
+
+        function deletepoint(index) {
+            $('#dgGridmapoint').datagrid('selectRow', index);
+            var row = $('#dgGridmapoint').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/AddvcdPoint/DeleteAddvcdPointInfo', { Addvcd: $("#AddvcdPoint").val(), Stcd: row.stcd }, function (ren) {
+                            if (ren.indexOf('成功') > -1)
+                                $('#dgGridmapoint').datagrid('reload'); // reload the user data
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+
+        }
+
+
+    </script>
+
+
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td id="fenqu">
+                @*分区编码：*@
+                @*<input id="Addvcd" name="Addvcd" style="width:160px;" type="text" class="easyui-textbox" hidden/>&nbsp;&nbsp;*@
+                分区名称：<input id="Addvnm" name="Addvnm" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                分区类型：<select id="ATYPE" name="ATYPE" type="text" class="easyui-combobox" style="width:200px">
+                    <option value="0">所有分区</option>
+                    <option value="1">行政分区</option>
+                    <option value="2">流域分区</option>
+                </select>
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>&nbsp;&nbsp;
+                @*<a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">录入</a>*@
+            </td>
+            <td style="text-align:right"><a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">录入</a></td>
+</tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:700px;height:260px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="UAddvcd" name="UAddvcd" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5" border="1">
+                <tr>
+                    <td style="text-align:right">分区编码：</td>
+                    <td>
+                        <input id="ADDVCD" name="ADDVCD" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">分区名称：</td>
+                    <td>
+                        <input id="ADDVNM" name="ADDVNM" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">描述：</td>
+                    <td>
+                        <input id="COMMENTS" name="COMMENTS" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">是否启用：</td>
+                    <td>
+                        <select id="TYPE" name="TYPE" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="1">行政分区</option>
+                            <option value="2">流域分区</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+
+<div id="dlgsetpoint" class="easyui-dialog" style="width:770px;height:530px;display:none" closed="true">
+    <input id="SAddvcd" name="SAddvcd" type="hidden" />
+    <input id="SSTCD" name="SSTCD" type="hidden" />
+    <input id="STYPE" name="STYPE" type="hidden" />
+    <div style="width:755px;height:30px;margin-top:10px;">
+        站点编码：<input id="StcdAPoint" name="StcdAPoint" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+        站点名称：<input id="StnmAPoint" name="StnmAPoint" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+        <a id="btnSear" href="#" class="easyui-linkbutton" onclick="doStcdSearch()" data-options="iconCls:'icon-search'">查询</a>
+    </div>
+    <table id="dgGridpoint" style="width:755px;height:453px"></table>
+</div>
+
+
+@*<div id="dlgsetpoint" class="easyui-dialog" style="width:770px;height:530px;display:none" closed="true" buttons="#dlg-setPoint">
+        <div style="height:420px;">
+            <div style="float:left;width:465px; height:440px;">
+                <div style="width:465px;height:30px;margin-top:10px;">
+                    站点编码：<input id="StcdAPoint" name="StcdAPoint" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                    站点名称：<input id="StnmAPoint" name="StnmAPoint" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                    <a id="btnSear" href="#" class="easyui-linkbutton" onclick="doStcdSearch()" data-options="iconCls:'icon-search'">查询</a>
+                </div>
+
+                <table id="dgGridpoint" style="width:465px;height:410px"></table>
+            </div>
+            <div id="divPoint" style="float:right;width:270px; height:450px; border-left:2px solid #D4D4D4"></div>
+        </div>
+        <div id="dlg-setPoint" style="height:30px;">
+            <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+            <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlgsetpoint').dialog('close')">取消</a>
+        </div>
+    </div>*@
+
+<div id="dlgmapoint" class="easyui-dialog" style="width:770px;height:530px;display:none" closed="true">
+    <input id="AddvcdPoint" name="AddvcdPoint" type="hidden" />
+    <div style="width:755px;height:30px;margin-top:10px;">
+        站点名称：<input id="StnmPoint" name="StnmPoint" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+        <a id="btnSear" href="#" class="easyui-linkbutton" onclick="doPointSearch()" data-options="iconCls:'icon-search'">查询</a>
+    </div>
+    <table id="dgGridmapoint" style="width:755px;height:453px"></table>
+</div>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+2019-08-15 16:01:41,111 [41] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+堆栈:    at System.Net.HttpWebRequest.GetResponse()
+   at EWF.Services.WeatherService.GetLastImg(String surl, String ecode, String strTag) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\WeatherService.cs:line 45
+   at EWF.Services.WeatherService.GetShowWeather(String sType, String url, String encode, String strTag) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\WeatherService.cs:line 33
+   at EWF.Application.Web.Controllers.HomeController.GetWeatherImage(String sType) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\HomeController.cs:line 77
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: System.Net.Http.HttpRequestException: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 ---> System.Net.Sockets.SocketException: 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。
+   at System.Net.Http.ConnectHelper.ConnectAsync(String host, Int32 port, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.ConnectHelper.ConnectAsync(String host, Int32 port, CancellationToken cancellationToken)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.CreateConnectionAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.WaitForCreatedConnectionAsync(ValueTask`1 creationTask)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.SendWithRetryAsync(HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.FinishSendAsyncUnbuffered(Task`1 sendTask, HttpRequestMessage request, CancellationTokenSource cts, Boolean disposeCts)
+   at System.Net.HttpWebRequest.SendRequest()
+   at System.Net.HttpWebRequest.GetResponse()
+源: System.Net.Requests
+--------------------------------------------
+
+2019-08-15 16:16:11,065 [41] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Object reference not set to an instance of an object.
+堆栈:    at EWF.Repository.IcejamRepository.GetIceData(String stcds, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\IcejamRepository.cs:line 198
+   at EWF.Services.IcejamService.GetIceDate(String stcd, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\IcejamService.cs:line 181
+   at EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetIceDate(String stcds, String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\IceJamController.cs:line 86
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: EWF.Repository
+--------------------------------------------
+
+2019-08-15 16:16:11,065 [31] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Object reference not set to an instance of an object.
+堆栈:    at EWF.Repository.IcejamRepository.GetIceData(String stcds, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\IcejamRepository.cs:line 198
+   at EWF.Services.IcejamService.GetIceDate(String stcd, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\IcejamService.cs:line 181
+   at EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetIceDate(String stcds, String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\IceJamController.cs:line 86
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: EWF.Repository
+--------------------------------------------
+
+2019-08-15 16:16:49,751 [34] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: 请求的名称有效，但是找不到请求的类型的数据。 请求的名称有效，但是找不到请求的类型的数据。
+堆栈:    at System.Net.HttpWebRequest.GetResponse()
+   at EWF.Application.Web.Areas.RealData.Controllers.WeatherCloudyController.Index() in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\WeatherCloudyController.cs:line 30
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: System.Net.Http.HttpRequestException: 请求的名称有效，但是找不到请求的类型的数据。 ---> System.Net.Sockets.SocketException: 请求的名称有效，但是找不到请求的类型的数据。
+   at System.Net.Http.ConnectHelper.ConnectAsync(String host, Int32 port, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.ConnectHelper.ConnectAsync(String host, Int32 port, CancellationToken cancellationToken)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.CreateConnectionAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.WaitForCreatedConnectionAsync(ValueTask`1 creationTask)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at System.Net.Http.HttpConnectionPool.SendWithRetryAsync(HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.FinishSendAsyncUnbuffered(Task`1 sendTask, HttpRequestMessage request, CancellationTokenSource cts, Boolean disposeCts)
+   at System.Net.HttpWebRequest.SendRequest()
+   at System.Net.HttpWebRequest.GetResponse()
+源: System.Net.Requests
+--------------------------------------------
+
+2019-08-15 16:17:02,983 [34] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Object reference not set to an instance of an object.
+堆栈:    at EWF.Repository.IcejamRepository.GetIceData(String stcds, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\RTDB\IcejamRepository.cs:line 198
+   at EWF.Services.IcejamService.GetIceDate(String stcd, String startDate, String endDate, String addvcd, String type) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\IcejamService.cs:line 181
+   at EWF.Application.Web.Areas.RealData.Controllers.IceJamController.GetIceDate(String stcds, String startDate, String endDate) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Areas\RealData\Controllers\IceJamController.cs:line 86
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: EWF.Repository
+--------------------------------------------
+

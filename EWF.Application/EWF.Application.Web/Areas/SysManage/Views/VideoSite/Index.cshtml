@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section CSS{
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+            bindAreaDataGrid();
+            bindGrid("");
+        })
+        //function bindSTCD() {
+        //    //绑定区域
+        //        var citycombo = [{ 'text': '全部站点', 'id': '' }];
+        //        com.ajax({
+        //            type: 'get',
+        //            url: '/RealData/River/GetAllStations/',
+        //            success: function (data) {
+        //                for (var i = 0; i < data.length; i++) {
+        //                    citycombo.push({ "text": data[i].STNM, "id": data[i].STCD });
+        //                }
+        //                $('#STCD').combobox({
+        //                    data: citycombo,
+        //                    valueField: 'id',
+        //                    textField: 'text',
+        //                    onLoadSuccess: function () {
+        //                        $('#STCD').combobox('select', "");
+        //                    },
+        //                    onSelect: function (record) {
+        //                        //bindBSDataGrid(record.id, $("#sttp").combobox('getValue'));
+        //                    }
+        //                });
+        //            }
+        //        });
+            
+        //}
+        //绑定站点列表
+        function bindAreaDataGrid() {
+            $('#areastcd').combogrid({
+                panelWidth: 450,
+                multiple: false,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '25%', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onSelect: function (rowIndex, rowData) {
+                    $("#LGTD").textbox('setValue',rowData["LGTD"]);
+                    $("#LTTD").textbox('setValue',rowData["LTTD"]);
+                }
+            });
+        }
+
+        function bindGrid(name) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/VideoSite/GetVideoData/',
+                queryParams: { 'name': name },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'ID', title: '编码', align: 'center', hidden: true },
+                    { field: 'STCD', title: '站点编码', width: '10%', align: 'center' },
+                    { field: 'NAME', title: '站名', width: '20%', align: 'center' },
+                    { field: 'LGTD', title: '经度', width: '20%', align: 'center' },
+                    { field: 'LTTD', title: '纬度', width: '20%', align: 'center' },
+                    { field: 'operate', title: '操作', width: '30%', align: 'center', formatter: formatOper }
+                ]]
+            });
+        }
+
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value }, function (jsondata) {
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            return edit + "&nbsp;&nbsp;&nbsp;&nbsp;" + del + "&nbsp;&nbsp;&nbsp;&nbsp;" + detail;
+        }
+
+        function addData() {
+            $('#fm').form('clear');
+            state = "Add";
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '添加视频站点信息');
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            state = "Edit";
+            $('#ID').val(row.ID);
+            $('#LGTD').textbox('setValue', row.LGTD);
+            $('#LTTD').textbox('setValue', row.LTTD);
+            $('#areastcd').combogrid('setValue', row.STCD);
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '修改视频站点信息');
+        }
+        function detailData(row) {
+            $('#fm').form('clear');
+            $('#ID').val(row.ID);
+            $('#LGTD').textbox('setValue', row.LGTD);
+            $('#LTTD').textbox('setValue', row.LTTD);
+            $('#areastcd').combogrid('setValue', row.STCD);
+            $('#dlg').dialog('open').dialog('setTitle', '查看视频站点信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+        }
+        function deleteData(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/VideoSite/DeleteVideoInfo', { ID: row.ID }, function (ren) {
+                            if (ren.result == "success")
+                                $('#dgGrid').datagrid('reload');
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function doSearch() {
+            var name = $('#name').val();
+            bindGrid(name);
+        }
+        function saveData() {
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/VideoSite/AddVideoInfo';
+                    break;
+                case "Edit":
+                    url = '/SysManage/VideoSite/EditVideoInfo';
+                    break;
+            }
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function (param) {
+                    param.STCD = $('#areastcd').combogrid('getValue');
+                    param.NAME = $('#areastcd').combogrid('getText');
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;
+                },
+                success: function (result) {
+                    var result = eval('(' + result + ')');
+                    if (result.errorMsg != undefined) {
+                        $.messager.show({
+                            title: '提示错误',
+                            msg: result.msg,
+                            showType: null,
+                            style: {
+                            }
+                        });
+                    } else {
+                        $.messager.show({
+                            title: '成功弹窗',
+                            msg: result.msg,
+                            showType: 'success',
+                            style: {
+                            }
+                        });
+                        $('#dlg').dialog('close');
+                        $('#dgGrid').datagrid('reload');
+                    }
+                }
+            });
+        }
+    </script>
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                站名：<input id="name" name="name" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+            <td style="text-align:right"><a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">添加</a></td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:500px;height:300px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="ID" name="ID" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">站点：</td>
+                    <td>
+                        <input id="areastcd" class="easyui-combogrid" style="width:200px" required toolbar="#tb11" />
+                        <div id="tb11">
+                            <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">经度：</td>
+                    <td>
+                        <input id="LGTD" name="LGTD" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">纬度：</td>
+                    <td>
+                        <input id="LTTD" name="LTTD" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+

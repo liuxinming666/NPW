@@ -1,0 +1,66 @@
+﻿
+@{
+    Layout = null;
+    ViewData["Title"] = "Index";
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.layout_extend.js"></script>
+    <script type="text/javascript" src="~/js/vedioRadar.js"></script>
+    <style type="text/css">
+        a {
+            CURSOR: hand;
+        }
+    </style>
+</head>
+<body id="bdy" style="text-align: center;" scroll="no">
+    <form id="form1" runat="server">
+        <div id="divSatellite" runat="server">
+            <div id="divTitle" runat="server" style="padding: 0px;">
+                <table border='0' cellpadding='0' cellspacing='0'>
+                    <tr>
+                        <td align="left">
+                            <div style="margin-right: 40px;">
+                                <img src="~/images/play/01.png" alt="首帧" style="border: 0; padding: 0px;" onclick="first('showImg','slist');" />
+                                <img src="~/images/play/02.png" alt="前一帧" style="border: 0; padding: 0px;" onclick="previous('showImg','slist');" />
+                                <img src="~/images/play/03.png" alt="播放" style="border: 0; padding: 0px;"  onclick="play('showImg','slist');" />
+                                <img src="~/images/play/04.png" alt="暂停" style="border: 0; padding: 0px;" onclick="suspend('showImg','slist');" />
+                                <img src="~/images/play/05.png" alt="停止" style="border: 0; padding: 0px;" onclick="stop('showImg','slist');" />
+                                <img src="~/images/play/06.png" alt="下一帧" style="border: 0; padding: 0px;" onclick="next('showImg','slist');" />
+                                <img src="~/images/play/07.png" alt="末帧" style="border: 0; padding: 0px;" onclick="last('showImg','slist');" />
+                            </div>
+                        </td>
+                        <td id="seleObj" runat="server">
+                            <select style="margin-left:40px; margin-right:120px;" name="slist" onchange="change('showImg','slist');" id="slist"></select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="con" align="center" style="padding: 0px;">
+                <img id="firstImg" alt="" name="showImg" src="" />
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+<script type="text/javascript">
+        $(function () {
+            @Html.Raw(ViewBag.message);
+            var imagelist = data;
+            //给第一张图片路径
+            var firstimage = "http://image.nmc.cn" + imagelist[0].img_path;
+            $("#firstImg").attr('src', firstimage);
+            //给select赋值内容
+            var pic = "";
+            for (var item in imagelist) {
+                pic = "http://image.nmc.cn" + imagelist[item].img_path;
+                $("#slist").append("<option value='" + pic + "'>" + imagelist[item].ymd + "</option>");
+            }
+        });
+</script>
+
+

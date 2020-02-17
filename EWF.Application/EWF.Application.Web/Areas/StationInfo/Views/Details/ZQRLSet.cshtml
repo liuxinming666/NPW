@@ -1,0 +1,2369 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "定线";
+}
+
+@section CSS {
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #box {
+            position: absolute;
+            right: 0;
+            top: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        #arrow {
+            color: #fff;
+            background: #000;
+            width: 20px;
+            height: 90px;
+            line-height: 90px;
+            text-align: center;
+            font-weight: bold;
+            float: left;
+            position: relative;
+            top: 35%;
+            transform: translateY(-70%);
+            -webkit-transform: translateY(-70%);
+            -o-transform: translateY(-70%);
+            -moz-transform: translateY(-70%);
+            -ms-transform: translateY(-70%);
+            cursor: pointer;
+        }
+
+        #col_box {
+            width: 200px;
+            height: 600px;
+            background: #eee;
+            float: left;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/tfjs/tfjs.js"></script>
+    <script src="~/js/echarts/dist/echarts.js"></script>
+    <script src="~/js/estat/dist/ecStat.js"></script>
+    <script src="~/js/stat/dist/stat.js"></script>
+    <script type="text/javascript">
+        var g_threeLineData;
+        var g_stnm;
+        var g_stcd;
+
+        var g_xMaxTrain;   //训练数据X的最大值
+        var g_yMaxTrain;   //训练数据Y的最大值
+        var g_xMinTrain;    //训练数据X的最小值
+        var g_yMinTrain;    //训练数据Y的最小值
+        var g_lineModeSet = '1';
+        //定义优化器
+        const numIterations = 300;
+        const learningRate = 0.1;
+        const optimizer = tf.train.adam(learningRate);
+
+        //设置变量
+        const a = tf.variable(tf.scalar(Math.random()));
+        const b = tf.variable(tf.scalar(Math.random()));
+        const c = tf.variable(tf.scalar(Math.random()));
+        const d = tf.variable(tf.scalar(Math.random()));
+        const e = tf.variable(tf.scalar(Math.random()));
+        var aECStat = tf.variable(tf.scalar(Math.random()));
+        var bECStat = tf.variable(tf.scalar(Math.random()));
+        var cECStat = tf.variable(tf.scalar(Math.random()));
+        var dECStat = tf.variable(tf.scalar(Math.random()));
+        var eECStat = tf.variable(tf.scalar(Math.random()));
+
+        var g_bMax = true; //当前页面是否是最大化
+        var g_old_docWidth = $(document).width();   //初始化时页面的宽度
+        var g_old_docHeight = $(document).height(); //初始化时页面的高度
+
+        //利用echart绘制所需的变量
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('divZqrlSimChart'));
+        var symbolSize = 10;
+        var g_arySimLineData;   //预测的曲线的数据数组
+        var g_aryMeaPtData;     //实测点的数据数组
+        var g_aryMeaPtWptn;     //实测点数据各个数据点的水势,和实测点的数据数组一一对应
+        var g_zr;   //EChart容器
+
+        var g_bAddMeaPt = false;    //代表是否是在添加实测点的状态
+        var g_bDelMeaPt = false;    //代表是否是在删除实测点的状态
+        var g_bAddSmoothPt = false; //代表是否在添加平滑点的状态
+
+        var g_arySegSim = new Array();  //分段拟合的数据
+        var g_nGenX = 16;   //训练完成后，生成拟合曲线数据点的个数
+
+        var g_aryOper = new Array();  //用户撤回操作的数组，存储每一次修改的预测曲线的数据
+
+
+        $(function () {
+            //var stcd = $.getUrlParam("stcd");
+            //g_stcd = stcd;
+            //var sDate = unescape($.getUrlParam("sDate"));
+            //var eDate = unescape($.getUrlParam("eDate"));
+
+            ////var stcd = '40105150';
+            ////g_stcd = stcd;
+            ////var sDate = '2019-01-01';
+            ////var eDate = '2019-06-28';
+
+            ////屏蔽鼠标右键菜单事件
+            //$(document).bind("contextmenu",
+            //    function (params) {
+            //        return false;
+            //    }
+            //);
+
+            ////$(document).bind("contextmenu",
+            ////    function (params) {
+            ////        top.layer.confirm('是否出图？', {
+            ////            btn: ['确定', '取消'] //按钮
+            ////        }, function (index) {
+            ////            var sUrl = '/StationInfo/Details/productImage?stcd=' + escape(g_stcd) + '&stnm=' + escape(g_stnm) + '&lineData=' + escape(g_arySimLineData);
+            ////            //var sUrl = '/StationInfo/Details/productImage?stcd=' + g_stcd + '&stnm=' + escape(g_stnm) + '&lineData=' + g_arySimLineData;
+            ////            sUrl = sUrl.replace(/%/g, '%25');
+
+            ////            //var sUrl = '/StationInfo/Details/productImage';
+            ////            //var sUrl = '/StationInfo/Details/ZQRLSet?stcd=' + g_stcd;
+            ////            var popWndIndex = top.layer.open({
+            ////                type: 2,
+            ////                title: '出图',
+            ////                content: [sUrl, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            ////            });
+            ////            top.layer.full(popWndIndex);
+            ////            top.layer.close(index);
+            ////        }, function (index) {
+            ////            top.layer.close(index);
+            ////            //layer.msg('取消', {
+            ////            //    time: 1000, //20s后自动关闭
+            ////            //    icon: 2
+            ////            //});
+            ////        });
+            ////        return false;
+            ////    }
+            ////);
+            //$.getJSON("/StationInfo/Details/GetThreeLineData", { "stcd": stcd, "sDate": sDate, "eDate": eDate }, reInitThreeLineChart);
+
+        });
+
+        function initData() {
+            //屏蔽鼠标右键菜单事件
+            $(document).bind("contextmenu",
+                function (params) {
+                    return false;
+                }
+            );
+
+            initChartData();
+
+            var oMoveBox = $("#col_box"), oArr = $("#arrow"), maxL = 200;
+            oArr.click(function () {
+                oMoveBox.animate({ "width": "-=" + maxL }, 400, function () {
+                    maxL = -maxL;
+                    $("#arrow").html(maxL < 0 ? "<" : ">");
+                })
+            });
+
+            $("#arrow").click();
+
+            $(".easyui-accordion .panel-header").click();
+        }
+
+        $(window).load(function () {
+            initData();
+        });
+
+        $(document).ready(function () {
+            //var oMoveBox = $("#col_box"), oArr = $("#arrow"), maxL = 200;
+            //oArr.click(function () {
+            //    oMoveBox.animate({ "width": "-=" + maxL }, 400, function () {
+            //        maxL = -maxL;
+            //        $("#arrow").html(maxL < 0 ? "<" : ">");
+            //    })
+            //});
+
+            //$("#arrow").click();
+        });
+
+        //出图
+        function producImg() {
+            var sUrl = '/StationInfo/Details/productImage?stcd=' + escape(g_stcd) + '&stnm=' + escape(g_stnm) + '&lineData=' + escape(g_arySimLineData);
+            sUrl = sUrl.replace(/%/g, '%25');
+            var popWndIndex = top.layer.open({
+                type: 2,
+                title: '出图',
+                content: [sUrl, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+            top.layer.full(popWndIndex);
+            top.layer.close(index);
+        }
+
+        $(window).resize(function () {
+            g_bMax = !g_bMax;
+            if (g_bMax) {
+                $("#divLineContainer").width($(document).width());
+                $("#divLineContainer").height($(document).height() - 0);
+                //myChart.resize($(document).width(), $(document).height() - 50);
+            }
+            else {
+                $("#divLineContainer").width(g_old_docWidth - 170);
+                $("#divLineContainer").height(g_old_docHeight - 210);
+                //myChart.resize(g_old_docWidth, g_old_docHeight - 50);
+            }
+            //$("#divLineContainer").width($(document).width() - 300);
+            //$("#divLineContainer").height($(document).height());
+            //updatePosition();
+            myChart.resize();
+
+            setChartDrag();
+        });
+
+        //点击删除实测点按钮
+        function onClickBtnDelMeaPt() {
+            //开始删点模式，关闭加点模式
+            g_bDelMeaPt = true;
+            g_bAddMeaPt = false;
+            g_bAddSmoothPt = false;
+        }
+
+        //点击增加点按钮
+        function onClickBtnPt() {
+            if ($('#rbAddPtSim').is(':checked')) {
+                onClickBtnAddMeaPt();
+            }
+            else {
+                onClickBtnAddSmoothPt();
+            }
+        }
+
+        //点击增加实测点按钮
+        function onClickBtnAddMeaPt() {
+            //开启加点模式，关闭删点模式
+            g_bAddMeaPt = true;
+            g_bDelMeaPt = false;
+            g_bAddSmoothPt = false;
+        }
+
+        //点击增加平滑点按钮
+        function onClickBtnAddSmoothPt() {
+            g_bAddSmoothPt = true;
+            g_bAddMeaPt = false;
+            g_bDelMeaPt = false;
+        }
+
+        //在ECchart上的右键菜单事件
+        function onContextmenuEChart(params) {
+            //关闭实测点增加和删除状态
+            g_bAddMeaPt = false;
+            g_bDelMeaPt = false;
+            g_bAddSmoothPt = false;
+            g_zr.setCursorStyle('default');
+        }
+
+        //在EChart上的鼠标移动事件
+        function onMousemoveEChart(params) {
+            var pointInPixel = [params.offsetX, params.offsetY];
+            var pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
+
+            if (myChart.containPixel('grid', pointInPixel)) {
+                var sShow = "水位:" + parseFloat(pointInGrid[1]).toFixed(2) + "m  流量:" + parseFloat(pointInGrid[0]).toFixed(2) + "m³/s";
+                $("#spanCoord").html(sShow);
+            }
+
+            if (g_bAddMeaPt) {
+                g_zr.setCursorStyle(myChart.containPixel('grid', pointInPixel) ? 'copy' : 'default');
+            }
+
+            if (g_bAddSmoothPt) {
+                g_zr.setCursorStyle(myChart.containPixel('grid', pointInPixel) ? 'copy' : 'default');
+            }
+
+            if (g_bDelMeaPt) {
+                g_zr.setCursorStyle(myChart.containPixel('grid', pointInPixel) ? 'crosshair' : 'default');
+            }
+        }
+
+        //在ECchart上的鼠标左键点击事件
+        function onClickEChart(params) {
+            var pointInPixel = [params.offsetX, params.offsetY];
+            var pointInGrid = myChart.convertFromPixel('grid', pointInPixel);
+            //增加实测点
+            if (myChart.containPixel('grid', pointInPixel) && g_bAddMeaPt) {
+                g_aryMeaPtData.push(pointInGrid);
+                g_aryMeaPtWptn.push($("input[name='setAddPtType']:checked").val());
+
+                var dataMeaTmp = new Array();
+                var dataMeaStyleTmp = new Array();  //数据点带样式
+                for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                    //实测点数据
+                    var zqMeaTmp = new Array();
+                    zqMeaTmp.push(parseFloat(g_aryMeaPtData[i][0]))
+                    zqMeaTmp.push(parseFloat(g_aryMeaPtData[i][1]))
+                    dataMeaTmp.push(zqMeaTmp);
+
+                    var sColor;
+                    if ($("#chkIsRope").prop("checked") == false) {
+                        sColor = 'rgba(0, 0, 256, 0.5)';
+                    }
+                    else {//涨
+                        if (g_aryMeaPtWptn[i] == '5') {
+                            sColor = 'rgba(256, 0, 0, 0.5)';
+                        }//落
+                        else if (g_aryMeaPtWptn[i] == '4') {
+                            sColor = 'rgba(0, 256, 0, 0.5)';
+                        }//平
+                        else if (g_aryMeaPtWptn[i] == '6') {
+                            sColor = 'rgba(0, 0, 256, 0.5)';
+                        }
+                    }
+
+                    dataMeaStyleTmp.push({ name: g_aryMeaPtWptn[i], value: zqMeaTmp, itemStyle: { color: sColor } });
+                }
+
+                myChart.setOption({
+                    series: [{
+                        id: 'meaPt',
+                        data: dataMeaStyleTmp
+                    }]
+                });
+
+                fitAgain();
+
+                g_bAddMeaPt = false;
+                g_zr.setCursorStyle('default');
+            }
+
+            //增加平滑点
+            if (myChart.containPixel('grid', pointInPixel) && g_bAddSmoothPt) {
+                addPtInSimLine(pointInGrid[1], pointInGrid[0]);
+                myChart.setOption({
+                    series: [{
+                        id: 'simLine',
+                        data: g_arySimLineData
+                    }]
+                });
+
+                //将添加过平滑点数据的曲线数据添加到数组中
+                g_aryOper.push(g_arySimLineData.slice(0));
+                $('#btnUndo').show();
+
+                g_bAddSmoothPt = false;
+                g_zr.setCursorStyle('default');
+            }
+        }
+
+        //向拟合线中增加一个平滑点
+        function addPtInSimLine(z, q) {
+            var length = g_arySimLineData.length;
+            var zAry = new Array();
+            for (var i = 0; i < length; i++) {
+                zAry.push(g_arySimLineData[i][1]);
+            }
+            zAry.push(z);
+            zAry = zAry.sort(function (a, b) {
+                return a - b;
+            });
+            var index = jQuery.inArray(z, zAry);
+            //var lowAry = g_arySimLineData
+            if (index == 0) {
+                g_arySimLineData.unshift([q, z]);
+            }
+            else if (index == zAry.length - 1) {
+                g_arySimLineData.push([q, z]);
+            }
+            else {
+                var lowAry = g_arySimLineData.slice(0, index);
+                lowAry.push([q, z]);
+                var hightAry = g_arySimLineData.slice(index);
+                g_arySimLineData = lowAry.concat(hightAry);
+            }
+        }
+
+        function reInitThreeLineChart(d) {
+            g_threeLineData = d;
+            //初始化记录实测点水势的数组
+            g_aryMeaPtWptn = new Array();
+            for (var i = 0; i < g_threeLineData.rows.length; i++) {
+                g_aryMeaPtWptn.push(g_threeLineData.rows[i].WPTN);
+            }
+            g_stnm = $.trim(d.rows[0].STNM);
+
+            if ($('#rbEChart').is(':checked')) {
+                fitLineECStat();
+            }
+            else {
+                fitLine();
+            }
+
+            //第一次绘制数据时,绑定鼠标单击事件,右键菜单事件
+            g_zr = myChart.getZr();
+            g_zr.on('click', function (params) {
+                onClickEChart(params);
+            });
+
+            g_zr.on('contextmenu', function (params) {
+                onContextmenuEChart(params);
+            });
+
+            g_zr.on('mousemove', function (params) {
+                onMousemoveEChart(params);
+            });
+
+
+            //第一次绘制时的数据
+            g_aryOper.push(g_arySimLineData.slice(0));
+
+            //初始化历史水位流量关系曲线下拉框
+            $('#selHisData').combobox({
+                editable: false,
+                valueField: 'LNNM',
+                textField: 'LNNMTEXT',
+                url: '/StationInfo/Details/GetStationZQRLYearMonth?outtype=json&stcd=' + g_stcd,
+                onChange: function (newValue, oldValue) {
+                    updateHisData();
+                },
+                //onSelect: function (record) {
+                //    updateHisData();
+                //},
+                onLoadSuccess: function () {
+                    var aryTmp = $('#selHisData').combobox('getData');
+                    $('#selHisData').combobox('select', aryTmp[aryTmp.length - 1]['LNNM']);
+                    updateHisData();
+                }
+            });
+        }
+
+        //更新历史曲线数据
+        function updateHisData() {
+            var bgtm = $('#selHisData').combobox('getValue');
+            if (bgtm == "") {
+                return;
+            }
+            $.getJSON("/StationInfo/Details/GetZQRLYearMonthData", { "stcd": g_stcd, "year": bgtm }, reUpdateHisData);
+        }
+
+        function reUpdateHisData(d) {
+            var length = d.length;
+            var meaLine = new Array();
+            for (var i = 0; i < length; i++) {
+                meaLine.push([parseFloat(d[i].Q), parseFloat(d[i].Z)])
+            }
+
+            myChart.setOption({
+                series: [{
+                    id: 'hisLine',
+                    data: meaLine
+                }]
+            });
+        }
+
+        //对更新后的点进行拟合
+        function processTrainData_again() {
+            //var data = g_arySimLineData;
+            var data = g_aryMeaPtData;
+            var length = data.length;
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i][1]);
+                yAry.push(data[i][0]);
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            xMaxTrain = xs.max();   //训练数据X的最大值
+            yMaxTrain = ys.max();   //训练数据Y的最大值
+            xMinTrain = xs.min();    //训练数据X的最小值
+            xMinTrain = tf.sub(xMinTrain, tf.scalar(0.001, 'float32'));
+            yMinTrain = ys.min();    //训练数据Y的最小值
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(yMinTrain), yMaxTrain.sub(yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+
+            return {
+                'xNor': xNor,
+                'yNor': yNor,
+                'xMaxTrain': xMaxTrain,
+                'yMaxTrain': yMaxTrain,
+                'xMinTrain': xMinTrain,
+                'yMinTrain': yMinTrain
+            };
+        }
+
+        //处理训练数据，缩放特征值和标签
+        function processTrainData() {
+            var data = g_threeLineData.rows;
+            var length = g_threeLineData.total
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i].Z)
+                yAry.push(data[i].Q)
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            g_xMaxTrain = xs.max();   //训练数据X的最大值
+            g_yMaxTrain = ys.max();   //训练数据Y的最大值
+            g_xMinTrain = xs.min();    //训练数据X的最小值
+            g_xMinTrain = tf.sub(g_xMinTrain, tf.scalar(0.001, 'float32'));
+            g_yMinTrain = ys.min();    //训练数据Y的最小值
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(g_xMinTrain), g_xMaxTrain.sub(g_xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(g_yMinTrain), g_yMaxTrain.sub(g_yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+            return { 'xNor': xNor, 'yNor': yNor }
+        }
+
+        //处理预测的数据，调整后
+        function processPredictData_again(xData, yPre, xMinTrain, xMaxTrain, yMinTrain, yMaxTrain) {
+            var xReal = tf.add(tf.mul(xData, xMaxTrain.sub(xMinTrain)), xMinTrain);
+            var yReal = tf.add(tf.mul(yPre, yMaxTrain.sub(yMinTrain)), yMinTrain);
+
+            return { 'xReal': xReal, 'yReal': yReal };
+        }
+
+        //处理预测的数据
+        function processPredictData(xData, yPre) {
+            var xReal = tf.add(tf.mul(xData, g_xMaxTrain.sub(g_xMinTrain)), g_xMinTrain);
+            var yReal = tf.add(tf.mul(yPre, g_yMaxTrain.sub(g_yMinTrain)), g_yMinTrain);
+
+            return { 'xReal': xReal, 'yReal': yReal };
+        }
+
+        //根据调整后的数据生成数据,加上了对分段拟合的支持
+        function generateXData_again2(num, xMinTrain, xMaxTrain, bExcQ) {
+            var xInterval = tf.div(xMaxTrain.sub(xMinTrain.add(tf.scalar(0.001, 'float32'))), tf.scalar(num, 'float32'));
+
+            var xAry = new Array();
+            var xTmp = xMinTrain.dataSync()[0] + 0.001;
+            for (var i = 0; i < num + 1; i++) {
+                xAry.push(xTmp);
+                xTmp = xTmp + xInterval.dataSync()[0];
+            }
+
+            while (bExcQ) {
+                var yTensor;
+                var xsTmp = tf.tensor(xAry);
+                var xNorTmp = tf.div(xsTmp.sub(xMinTrain), xMaxTrain.sub(xMinTrain));
+                if ($('#rbEChart').is(':checked')) {
+                    yTensor = predictECStat(xNorTmp);
+                }
+                else {
+                    yTensor = predict(xNorTmp);
+                }
+                var yMax = tf.max(yTensor);
+                if (yMax.dataSync()[0] < 1) {
+                    xAry.push(xTmp);
+                    xTmp = xTmp + xInterval.dataSync()[0];
+                    if (xAry.length > num * 2) {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            xs = tf.tensor(xAry);
+            //X标准化，特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain));
+            return xNor;
+        }
+
+        //根据调整后的数据生成数据
+        function generateXData_again(num, xMinTrain, xMaxTrain) {
+            var xInterval = tf.div(xMaxTrain.sub(xMinTrain.add(tf.scalar(0.001, 'float32'))), tf.scalar(num, 'float32'));
+
+            var xAry = new Array();
+            var xTmp = xMinTrain.dataSync()[0] + 0.001;
+            for (var i = 0; i < num + 1; i++) {
+                xAry.push(xTmp);
+                xTmp = xTmp + xInterval.dataSync()[0];
+            }
+
+            //while (true) {
+            //    var yTensor;
+            //    var xsTmp = tf.tensor(xAry);
+            //    var xNorTmp = tf.div(xsTmp.sub(xMinTrain), xMaxTrain.sub(xMinTrain));
+            //    if ($('#rbEChart').is(':checked')) {
+            //        yTensor = predictECStat(xNorTmp);
+            //    }
+            //    else {
+            //        yTensor = predict(xNorTmp);
+            //    }
+            //    var yMax = tf.max(yTensor);
+            //    if (yMax.dataSync()[0] < 1) {
+            //        xAry.push(xTmp);
+            //        xTmp = xTmp + xInterval.dataSync()[0];
+            //        if (xAry.length > num * 2) {
+            //            debugger;
+            //            break;
+            //        }
+            //    }
+            //    else {
+            //        break;
+            //    }
+            //}
+
+            xs = tf.tensor(xAry);
+            //X标准化，特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain));
+            return xNor;
+        }
+
+        //生成需要预测的数据,num要生成数据的个数减1
+        function generateXData(num) {
+            var xInterval = tf.div(g_xMaxTrain.sub(g_xMinTrain.add(tf.scalar(0.001, 'float32'))), tf.scalar(num, 'float32'));
+
+            var xAry = new Array();
+            var xTmp = g_xMinTrain.dataSync()[0] + 0.001;
+            for (var i = 0; i < num + 1; i++) {
+                xAry.push(xTmp);
+                xTmp = xTmp + xInterval.dataSync()[0];
+            }
+
+            while (true) {
+                var yTensor;
+                var xsTmp = tf.tensor(xAry);
+                var xNorTmp = tf.div(xsTmp.sub(g_xMinTrain), g_xMaxTrain.sub(g_xMinTrain));
+                if ($('#rbEChart').is(':checked')) {
+                    yTensor = predictECStat(xNorTmp);
+                }
+                else {
+                    yTensor = predict(xNorTmp);
+                }
+                var yMax = tf.max(yTensor);
+                if (yMax.dataSync()[0] < 1) {
+                    xAry.push(xTmp);
+                    xTmp = xTmp + xInterval.dataSync()[0];
+                    if (xAry.length > num * 2) {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            var xs = tf.tensor(xAry);
+            //X标准化，特征缩放
+            var xNor = tf.div(xs.sub(g_xMinTrain), g_xMaxTrain.sub(g_xMinTrain));
+            return xNor;
+        }
+
+        //模型，多项式方程  y = a * x ^ 2 + b * x + c
+        function predict(x) {
+            switch (g_lineModeSet) {
+                case '1'://二项式
+                    return tf.tidy(() => {
+                        return a.mul(x.pow(tf.scalar(2, 'int32')))
+                            .add(b.mul(x))
+                            .add(c);
+                    });
+                    break;
+                case '6'://三项式
+                    return tf.tidy(() => {
+                        return a.mul(x.pow(tf.scalar(3, 'int32')))
+                            .add(b.mul(x.pow(tf.scalar(2, 'int32'))))
+                            .add(c.mul(x))
+                            .add(d);
+                    });
+                    break;
+                case '7'://四项式
+                    return tf.tidy(() => {
+                        return a.mul(x.pow(tf.scalar(4, 'int32')))
+                            .add(b.mul(x.pow(tf.scalar(3, 'int32'))))
+                            .add(c.mul(x.pow(tf.scalar(2, 'int32'))))
+                            .add(d.mul(x))
+                            .add(e);
+                    });
+                    break;
+                case '2'://对数
+                    return tf.tidy(() => {
+                        return a.mul(x.log())
+                            .add(b);
+                    });
+                    break;
+                case '3'://指数
+                    return tf.tidy(() => {
+                        return a.mul(tf.exp(b.mul(x)))
+                            .add(c);
+                    });
+                    break;
+                case '4'://幂
+                    return tf.tidy(() => {
+                        return a.mul(x.pow(b))
+                            .add(c);
+                    });
+                    break;
+                case '5'://线性
+                    return tf.tidy(() => {
+                        return a.mul(x)
+                            .add(b);
+                    });
+                    break;
+            }
+        }
+
+        //var iterNum = 1;
+        //var lossAry;
+        //损失函数
+        function loss(predictions, labels) {
+            // 将labels（实际的值）进行抽象
+            // 然后获取平均数.
+            const error = predictions.sub(labels).square().mean();
+            //const error = predictions.sub(labels).abs().mean();
+            //lossAry.push([parseFloat(iterNum), parseFloat(error.dataSync()[0])]);
+            //iterNum = iterNum + 1;
+            return error;
+        }
+
+        //训练迭代器
+        async function train(xs, ys, numIterations) {
+            for (let iter = 0; iter < numIterations; iter++) {
+                $('#divProBar').progressbar('setValue', ((100 / numIterations) * iter).toFixed(0));
+                optimizer.minimize(() => {
+                    const pred = predict(xs);
+                    var curLoss = loss(pred, ys);
+                    if ((curLoss.dataSync()[0] - 0.0001) < 0) {
+                        iter = numIterations;
+                    }
+                    return curLoss;
+                });
+                await tf.nextFrame();
+            }
+        }
+
+        //根据调整后的实测点生成训练数据，特征缩放，EChart定制，增加了对分段拟合的支持
+        function processTrainData_again2(trainData_ori) {
+            var data = trainData_ori;
+            var length = data.length;
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i][1]);
+                yAry.push(data[i][0]);
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            xMaxTrain = xs.max();   //训练数据X的最大值
+            yMaxTrain = ys.max();   //训练数据Y的最大值
+            xMinTrain = xs.min();    //训练数据X的最小值
+            xMinTrain = tf.sub(xMinTrain, tf.scalar(0.001, 'float32'));
+            yMinTrain = ys.min();    //训练数据Y的最小值
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(yMinTrain), yMaxTrain.sub(yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+
+            return {
+                'xNor': xNor,
+                'yNor': yNor,
+                'xMaxTrain': xMaxTrain,
+                'yMaxTrain': yMaxTrain,
+                'xMinTrain': xMinTrain,
+                'yMinTrain': yMinTrain
+            };
+        }
+
+        //根据调整后的实测点生成训练数据，特征缩放，EChart定制，增加了对分段拟合的支持
+        function processTrainDataECStat_again2(trainData_ori) {
+            var data = trainData_ori;
+            var length = data.length;
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i][1]);
+                yAry.push(data[i][0]);
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            xMaxTrain = xs.max();   //训练数据X的最大值
+            yMaxTrain = ys.max();   //训练数据Y的最大值
+            xMinTrain = xs.min();    //训练数据X的最小值
+            xMinTrain = tf.sub(xMinTrain, tf.scalar(0.001, 'float32'));
+            yMinTrain = ys.min();    //训练数据Y的最小值
+            yMinTrain = tf.sub(yMinTrain, tf.scalar(0.001, 'float32'));
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(yMinTrain), yMaxTrain.sub(yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+            return {
+                'xNor': xNor,
+                'yNor': yNor,
+                'xMaxTrain': xMaxTrain,
+                'yMaxTrain': yMaxTrain,
+                'xMinTrain': xMinTrain,
+                'yMinTrain': yMinTrain
+            };
+        }
+
+        //根据调整后的实测点生成训练数据，特征缩放，EChart定制
+        function processTrainDataECStat_again() {
+            //var data = g_arySimLineData;
+            var data = g_aryMeaPtData;
+            var length = data.length;
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i][1]);
+                yAry.push(data[i][0]);
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            xMaxTrain = xs.max();   //训练数据X的最大值
+            yMaxTrain = ys.max();   //训练数据Y的最大值
+            xMinTrain = xs.min();    //训练数据X的最小值
+            xMinTrain = tf.sub(xMinTrain, tf.scalar(0.001, 'float32'));
+            yMinTrain = ys.min();    //训练数据Y的最小值
+            yMinTrain = tf.sub(yMinTrain, tf.scalar(0.001, 'float32'));
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(xMinTrain), xMaxTrain.sub(xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(yMinTrain), yMaxTrain.sub(yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+            return {
+                'xNor': xNor,
+                'yNor': yNor,
+                'xMaxTrain': xMaxTrain,
+                'yMaxTrain': yMaxTrain,
+                'xMinTrain': xMinTrain,
+                'yMinTrain': yMinTrain
+            };
+        }
+
+        //生成训练的数据，特征缩放，根据ECStat的特性进行定制
+        function processTrainDataECStat() {
+            var data = g_threeLineData.rows;
+            var length = g_threeLineData.total
+            var xAry = new Array();
+            var yAry = new Array();
+            for (var i = 0; i < length; i++) {
+                xAry.push(data[i].Z)
+                yAry.push(data[i].Q)
+            }
+
+            xs = tf.tensor2d(xAry, [length, 1]);
+            ys = tf.tensor2d(yAry, [length, 1]);
+
+            //计算X,Y的最大值和最小值
+            g_xMaxTrain = xs.max();   //训练数据X的最大值
+            g_yMaxTrain = ys.max();   //训练数据Y的最大值
+            g_xMinTrain = xs.min();    //训练数据X的最小值
+            g_xMinTrain = tf.sub(g_xMinTrain, tf.scalar(0.001, 'float32'));
+            g_yMinTrain = ys.min();    //训练数据Y的最小值
+            g_yMinTrain = tf.sub(g_yMinTrain, tf.scalar(0.001, 'float32'));
+            //X,Y标准化,特征缩放
+            xNor = tf.div(xs.sub(g_xMinTrain), g_xMaxTrain.sub(g_xMinTrain)); //tf.div(xs.sub(g_xMeanTrain), g_xStdTrain); //tf.batchNormalization(xs, g_xMeanTrain, xVar);
+            yNor = tf.div(ys.sub(g_yMinTrain), g_yMaxTrain.sub(g_yMinTrain));//tf.div(ys.sub(g_yMeanTrain), g_yStdTrain);
+            return { 'xNor': xNor, 'yNor': yNor };
+        }
+
+        //模型，多项式方程  y = a * x ^ 2 + b * x + c
+        function predictECStat(x) {
+            switch (g_lineModeSet) {
+                case '1'://二项式
+                    return tf.tidy(() => {
+                        return aECStat.mul(x.pow(tf.scalar(2, 'int32')))
+                            .add(bECStat.mul(x))
+                            .add(cECStat);
+                    });
+                    break;
+                case '6'://三项式
+                    return tf.tidy(() => {
+                        return aECStat.mul(x.pow(tf.scalar(3, 'int32')))
+                            .add(bECStat.mul(x.pow(tf.scalar(2, 'int32'))))
+                            .add(cECStat.mul(x))
+                            .add(dECStat);
+                    });
+                    break;
+                case '7'://四项式
+                    return tf.tidy(() => {
+                        return aECStat.mul(x.pow(tf.scalar(4, 'int32')))
+                            .add(bECStat.mul(x.pow(tf.scalar(3, 'int32'))))
+                            .add(cECStat.mul(x.pow(tf.scalar(2, 'int32'))))
+                            .add(dECStat.mul(x))
+                            .add(eECStat);
+                    });
+                    break;
+                case '2'://对数
+                    return tf.tidy(() => {
+                        return aECStat.mul(x.log())
+                            .add(bECStat);
+                    });
+                    break;
+                case '3'://指数
+                    return tf.tidy(() => {
+                        return aECStat.mul(tf.exp(bECStat.mul(x)))
+                            .add(cECStat);
+                    });
+                    break;
+                case '4'://幂
+                    return tf.tidy(() => {
+                        return aECStat.mul(x.pow(bECStat))
+                            .add(cECStat);
+                    });
+                    break;
+                case '5'://线性
+                    return tf.tidy(() => {
+                        return aECStat.mul(x)
+                            .add(bECStat);
+                    });
+                    break;
+            }
+        }
+
+        //根据调整后的点继续拟合，加上了对分段拟合的支持
+        //trainData_ori:训练的原数据，bExcQ生成的数据是否超过最大流量
+        async function fitLine_again2(trainData_ori, bExcQ) {
+            $('#wPro').window('open');
+
+            var trainData = processTrainData_again2(trainData_ori);
+            var xMinTrain = trainData['xMinTrain'];
+            var xMaxTrain = trainData['xMaxTrain'];
+            var yMinTrain = trainData['yMinTrain'];
+            var yMaxTrain = trainData['yMaxTrain'];
+
+            await train(trainData['xNor'], trainData['yNor'], numIterations);
+
+            var xData = generateXData_again2(g_nGenX / (g_arySegSim.length + 1), xMinTrain, xMaxTrain);
+            var yPre = predict(xData);
+
+            var realData = processPredictData_again(xData, yPre, xMinTrain, xMaxTrain, yMinTrain, yMaxTrain);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+            $('#wPro').window('close');
+
+            return { 'Z': xRealAry, 'Q': yRealAry };
+        }
+
+        //根据调整后的点继续拟合，加上了对分段拟合的支持
+        //trainData_ori:训练的原数据，bExcQ生成的数据是否超过最大流量
+        async function fitLineECStat_again2(trainData_ori, bExcQ) {
+            var trainData = processTrainDataECStat_again2(trainData_ori);
+            var xAry = trainData['xNor'].dataSync();
+            var yAry = trainData['yNor'].dataSync();
+            var xMaxTrain = trainData['xMaxTrain'];
+            var yMaxTrain = trainData['yMaxTrain'];
+            var xMinTrain = trainData['xMinTrain'];
+            var yMinTrain = trainData['yMinTrain'];
+
+            var length = (trainData['xNor'].dataSync()).length;
+            var logicData = new Array();
+
+            for (var i = 0; i < length; i++) {
+                logicData.push([parseFloat(xAry[i]), parseFloat(yAry[i])]);
+            }
+
+            //相当于参数训练
+            var myRegression;
+            switch (g_lineModeSet) {
+                case '1'://二项式
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '6'://三项式
+                    myRegression = ecStat.regression('polynomial', logicData, 3);
+                    aECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '7'://四项式
+                    myRegression = ecStat.regression('polynomial', logicData, 4);
+                    aECStat = tf.scalar(myRegression.parameter[4], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    eECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '2'://对数
+                    myRegression = ecStat.regression('logarithmic', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+                case '3'://指数
+                    myRegression = ecStat.regression('exponential', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['coefficient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['index'], 'float32');
+                    cECStat = tf.scalar(0);
+                    break;
+                case '4'://幂
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '5'://线性
+                    myRegression = ecStat.regression('linear', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+            }
+
+            var xData = generateXData_again2(g_nGenX / (g_arySegSim.length + 1), xMinTrain, xMaxTrain, bExcQ);
+            var yPre = predictECStat(xData);
+
+            var realData = processPredictData_again(xData, yPre, xMinTrain, xMaxTrain, yMinTrain, yMaxTrain);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+
+            return { 'Z': xRealAry, 'Q': yRealAry };
+        }
+
+        //根据重拟合的结果更新相应的数据
+        function updateData_again(newData) {
+            var xRealAry = newData.Z;
+            var yRealAry = newData.Q;
+
+            var dataLineTmp = new Array();  //拟合的曲线
+            var gridDataAry = new Array();  //数据表格的数据
+            var length = xRealAry.length;
+            for (var i = 0; i < length; i++) {
+                //拟合的曲线数据
+                var zqSimTmp = new Array();
+                //zqSimTmp.push(parseFloat(parseFloat(yRealAry[i]).toFixed(2)));
+                //zqSimTmp.push(parseFloat(parseFloat(xRealAry[i]).toFixed(2)));
+                zqSimTmp.push(parseFloat(yRealAry[i]));
+                zqSimTmp.push(parseFloat(xRealAry[i]));
+                dataLineTmp.push(zqSimTmp);
+
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(xRealAry[i]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(yRealAry[i]).toFixed(2)) });
+            }
+
+            g_arySimLineData = dataLineTmp;
+            myChart.setOption({
+                series: [{
+                    id: 'simLine',
+                    data: g_arySimLineData
+                }]
+            });
+
+            ShowTable(gridDataAry, g_stnm);
+        }
+
+        //根据调整后的点继续进行拟合
+        async function fitLineECStat_again() {
+            var trainData = processTrainDataECStat_again();
+            var xAry = trainData['xNor'].dataSync();
+            var yAry = trainData['yNor'].dataSync();
+            var xMaxTrain = trainData['xMaxTrain'];
+            var yMaxTrain = trainData['yMaxTrain'];
+            var xMinTrain = trainData['xMinTrain'];
+            var yMinTrain = trainData['yMinTrain'];
+
+            var length = (trainData['xNor'].dataSync()).length;
+            var logicData = new Array();
+
+            for (var i = 0; i < length; i++) {
+                logicData.push([parseFloat(xAry[i]), parseFloat(yAry[i])]);
+            }
+
+            //相当于参数训练
+            var myRegression;
+            switch (g_lineModeSet) {
+                case '1'://二项式
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '6'://三项式
+                    myRegression = ecStat.regression('polynomial', logicData, 3);
+                    aECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '7'://四项式
+                    myRegression = ecStat.regression('polynomial', logicData, 4);
+                    aECStat = tf.scalar(myRegression.parameter[4], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    eECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '2'://对数
+                    myRegression = ecStat.regression('logarithmic', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+                case '3'://指数
+                    myRegression = ecStat.regression('exponential', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['coefficient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['index'], 'float32');
+                    cECStat = tf.scalar(0);
+                    break;
+                case '4'://幂
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '5'://线性
+                    myRegression = ecStat.regression('linear', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+            }
+
+            var xData = generateXData_again(15, xMinTrain, xMaxTrain);
+            var yPre = predictECStat(xData);
+
+            var realData = processPredictData_again(xData, yPre, xMinTrain, xMaxTrain, yMinTrain, yMaxTrain);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+
+            //显示公式
+            //var sShow = myRegression.expression;
+            //sShow = sShow.replace(/x/g, 'h');
+            //sShow = sShow.replace(/y/g, 'q');
+            //$("#spanFormula").html(sShow);
+
+            var dataLineTmp = new Array();  //拟合的曲线
+            var gridDataAry = new Array();  //数据表格的数据
+            var length = xRealAry.length;
+            for (var i = 0; i < length; i++) {
+                //拟合的曲线数据
+                var zqSimTmp = new Array();
+                //zqSimTmp.push(parseFloat(parseFloat(yRealAry[i]).toFixed(2)));
+                //zqSimTmp.push(parseFloat(parseFloat(xRealAry[i]).toFixed(2)));
+                zqSimTmp.push(parseFloat(yRealAry[i]));
+                zqSimTmp.push(parseFloat(xRealAry[i]));
+                dataLineTmp.push(zqSimTmp);
+
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(xRealAry[i]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(yRealAry[i]).toFixed(2)) });
+            }
+
+            g_arySimLineData = dataLineTmp;
+            myChart.setOption({
+                series: [{
+                    id: 'simLine',
+                    data: g_arySimLineData
+                }]
+            });
+
+            ShowTable(gridDataAry, g_stnm);
+        }
+
+        //拟合线,利用ecStat
+        async function fitLineECStat() {
+            var trainData = processTrainDataECStat();
+            var xAry = trainData['xNor'].dataSync();
+            var yAry = trainData['yNor'].dataSync();
+
+            var length = (trainData['xNor'].dataSync()).length;
+            var logicData = new Array();
+
+            for (var i = 0; i < length; i++) {
+                logicData.push([parseFloat(xAry[i]), parseFloat(yAry[i])]);
+            }
+
+            //相当于参数训练
+            var myRegression;
+            switch (g_lineModeSet) {
+                case '1'://二项式
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '6'://三项式
+                    myRegression = ecStat.regression('polynomial', logicData, 3);
+                    aECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '7'://四项式
+                    myRegression = ecStat.regression('polynomial', logicData, 4);
+                    aECStat = tf.scalar(myRegression.parameter[4], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[3], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    dECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    eECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '2'://对数
+                    myRegression = ecStat.regression('logarithmic', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+                case '3'://指数
+                    myRegression = ecStat.regression('exponential', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['coefficient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['index'], 'float32');
+                    cECStat = tf.scalar(0);
+                    break;
+                case '4'://幂
+                    myRegression = ecStat.regression('polynomial', logicData, 2);
+                    aECStat = tf.scalar(myRegression.parameter[2], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter[1], 'float32');
+                    cECStat = tf.scalar(myRegression.parameter[0], 'float32');
+                    break;
+                case '5'://线性
+                    myRegression = ecStat.regression('linear', logicData);
+                    aECStat = tf.scalar(myRegression.parameter['gradient'], 'float32');
+                    bECStat = tf.scalar(myRegression.parameter['intercept'], 'float32');
+                    break;
+            }
+
+            var xData = generateXData(15);
+            var yPre = predictECStat(xData);
+
+            var realData = processPredictData(xData, yPre);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+
+            var sShow = myRegression.expression;
+            sShow = sShow.replace(/x/g, 'h');
+            sShow = sShow.replace(/y/g, 'q');
+
+            //显示公式
+            //$("#spanFormula").html(sShow);
+
+            var data = g_threeLineData.rows;
+            var length = g_threeLineData.total;
+
+            var serAry = new Array();   //数据数组
+            var gridDataAry = new Array();
+
+            var dataMeaTmp = new Array();
+            var dataMeaStyleTmp = new Array();  //数据点带样式
+            var dataLineTmp = new Array();  //拟合的曲线
+            for (var i = 0; i < length; i++) {
+                //实测点数据
+                var zqMeaTmp = new Array();
+                zqMeaTmp.push(parseFloat(data[i].Q))
+                zqMeaTmp.push(parseFloat(data[i].Z))
+                dataMeaTmp.push(zqMeaTmp);
+
+                var sColor;
+                if ($("#chkIsRope").prop("checked") == false) {
+                    sColor = 'rgba(0, 0, 256, 0.5)';
+                }
+                else {//涨
+                    if (data[i].WPTN == '5') {
+                        sColor = 'rgba(256, 0, 0, 0.5)';
+                    }//洛
+                    else if (data[i].WPTN == '4') {
+                        sColor = 'rgba(0, 256, 0, 0.5)';
+                    }//平
+                    else if (data[i].WPTN == '6') {
+                        sColor = 'rgba(0, 0, 256, 0.5)';
+                    }
+                }
+
+                dataMeaStyleTmp.push({ name: data[i].WPTN, value: zqMeaTmp, itemStyle: { color: sColor } });
+                //gridDataAry.push({ 'coluZ': data[i].Z, 'coluForeQ': parseFloat(yReal.dataSync()[i]).toFixed(2), 'coluMeaQ': parseFloat(data[i].Q) });
+            }
+            g_aryMeaPtData = dataMeaTmp;
+
+            length = xRealAry.length;
+            for (var i = 0; i < length; i++) {
+                //拟合的曲线数据
+                var zqSimTmp = new Array();
+                //zqSimTmp.push(parseFloat(parseFloat(yRealAry[i]).toFixed(2)));
+                //zqSimTmp.push(parseFloat(parseFloat(xRealAry[i]).toFixed(2)));
+                zqSimTmp.push(parseFloat(yRealAry[i]));
+                zqSimTmp.push(parseFloat(xRealAry[i]));
+                dataLineTmp.push(zqSimTmp);
+
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(xRealAry[i]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(yRealAry[i]).toFixed(2)) });
+            }
+
+            var objMea = {
+                id: 'meaPt',
+                name: '实测点',
+                type: 'scatter',
+                data: dataMeaStyleTmp,
+                itemStyle: {
+                    color: 'rgba(0, 0, 256, 0.5)'
+                }
+            };
+
+            //if ($("#chkIsRope").prop("checked") == false) {
+            //    objMea.itemStyle = { color: 'rgba(0, 0, 256, 0.5)' };
+            //}
+
+
+            var objLine = {
+                name: '预测曲线',
+                id: 'simLine',
+                type: 'line',
+                data: dataLineTmp,
+                //data: lossAry,
+                symbolSize: symbolSize,
+                showSymbol: true,
+                smooth: true,
+            };
+            g_arySimLineData = dataLineTmp;
+
+            var hisLine = {
+                name: '历史曲线',
+                id: 'hisLine',
+                type: 'line',
+                data: [],
+                //data: lossAry,
+                symbolSize: symbolSize,
+                showSymbol: false,
+                smooth: true,
+            };
+
+            serAry.push(objLine);
+            serAry.push(hisLine);
+            serAry.push(objMea);
+
+            $('#wPro').window('close');
+
+            SetZqrlSimChartData(serAry);
+            if ($("#chkIsRope").prop("checked") == true) {
+                fitAgain();
+            }
+
+            ShowTable(gridDataAry, g_stnm);
+        }
+
+        //修改后继续拟合
+        async function fitLine_again() {
+            $('#wPro').window('open');
+
+            var trainData = processTrainData_again();
+            var xMinTrain = trainData['xMinTrain'];
+            var xMaxTrain = trainData['xMaxTrain'];
+            var yMinTrain = trainData['yMinTrain'];
+            var yMaxTrain = trainData['yMaxTrain'];
+
+            await train(trainData['xNor'], trainData['yNor'], numIterations);
+
+            var xData = generateXData_again(15, xMinTrain, xMaxTrain);
+            var yPre = predict(xData);
+
+            var realData = processPredictData_again(xData, yPre, xMinTrain, xMaxTrain, yMinTrain, yMaxTrain);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+
+            //显示公式
+            showFormula();
+
+            var dataLineTmp = new Array();  //拟合的曲线
+            var gridDataAry = new Array();  //数据表数组
+
+            var length = xRealAry.length;
+            for (var i = 0; i < length; i++) {
+                //拟合的曲线数据
+                var zqSimTmp = new Array();
+                //zqSimTmp.push(parseFloat(parseFloat(yRealAry[i]).toFixed(2)));
+                //zqSimTmp.push(parseFloat(parseFloat(xRealAry[i]).toFixed(2)));
+                zqSimTmp.push(parseFloat(yRealAry[i]));
+                zqSimTmp.push(parseFloat(xRealAry[i]));
+                dataLineTmp.push(zqSimTmp);
+
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(xRealAry[i]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(yRealAry[i]).toFixed(2)) });
+            }
+
+            $('#wPro').window('close');
+
+            g_arySimLineData = dataLineTmp;
+            myChart.setOption({
+                series: [{
+                    id: 'simLine',
+                    data: g_arySimLineData
+                }]
+            });
+
+            ShowTable(gridDataAry, g_stnm);
+        }
+
+        //拟合线
+        async function fitLine() {
+            //iterNum = 1;
+            //lossAry = new Array();
+            $('#wPro').window('open');
+            var trainData = processTrainData();
+
+            await train(trainData['xNor'], trainData['yNor'], numIterations);
+
+            var xData = generateXData(15);
+            var yPre = predict(xData);
+
+            var realData = processPredictData(xData, yPre);
+            var xReal = realData['xReal'];
+            var yReal = realData['yReal'];
+            var xRealAry = xReal.dataSync();
+            var yRealAry = yReal.dataSync();
+
+            //显示公式
+            showFormula();
+
+            var data = g_threeLineData.rows;
+            var length = g_threeLineData.total;
+
+            var serAry = new Array();   //数据数组
+            var gridDataAry = new Array();
+
+            var dataMeaTmp = new Array();
+            var dataMeaStyleTmp = new Array();  //数据点带样式
+            var dataLineTmp = new Array();  //拟合的曲线
+            for (var i = 0; i < length; i++) {
+                //实测点数据
+                var zqMeaTmp = new Array();
+                zqMeaTmp.push(parseFloat(data[i].Q))
+                zqMeaTmp.push(parseFloat(data[i].Z))
+                dataMeaTmp.push(zqMeaTmp);
+
+                var sColor;
+                if ($("#chkIsRope").prop("checked") == false) {
+                    sColor = 'rgba(0, 0, 256, 0.5)';
+                }
+                else {//涨
+                    if (data[i].WPTN == '5') {
+                        sColor = 'rgba(256, 0, 0, 0.5)';
+                    }//洛
+                    else if (data[i].WPTN == '4') {
+                        sColor = 'rgba(0, 256, 0, 0.5)';
+                    }//平
+                    else if (data[i].WPTN == '6') {
+                        sColor = 'rgba(0, 0, 256, 0.5)';
+                    }
+                }
+
+                dataMeaStyleTmp.push({ name: data[i].WPTN, value: zqMeaTmp, itemStyle: { color: sColor } });
+                //gridDataAry.push({ 'coluZ': data[i].Z, 'coluForeQ': parseFloat(yReal.dataSync()[i]).toFixed(2), 'coluMeaQ': parseFloat(data[i].Q) });
+            }
+            g_aryMeaPtData = dataMeaTmp;
+
+            length = xRealAry.length;
+            for (var i = 0; i < length; i++) {
+                //拟合的曲线数据
+                var zqSimTmp = new Array();
+                //zqSimTmp.push(parseFloat(parseFloat(yRealAry[i]).toFixed(2)));
+                //zqSimTmp.push(parseFloat(parseFloat(xRealAry[i]).toFixed(2)));
+                zqSimTmp.push(parseFloat(yRealAry[i]));
+                zqSimTmp.push(parseFloat(xRealAry[i]));
+                dataLineTmp.push(zqSimTmp);
+
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(xRealAry[i]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(yRealAry[i]).toFixed(2)) });
+            }
+
+            var objMea = {
+                id: 'meaPt',
+                name: '实测点',
+                type: 'scatter',
+                data: dataMeaStyleTmp,
+                itemStyle: {
+                    color: 'rgba(0, 0, 256, 0.5)'
+                }
+            };
+
+            var objLine = {
+                name: '预测曲线',
+                id: 'simLine',
+                type: 'line',
+                data: dataLineTmp,
+                //data: lossAry,
+                symbolSize: symbolSize,
+                showSymbol: true,
+                smooth: true,
+            };
+            g_arySimLineData = dataLineTmp;
+
+            var hisLine = {
+                name: '历史曲线',
+                id: 'hisLine',
+                type: 'line',
+                data: [],
+                //data: lossAry,
+                symbolSize: symbolSize,
+                showSymbol: false,
+                smooth: true,
+            };
+
+            serAry.push(objLine);
+            serAry.push(hisLine);
+            serAry.push(objMea);
+
+            $('#wPro').window('close');
+
+            SetZqrlSimChartData(serAry);
+
+
+            ShowTable(gridDataAry, g_stnm);
+        }
+
+        //点击回撤按钮事件
+        function onClickBtnUndo() {
+            if (g_aryOper.length > 1) {
+                g_aryOper.pop();
+                myChart.setOption({
+                    series: [{
+                        id: 'simLine',
+                        data: g_aryOper[g_aryOper.length - 1]
+                    }]
+                });
+                g_arySimLineData = (g_aryOper[g_aryOper.length - 1]).slice(0);
+            }
+
+            if (g_aryOper.length == 1) {
+                $('#btnUndo').hide();
+            }
+
+            setChartDrag();
+        }
+
+        //手工调整后，根据调整后的点继续拟合
+        async function fitAgain() {
+            if ($('#rbEChart').is(':checked')) {
+                //await fitLineECStat_again();
+                //重拟合时，检查是否需要分段拟合
+                if (g_arySegSim.length == 0 && $("#chkIsRope").prop("checked") == false) {
+                    var newData = await fitLineECStat_again2(g_aryMeaPtData, true);
+                    updateData_again(newData);
+                }//考虑绳套情况时
+                else if (g_arySegSim.length == 0 && $("#chkIsRope").prop("checked") == true) {
+                    //数据分为2段，一段水势升，一段为水势降，水势为平时两边都考虑
+                    var seg1 = new Array();//涨数据数组
+                    var seg2 = new Array();//洛数据数组
+                    //将实测点数据分段
+                    for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                        //涨
+                        if (g_aryMeaPtWptn[i] == '5') {
+                            seg1.push(g_aryMeaPtData[i]);
+                        }//洛
+                        else if (g_aryMeaPtWptn[i] == '4') {
+                            seg2.push(g_aryMeaPtData[i]);
+                        }//平
+                        else {
+                            seg1.push(g_aryMeaPtData[i]);
+                            seg2.push(g_aryMeaPtData[i]);
+                        }
+                    }
+
+                    var newData1 = await fitLineECStat_again2(seg1, true);
+                    var newData2 = await fitLineECStat_again2(seg2, true);
+                    //将拟合的两端数据合并
+                    var zAry = new Float32Array(newData1.Z.length + newData2.Z.length);
+                    var qAry = new Float32Array(newData1.Q.length + newData2.Q.length);
+                    zAry.set(newData1.Z);
+                    zAry.set(newData2.Z.reverse(), newData1.Z.length);
+                    qAry.set(newData1.Q);
+                    qAry.set(newData2.Q.reverse(), newData1.Q.length);
+                    var newData = { 'Z': zAry, 'Q': qAry };
+
+                    updateData_again(newData);
+                }
+                else {
+                    //数据分为2段
+                    var seg1 = new Array();
+                    var seg2 = new Array();
+                    for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                        if (g_aryMeaPtData[i][1] < g_arySegSim[0]) {
+                            seg1.push(g_aryMeaPtData[i])
+                        }
+                        else {
+                            seg2.push(g_aryMeaPtData[i]);
+                        }
+                    }
+
+                    var newData1 = await fitLineECStat_again2(seg1, false);
+                    var newData2 = await fitLineECStat_again2(seg2, true);
+
+                    //将拟合的两端数据合并
+                    var zAry = new Float32Array(newData1.Z.length + newData2.Z.length);
+                    var qAry = new Float32Array(newData1.Q.length + newData2.Q.length);
+                    zAry.set(newData1.Z);
+                    zAry.set(newData2.Z, newData1.Z.length);
+                    qAry.set(newData1.Q);
+                    qAry.set(newData2.Q, newData1.Q.length);
+                    var newData = { 'Z': zAry, 'Q': qAry };
+
+                    updateData_again(newData);
+                }
+            }
+            else {
+                //await fitLine_again();
+                if (g_arySegSim.length == 0 && $("#chkIsRope").prop("checked") == false) {
+                    var newData = await fitLine_again2(g_aryMeaPtData, true);
+                    updateData_again(newData);
+                }//考虑绳套
+                else if (g_arySegSim.length == 0 && $("#chkIsRope").prop("checked") == true) {
+                    //数据分为2段，一段水势升，一段为水势降，水势为平时两边都考虑
+                    var seg1 = new Array();//涨数据数组
+                    var seg2 = new Array();//洛数据数组
+                    //将实测点数据分段
+                    for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                        //涨
+                        if (g_aryMeaPtWptn[i] == '5') {
+                            seg1.push(g_aryMeaPtData[i]);
+                        }//洛
+                        else if (g_aryMeaPtWptn[i].WPTN == '4') {
+                            seg2.push(g_aryMeaPtData[i]);
+                        }//平
+                        else {
+                            seg1.push(g_aryMeaPtData[i]);
+                            seg2.push(g_aryMeaPtData[i]);
+                        }
+                    }
+
+                    var newData1 = await fitLine_again2(seg1, true);
+                    var newData2 = await fitLine_again2(seg2, true);
+
+                    //将拟合的两端数据合并
+                    var zAry = new Float32Array(newData1.Z.length + newData2.Z.length);
+                    var qAry = new Float32Array(newData1.Q.length + newData2.Q.length);
+                    zAry.set(newData1.Z);
+                    zAry.set(newData2.Z.reverse(), newData1.Z.length);
+                    qAry.set(newData1.Q);
+                    qAry.set(newData2.Q.reverse(), newData1.Q.length);
+                    var newData = { 'Z': zAry, 'Q': qAry };
+
+                    updateData_again(newData);
+                }
+                else {
+                    //数据分为2段
+                    var seg1 = new Array();
+                    var seg2 = new Array();
+                    for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                        if (g_aryMeaPtData[i][1] < g_arySegSim[0]) {
+                            seg1.push(g_aryMeaPtData[i])
+                        }
+                        else {
+                            seg2.push(g_aryMeaPtData[i]);
+                        }
+                    }
+
+                    var newData1 = await fitLine_again2(seg1, false);
+                    var newData2 = await fitLine_again2(seg2, true);
+
+                    //将拟合的两端数据合并
+                    var zAry = new Float32Array(newData1.Z.length + newData2.Z.length);
+                    var qAry = new Float32Array(newData1.Q.length + newData2.Q.length);
+                    zAry.set(newData1.Z);
+                    zAry.set(newData2.Z, newData1.Z.length);
+                    qAry.set(newData1.Q);
+                    qAry.set(newData2.Q, newData1.Q.length);
+                    var newData = { 'Z': zAry, 'Q': qAry };
+
+                    updateData_again(newData);
+                }
+
+            }
+            //if ($('#chkMode').is(':checked')) {
+            //    await fitLineECStat_again();
+            //}
+            //else {
+            //    await fitLine_again();
+            //}
+
+            //将新修改的拟合曲线的数据添加到数组中,
+            //目前是增加和删除实测点才重拟合，
+            //增加和删除实测点目前没有撤回功能，
+            //所以将重拟合的曲线数据替换为操作数组的第一个数据
+            //还有此处的设计需增加拟合一定是在增加实测点的操作之后的
+            g_aryOper = new Array();
+            g_aryOper.push(g_arySimLineData.slice(0));
+
+            setChartDrag();
+        }
+
+        //趋势线模式改变时的事件
+        async function onModeSetChange(rabObj) {
+            cleanTool();
+            g_lineModeSet = rabObj.value;
+            if ($('#rbEChart').is(':checked')) {
+                await fitLineECStat();
+            }
+            else {
+                await fitLine();
+            }
+
+            //if ($('#chkMode').is(':checked')) {
+            //    await fitLineECStat();
+            //}
+            //else {
+            //    await fitLine();
+            //}
+            //拟合线模式改变时清空操作数组,并将新拟合的曲线数据增加到数组中
+            g_aryOper = new Array();
+            g_aryOper.push(g_arySimLineData.slice(0));
+
+            updateHisData();
+        }
+
+        //设置模拟水位流量关系曲线的数据
+        function SetZqrlSimChartData(serAry) {
+            var producImgUrl = 'image://' + getHomeUrl() + '/images/line.png';
+            var showTableUrl = 'image://' + getHomeUrl() + '/images/d15.png';
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: g_stnm + '水位流量关系曲线',
+                    left: 'center',
+                    top: 'top'
+                    //textAlign: 'left'
+                },
+                tooltip: {
+                    triggerOn: 'click',
+                    formatter: function (params) {
+                        if (params.seriesId == 'meaPt') {
+                            if (params.data.name == '5') {//涨
+                                return '流量: ' + params.data.value[0].toFixed(2) + '↑<br>水位: ' + params.data.value[1].toFixed(2);
+                            }
+                            else if (params.data.name == '4') {//洛
+                                return '流量: ' + params.data.value[0].toFixed(2) + '↓<br>水位: ' + params.data.value[1].toFixed(2);
+                            }
+                            else if (params.data.name == '6') {//平
+                                return '流量: ' + params.data.value[0].toFixed(2) + '—<br>水位: ' + params.data.value[1].toFixed(2);
+                            }
+                        }
+                        else {
+                            return '流量: ' + params.data[0].toFixed(2) + '<br>水位: ' + params.data[1].toFixed(2);
+                        }
+                    }
+                },
+                legend: {
+                    orient: 'vertical',  //垂直显示
+                    top: 'middle',
+                    left: 'left'
+                    //y: 'center',    //延Y轴居中
+                    //x: 'right', //居右显示
+                },
+                grid: {
+
+                },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        show: true
+                    }
+                ],
+                xAxis: {
+                    type: 'value',
+                    name: '流量(m³/s)',
+                    nameLocation: 'end',
+                    scale: true,
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '水位(m)',
+                    nameLocation: 'end',
+                    nameGap: 30,
+                    scale: true
+                },
+                toolbox: {
+                    show: true,
+                    itemSize: 25,
+                    right: 20,
+                    feature: {
+                        myTool1: {
+                            show: true,
+                            title: '出图',
+                            icon: producImgUrl,
+                            onclick: function () {
+                                producImg();
+                            }
+                        },
+                        myTool2: {
+                            show: true,
+                            title: '数据表',
+                            icon: showTableUrl,
+                            onclick: function () {
+                                showTableWnd();
+                            }
+                        }
+                    }
+                },
+                series: serAry
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+            //图例选择变化时的事件
+            myChart.on('legendselectchanged', function (obj) {
+                setChartDrag();
+            });
+
+            setChartDrag();
+        }
+
+        //设置图表可拖拽
+        function setChartDrag() {
+            if (!myChart.inNode) {
+                setTimeout(function () {
+                    // Add shadow circles (which is not visible) to enable drag.
+                    myChart.setOption({
+                        graphic: echarts.util.map(g_arySimLineData, function (item, dataIndex) {
+                            return {
+                                type: 'circle',
+                                position: myChart.convertToPixel('grid', item),
+                                shape: {
+                                    cx: 0,
+                                    cy: 0,
+                                    r: symbolSize / 2
+                                },
+                                invisible: true,
+                                draggable: true,
+                                ondrag: echarts.util.curry(onPointDragging, dataIndex),
+                                ondragend: echarts.util.curry(onPointDragEnd, dataIndex),
+                                onmousemove: echarts.util.curry(showTooltip, dataIndex),
+                                onmouseout: echarts.util.curry(hideTooltip, dataIndex),
+                                z: 100
+                            };
+                        })
+                    });
+                }, 0);
+
+                window.addEventListener('resize', updatePosition);
+            }
+
+            myChart.on('dataZoom', updatePosition);
+
+            //关联删除实测点事件
+            myChart.on('click', { seriesName: '实测点' }, function (params) {
+                onClickDelMeaPt(params);
+            });
+        }
+
+        //点击删除实测点事件
+        function onClickDelMeaPt(params) {
+            if (g_bDelMeaPt) {
+                g_aryMeaPtData.splice(params.dataIndex, 1);
+                g_aryMeaPtWptn.splice(params.dataIndex, 1);
+
+                var dataMeaTmp = new Array();
+                var dataMeaStyleTmp = new Array();  //数据点带样式
+                for (var i = 0; i < g_aryMeaPtData.length; i++) {
+                    //实测点数据
+                    var zqMeaTmp = new Array();
+                    zqMeaTmp.push(parseFloat(g_aryMeaPtData[i][0]))
+                    zqMeaTmp.push(parseFloat(g_aryMeaPtData[i][1]))
+                    dataMeaTmp.push(zqMeaTmp);
+
+                    var sColor;
+                    if ($("#chkIsRope").prop("checked") == false) {
+                        sColor = 'rgba(0, 0, 256, 0.5)';
+                    }
+                    else {//涨
+                        if (g_aryMeaPtWptn[i] == '5') {
+                            sColor = 'rgba(256, 0, 0, 0.5)';
+                        }//落
+                        else if (g_aryMeaPtWptn[i] == '4') {
+                            sColor = 'rgba(0, 256, 0, 0.5)';
+                        }//平
+                        else if (g_aryMeaPtWptn[i] == '6') {
+                            sColor = 'rgba(0, 0, 256, 0.5)';
+                        }
+                    }
+
+                    dataMeaStyleTmp.push({ name: g_aryMeaPtWptn[i], value: zqMeaTmp, itemStyle: { color: sColor } });
+                }
+
+                myChart.setOption({
+                    series: [{
+                        id: 'meaPt',
+                        data: dataMeaStyleTmp
+                    }]
+                });
+
+                fitAgain();
+
+                g_bDelMeaPt = false;
+                g_zr.setCursorStyle('default');
+            }
+        }
+
+        function showTooltip(dataIndex) {
+            myChart.dispatchAction({
+                type: 'showTip',
+                seriesIndex: 0,
+                dataIndex: dataIndex
+            });
+        }
+
+        function hideTooltip(dataIndex) {
+            myChart.dispatchAction({
+                type: 'hideTip'
+            });
+        }
+
+        //更新位置
+        function updatePosition() {
+            myChart.setOption({
+                graphic: echarts.util.map(g_arySimLineData, function (item, dataIndex) {
+                    return {
+                        position: myChart.convertToPixel('grid', item)
+                    };
+                })
+            });
+        }
+
+        //拖动点事件结束
+        function onPointDragEnd(dataIndex, param) {
+            //将拖动过的曲线数据添加到数组中
+            g_aryOper.push(g_arySimLineData.slice(0));
+            $('#btnUndo').show();
+        }
+
+        //拖动点时事件
+        function onPointDragging(dataIndex, dx, dy) {
+            g_arySimLineData[dataIndex] = myChart.convertFromPixel('grid', this.position);
+
+            // Update data
+            myChart.setOption({
+                series: [{
+                    id: 'simLine',
+                    data: g_arySimLineData
+                }]
+            });
+        }
+
+        function LeftCollapse() {
+            $("#divLineContainer").width($(document).width() - 50);
+            ReflowChart();
+        }
+
+        function LeftExpand() {
+
+            $("#divLineContainer").width($(document).width() - 300);
+            ReflowChart();
+        }
+        function ReflowChart() {
+            var HChart = $("#divZqrlSimChart").highcharts();
+            HChart.reflow();
+        }
+
+        function showTableWnd() {
+            var length = g_arySimLineData.length;
+            var gridDataAry = new Array();
+            for (var i = 0; i < length; i++) {
+                //更新后的曲线数据
+                gridDataAry.push({ 'coluZ': parseFloat(parseFloat(g_arySimLineData[i][1]).toFixed(2)), 'coluForeQ': parseFloat(parseFloat(g_arySimLineData[i][0]).toFixed(2)) });
+            }
+            ShowTable(gridDataAry, g_stnm);
+            $('#divGrid').window('open');
+        }
+
+        function ShowTable(d, stnm) {
+            $('#dgGrid').datagrid({
+                striped: true,
+                singleSelect: true,
+                collapsible: true,
+                rownumbers: true,
+                nowrap: false,
+                remoteSort: false,
+                loadMsg: '',
+                data: d,
+                columns: [[
+                    { field: 'coluZ', title: '水位(m)', width: '50%', align: 'center', editor: { type: 'numberbox', options: { precision: 2 } } },
+                    { field: 'coluForeQ', title: '流量(m³/s)', width: '50%', align: 'center', editor: { type: 'numberbox', options: { precision: 2 } } }
+                ]],
+                onSelect: function (rowIndex, rowData) {
+                    var HChart = $("#divZqrlSimChart").highcharts();
+                    var series = HChart.get('simLine');
+                    series.data[rowIndex].select(true);
+                    //退出编辑
+                    if (g_editIndex == undefined) { return true }
+                    if ($('#dgGrid').datagrid('validateRow', g_editIndex)) {
+                        $('#dgGrid').datagrid('endEdit', g_editIndex);
+                        updateLine(g_editIndex);
+                        g_editIndex = undefined;
+                        return true;
+                    }
+                },
+                onDblClickCell: onClickCell
+            });
+        }
+
+        //根据表格中更改的数据更新曲线数据
+        function updateLine(index) {
+            var data = ($('#dgGrid').datagrid('getData')).rows;
+
+            var dataLineTmp = new Array();
+            for (var i = 0; i < data.length; i++) {
+                var zqSimTmp = new Array();
+                zqSimTmp.push(parseFloat(data[i].coluForeQ));
+                zqSimTmp.push(parseFloat(data[i].coluZ));
+                dataLineTmp.push(zqSimTmp);
+            }
+            var HChart = $("#divZqrlSimChart").highcharts();
+            var series = HChart.get('simLine');
+            series.setData(dataLineTmp);
+        }
+
+        $.extend($.fn.datagrid.methods, {
+            editCell: function (jq, param) {
+                return jq.each(function () {
+                    var opts = $(this).datagrid('options');
+                    var fields = $(this).datagrid('getColumnFields', true).concat($(this).datagrid('getColumnFields'));
+                    for (var i = 0; i < fields.length; i++) {
+                        var col = $(this).datagrid('getColumnOption', fields[i]);
+                        col.editor1 = col.editor;
+                        if (fields[i] != param.field) {
+                            col.editor = null;
+                        }
+                    }
+                    $(this).datagrid('beginEdit', param.index);
+                    for (var i = 0; i < fields.length; i++) {
+                        var col = $(this).datagrid('getColumnOption', fields[i]);
+                        col.editor = col.editor1;
+                    }
+                });
+            }
+        });
+
+        var g_editIndex = undefined;    //当前编辑的行
+        function endEditing() {
+            if (g_editIndex == undefined) { return true }
+            if ($('#dgGrid').datagrid('validateRow', g_editIndex)) {
+                $('#dgGrid').datagrid('endEdit', g_editIndex);
+                g_editIndex = undefined;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        function onClickCell(index, field) {
+            var HChart = $("#divZqrlSimChart").highcharts();
+            var series = HChart.get('simLine');
+            series.data[index].select(true);
+            if (endEditing()) {
+                $('#dgGrid').datagrid('selectRow', index)
+                    .datagrid('editCell', { index: index, field: field });
+                g_editIndex = index;
+            }
+        }
+
+        //点击设置中的模式单选框
+        async function onFrameModeSetChange(rbObj) {
+            cleanTool();
+            if (rbObj.value == '1') {
+                $('#labelMi').hide();
+                await fitLineECStat();
+            }
+            else {
+                $('#labelMi').show();
+                await fitLine();
+            }
+            //切换极速模式改变时清空操作数组,并将新拟合的曲线数据增加到数组中
+            g_aryOper = new Array();
+            g_aryOper.push(g_arySimLineData.slice(0));
+
+            updateHisData();
+        }
+
+        //点击极速模式复选框
+        async function onClickChkMode() {
+            if ($('#chkMode').is(':checked')) {
+                $('#labelMi').hide();
+                await fitLineECStat();
+            }
+            else {
+                $('#labelMi').show();
+                await fitLine();
+            }
+            //切换极速模式改变时清空操作数组,并将新拟合的曲线数据增加到数组中
+            g_aryOper = new Array();
+            g_aryOper.push(g_arySimLineData.slice(0));
+
+            updateHisData();
+        }
+
+        //显示公式
+        function showFormula() {
+            var sShow;
+            switch (g_lineModeSet) {
+                case '1'://多项式
+                    sShow = "q=" + (a.dataSync()[0]).toFixed(4) + "*h²+" + (b.dataSync()[0]).toFixed(4) + "*h+" + (c.dataSync()[0]).toFixed(4);
+                    break;
+                case '2'://对数
+                    sShow = "q=" + (a.dataSync()[0]).toFixed(4) + "*㏑(h)+" + (b.dataSync()[0]).toFixed(4);
+                    break;
+                case '3'://指数
+                    sShow = "q=" + (a.dataSync()[0]).toFixed(4) + "*e^(" + (b.dataSync()[0]).toFixed(4) + "*h)+" + (c.dataSync()[0]).toFixed(4);
+                    break;
+                case '4'://幂
+                    sShow = "q=" + (a.dataSync()[0]).toFixed(4) + "*h^" + (b.dataSync()[0]).toFixed(4) + "+" + (c.dataSync()[0]).toFixed(4);
+                    break;
+                case '5'://线性
+                    sShow = "q=" + (a.dataSync()[0]).toFixed(4) + "*h+" + (b.dataSync()[0]).toFixed(4);
+                    break;
+            }
+            //$("#spanFormula").html(sShow);
+        }
+
+        //修改X轴最小值
+        function onXMinChange(newValue, oldValue) {
+            if ($.trim(newValue) == '') {
+                myChart.setOption({
+                    xAxis: [{
+                        min: null
+                    }]
+                });
+            }
+            else {
+                myChart.setOption({
+                    xAxis: [{
+                        min: parseFloat(newValue)
+                    }]
+                });
+            }
+        }
+
+        //修改X轴最大值
+        function onXMaxChange(newValue, oldValue) {
+            if ($.trim(newValue) == '') {
+                myChart.setOption({
+                    xAxis: [{
+                        max: null
+                    }]
+                });
+            }
+            else {
+                myChart.setOption({
+                    xAxis: [{
+                        max: parseFloat(newValue)
+                    }]
+                });
+            }
+        }
+
+        //修改Y轴最小值
+        function onYMinChange(newValue, oldValue) {
+            if ($.trim(newValue) == '') {
+                myChart.setOption({
+                    yAxis: [{
+                        min: null
+                    }]
+                });
+            }
+            else {
+                myChart.setOption({
+                    yAxis: [{
+                        min: parseFloat(newValue)
+                    }]
+                });
+            }
+        }
+        //修改Y轴最大值
+        function onYMaxChange(newValue, oldValue) {
+            if ($.trim(newValue) == '') {
+                myChart.setOption({
+                    yAxis: [{
+                        max: null
+                    }]
+                });
+            }
+            else {
+                myChart.setOption({
+                    yAxis: [{
+                        max: parseFloat(newValue)
+                    }]
+                });
+            }
+        }
+
+        //分段拟合，工具栏中的分段拟合
+        function onSegSimChange(newValue, oldValue) {
+            g_arySegSim = new Array();
+            if ($.trim(newValue) != '') {
+                g_arySegSim.push(parseFloat(newValue));
+            }
+
+            fitAgain();
+        }
+
+        //清理工具箱的相关内容
+        function cleanTool() {
+            $('#txtSegSim').numberbox('clear');
+            $('#chkIsRope').prop("checked", false); //将考虑绳套模式改为不考虑
+        }
+
+        //是否考虑绳套复选框改变时
+        function onChkIsRopeChange(chkObj) {
+            initChartData();
+            //考虑绳套时先将模式改为极速模式,分段分析不可用，加点模式不可用，加点类型可用
+            if (chkObj.checked) {
+                $('#rbEChart').prop("checked", true);
+                $('#txtSegSim').numberbox({ disabled: true });
+                $("#divAddPtMode").hide();
+                $("#divAddPtType").show();
+
+                //setTimeout('fitAgain()', 1000);
+            }
+            else {
+                //不考虑绳套时放开分段分析，加点模式可用，加点类型不可用
+                $('#txtSegSim').numberbox({ disabled: false });
+                $("#divAddPtType").hide();
+                $("#divAddPtMode").show();
+            }
+        }
+
+        //初始化图表数据
+        function initChartData() {
+            var stcd = $.getUrlParam("stcd");
+            g_stcd = stcd;
+            var sDate = unescape($.getUrlParam("sDate"));
+            var eDate = unescape($.getUrlParam("eDate"));
+            $.getJSON("/StationInfo/Details/GetThreeLineData", { "stcd": stcd, "sDate": sDate, "eDate": eDate }, reInitThreeLineChart);
+        }
+
+        function getHomeUrl() {
+            var strFullPath = window.document.location.href;
+            var strPath = window.document.location.pathname;
+            var pos = strFullPath.indexOf(strPath);
+            var prePath = strFullPath.substring(0, pos);
+            var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+            return prePath;
+        }
+    </script>
+}
+@*<div data-options="region:'west',split:true,title:'',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:300px;">
+        <table id="dgGrid" style="height:100%;width:100%;"></table>
+    </div>*@
+
+<div id="divC">
+    <div>
+        @*<label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="5" />线性</label>
+            <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="1" checked />多项式</label>
+            <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="2" />对数</label>
+            <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="3" />指数</label>
+            <label id="labelMi" style="display:none;"><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="4" />幂</label>*@
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="spanCoord"></span>
+        @*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;公式：<span id="spanFormula" title="公式使用时需将x和y同时进行归一化处理!" class="easyui-tooltip"></span>*@
+        <div style="float:right; padding-right:20px;">
+            <a href="###" class="easyui-linkbutton" onclick="onClickBtnPt();" iconCls="icon-add">加点</a>
+            <a href="###" class="easyui-linkbutton" onclick="onClickBtnDelMeaPt();" iconCls="icon-clear">删点</a>
+            @*<a href="###" class="easyui-linkbutton" style="width:100px;" onclick="onClickBtnAddSmoothPt();" iconCls="icon-add">加点平滑</a>*@
+            <a href="###" id="btnUndo" style="display:none;" onclick="onClickBtnUndo();" class="easyui-linkbutton" iconCls="icon-undo">回撤</a>
+            <a href="###" id="btnFitAgain" style="display:none;" onclick="fitAgain();" class="easyui-linkbutton" iconCls="icon-reload">重拟合</a>
+            <span>历年曲线:</span><input id="selHisData" class="easyui-combobox" style="width:100px;" />
+            @*<input id="chkMode" checked="checked" type="checkbox" onclick="onClickChkMode();" /><span>极速模式</span>*@
+            @*<a href="#" class="easyui-linkbutton" onclick="showTableWnd();" data-options="plain:true">显示数据表</a>*@
+        </div>
+    </div>
+    <div style="width:100%;overflow:hidden;height:94%;" id="divLineContainer">
+        <div id="divZqrlSimChart" style="height:100%; width:100%;position:fixed;"></div>
+    </div>
+</div>
+
+<div id="box">
+    <div id="arrow">></div>
+    <div id="col_box" style="padding:0px;">
+        <div class="easyui-accordion" style="width:200px;" data-options="multiple:true,selected:false">
+            <div title="模式选择" data-options="" style="overflow:auto;padding:5px;">
+                <label><input id="rbEChart" name="setFrameMode" onchange="onFrameModeSetChange(this);" type="radio" value="1" checked />极速模式</label>
+                <label><input id="rbTensorflow" name="setFrameMode" onchange="onFrameModeSetChange(this);" type="radio" value="2" />普通模式</label>
+            </div>
+            <div title="拟合方法" data-options="" style="overflow:auto;padding:5px;">
+                <div>
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="5" />线&nbsp;&nbsp;&nbsp;性</label>&nbsp;&nbsp;
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="1" checked />二项式</label>
+                </div>
+                <div>
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="6" />三项式</label>&nbsp;&nbsp;
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="7" />四项式</label>
+                </div>
+                <div>
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="2" />对&nbsp;&nbsp;&nbsp;数</label>&nbsp;&nbsp;
+                    <label><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="3" />指&nbsp;&nbsp;&nbsp;数</label>
+                </div>
+                <div>
+                    <label id="labelMi" style="display:none;"><input name="setRadio" onchange="onModeSetChange(this);" type="radio" value="4" />幂</label>
+                </div>
+                <div>
+                    <label><input id="chkIsRope" onchange="onChkIsRopeChange(this);" type="checkbox" />&nbsp;是否考虑绳套</label>
+                </div>
+            </div>
+            <div title="图表设置" data-options="" style="overflow:auto;padding:5px;">
+                <div style="margin:0px;">
+                    水位轴最小值:&nbsp;&nbsp;<input type="text" class="easyui-numberbox" style="width:70px;" value=""
+                                              data-options="min:0,precision:2,
+                                         onChange:function(newValue,oldValue){onYMinChange(newValue,oldValue);}" />
+                </div>
+                <div style="margin:0px;">
+                    水位轴最大值:&nbsp;&nbsp;<input type="text" class="easyui-numberbox" style="width:70px;" value=""
+                                              data-options="min:0,precision:2,
+                                         onChange:function(newValue,oldValue){onYMaxChange(newValue,oldValue);}" />
+                </div>
+                <div style="margin:0px;">
+                    流量轴最小值:&nbsp;&nbsp;<input type="text" class="easyui-numberbox" style="width:70px;" value=""
+                                              data-options="min:0,precision:2,
+                                         onChange:function(newValue,oldValue){onXMinChange(newValue,oldValue);}" />
+                </div>
+                <div style="margin:0px;">
+                    流量轴最大值:&nbsp;&nbsp;<input type="text" class="easyui-numberbox" style="width:70px;" value=""
+                                              data-options="min:0,precision:2,
+                                         onChange:function(newValue,oldValue){onXMaxChange(newValue,oldValue);}" />
+                </div>
+            </div>
+            <div title="曲线调整" data-options="" style="overflow:auto;padding:5px;">
+                <div id="divAddPtMode" style="margin:5px;">
+                    加点模式:
+                    &nbsp;&nbsp;<label><input id="rbAddPtSim" name="setAddPtMode" onchange="" type="radio" value="1" checked />拟合</label>
+                    <label><input id="rbAddPtSmooth" name="setAddPtMode" onchange="" type="radio" value="2" />平滑</label>
+                </div>
+                <div id="divAddPtType" style="margin:5px;display:none">
+                    加点水势:
+                    &nbsp;&nbsp;<label><input id="rbAddPtZ" name="setAddPtType" onchange="" type="radio" value="5" checked />涨</label>
+                    <label><input id="rbAddPtL" name="setAddPtType" onchange="" type="radio" value="4" />落</label>
+                    <label><input id="rbAddPtP" name="setAddPtType" onchange="" type="radio" value="6" />平</label>
+                </div>
+                <div style="margin:5px;">
+                    分段分析:
+                    &nbsp;&nbsp;<input id="txtSegSim" class="easyui-numberbox" value="" style="width:70px;"
+                                       data-options="min:0,precision:2,
+                                       onChange:function(newValue,oldValue){onSegSimChange(newValue,oldValue);}" />m
+                </div>
+            </div>
+            @*<div title="其他" data-options="" style="overflow:auto;padding:5px;">
+                    <div style="margin:5px;">
+                        <a href="###" class="easyui-linkbutton" style="width:100px;" onclick="showTableWnd();" iconCls="icon-list">显示数据表</a>
+                    </div>
+                    <div style="margin:5px;">
+                        <a href="###" class="easyui-linkbutton" style="width:100px;" onclick="producImg();" iconCls="icon-image">&nbsp;&nbsp;&nbsp;出&nbsp;&nbsp;&nbsp;&nbsp;图&nbsp;&nbsp;&nbsp;</a>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<div id="wPro" class="easyui-window" title="处理中" style="width:400px;height:50px;overflow:hidden;"
+     data-options="iconCls:'icon-save',modal:true,noheader:true,border:false,closed:true">
+    <div id="divProBar" class="easyui-progressbar" style="width:400px; height:50px;"></div>
+</div>
+
+<div id="divGrid" class="easyui-window" title="关系曲线数据表" style="width:300px;height:400px;overflow:hidden;"
+     data-options="iconCls:'icon-save',modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false">
+    <table id="dgGrid" style="height:100%;width:100%;"></table>
+</div>
+
+
+

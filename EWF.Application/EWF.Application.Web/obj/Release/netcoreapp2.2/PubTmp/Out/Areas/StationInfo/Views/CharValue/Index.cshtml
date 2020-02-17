@@ -1,0 +1,719 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "历史特征值";
+}
+<div style="padding-left: 30px; background-color:White; height: 40px; line-height: 40px;">
+    <a href="javascript:ShowZChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1',selected:true">
+        最高水位
+    </a> <a href="javascript:ShowQChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1'">
+        最大流量
+    </a> <a href="javascript:ShowSandChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1'">
+        最大含沙量
+    </a> <a href="javascript:ShowJLChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1'">
+        径流量
+    </a> <a href="javascript:ShowSSLChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1'">
+        输沙量
+    </a> <a href="javascript:ShowRainChart()" class="easyui-linkbutton" data-options="toggle:true,group:'g1'">
+        降水量
+    </a>
+  
+    <img onclick="onTableImgClick();" style="position:absolute; right:10px; height:50px; width:50px; cursor:hand;" alt="数据表" onclick="alert('数据表')" src="~/images/d15.png" />
+</div>
+<div id="divChart" style="width: 100%; height: 100%; overflow: hidden;">
+    
+</div>
+<div id="w" class="easyui-window" data-options="title:'数据表',top:'5px',resizable:false,minimizable:false,maximizable:false,collapsible:false,modal:false,closed:true,iconCls:'icon-save'" style="width:800px;height:400px;padding:0px;overflow: hidden;">
+    @*<table id="dgGrid" style="height:100%;overflow:auto;"></table>*@
+    <table id="dgGrid" title="" style="height:100%;overflow:auto;" data-options="
+                rownumbers:true,
+                collapsible: true,
+                singleSelect:true,
+                autoRowHeight:false,
+                pagination:true,
+                pagePosition: 'bottom',
+                pageSize:10">
+        <thead>
+            <tr>
+                <th field="时间" width="16%">时间</th>
+                <th field="最高水位" width="14%">最高水位</th>
+                <th field="最大流量" width="14%">最大流量</th>
+                <th field="最大含沙量" width="14%" >最大含沙量</th>
+                <th field="径流量" width="14%" >径流量</th>
+                <th field="输沙量" width="14%" >输沙量</th>
+                <th field="降水量" width="14%">降水量</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        var stcd;
+        var stnm;
+        var chartColor = "#7CB5EC";
+        var plotLine = "#ff0000";
+        var jsonColors;
+
+        var type = "";
+        var strBqsm;
+
+    $(function () {
+            InitChart();
+            $('#dlg').dialog('close');
+
+        });
+        function InitChart(strStcd, strStnm, jsoncolor) {
+
+            stcd = strStcd;
+            stnm = strStnm;
+            jsonColors = eval("(" + jsoncolor + ")");
+            strBqsm = window.external.GetBqsm(stcd);
+            ShowZChart();
+
+        }
+        function InitChart()
+        {
+            stcd = $.getUrlParam("stcd");//'40105150';
+            stnm = "";
+            ShowZChart();
+            DataToJSGrid();
+        }
+
+        function RefreshChart(strStcd, strStnm) {
+            stcd = strStcd;
+            stnm = strStnm;
+            if (type == "" || type == "Z") {
+                strBqsm = window.external.GetBqsm(stcd);
+                ShowZChart();
+            } else if (type == "Q") {
+                ShowQChart();
+            } else if (type == "Sand") {
+                ShowSandChart();
+            } else if (type == "SSL") {
+                ShowSSLChart();
+            } else if (type == "JL") {
+                ShowJLChart();
+            } else if (type == "Rain") {
+                ShowRainChart();
+            }
+        }
+
+        function DrawChart(id, jsonData, title, colName, yText, searisName) {
+             Highcharts.setOptions({
+                                lang:{
+                                   contextButtonTitle:"图表导出菜单",
+                                   downloadJPEG:"下载JPEG图片",
+                                   downloadPDF:"下载PDF文件",
+                                   downloadPNG:"下载PNG文件",
+                                   downloadSVG:"下载SVG文件",
+                                   loading:"加载中",
+                                   noData:"没有数据",
+                                   printChart:"打印图表",
+                                   resetZoom:"恢复缩放",
+                                   resetZoomTitle:"恢复图表",
+                                   thousandsSep:""
+                                }
+                            });
+            var chart = new Highcharts.Chart(id, {
+                chart: {
+                    type: 'column',
+                    marginRight: 20,
+                    marginLeft:90,
+                    width: $("#divChart").width(),
+                    height: $("#divChart").height() - 40
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: title,
+                    style:{
+                        color: '#000000',
+                        fontSize: '25px'
+                    }
+                },
+                xAxis: {
+                    categories: GetCategories(jsonData),
+                    crosshair: true
+                },
+                legend: {
+                    enabled: false
+                },
+                yAxis: {
+                    title: {
+                        text: yText
+                    },
+                    labels: {
+                        format: '{value}'
+                    },
+                    max: GetMaxV(jsonData, colName),
+                    min: GetZMinV(jsonData, colName)
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:14px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0" nowrap>{series.name}: </td>' +
+                '<td style="padding:0;color:#0B051D"><b>{point.y'+ '}</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    type: 'column',
+                    name: searisName,
+                    data: GetData(jsonData, colName),
+                    color: chartColor
+                }],
+                lang: {
+                    noData: "没有数据"
+                },
+                noData: {
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '26px',
+                        color: '#7cb5ec'
+                    }
+                }
+            });
+            chart.yAxis[0].removePlotLine("plot-line-1");
+
+            if (jsonData.length>0&&jsonData[jsonData.length - 1]["年份"] == "Av"&&jsonData[jsonData.length - 1][colName] != "0") {
+                chart.yAxis[0].addPlotLine({
+                    value: jsonData[jsonData.length - 1][colName],
+                    color: '#7CB5EC',
+                    width: 2,
+                    id: 'plot-line-1',
+                    label: {
+                        text: "平均：" + jsonData[jsonData.length - 1][colName],
+                        align: "right",
+                        style: {
+                            color: '#000000',
+                            fontWeight: 'bold',
+                            textAlign: "left",
+                            fontSize: "16px"
+                        },
+                        x: -20
+                    },
+                    zIndex: 6
+                });
+            }
+            return chart;
+        }
+
+        function GetDecimals(colName) {
+            if (colName == "年降水量") {
+                return ".1f";
+            }
+            return ".2f";
+        }
+
+        //生成x轴目录数据
+        function GetCategories(jsonData) {
+
+            var result = [];
+            for (var i in jsonData) {
+                if (jsonData[i]["年份"] != "Av") {
+                    result.push(jsonData[i]["年份"]);
+                }
+            }
+            return result;
+        }
+
+        function GetMaxV(jsonData, colName) {
+            var maxV = null;
+            for (var i in jsonData) {
+                if (Number(jsonData[i][colName]) > maxV) {
+                    maxV = Number(jsonData[i][colName]);
+                }
+            }
+            return maxV;
+        }
+        function GetZMinV(jsonData, colName) {
+            if (colName != "水位") {
+                return null;
+            }
+            return GetMinV(jsonData, colName);
+        }
+
+        function GetMinV(jsonData, colName) {
+            var minV = Number.MAX_VALUE;
+            for (var i in jsonData) {
+                if (!jsonData[i][colName]) {
+                    continue;
+                }
+                if (Number(jsonData[i][colName]) < minV) {
+
+                    minV = Number(jsonData[i][colName]);
+                }
+            }
+            if (minV == Number.MAX_VALUE) {
+                minV = null;
+            }
+
+            return minV;
+        }
+        //返回x，y数据序列
+        function GetData(jsonData, colName) {
+            if (jsonData.length == 0) {
+                return null;
+            }
+
+            var result = [];
+            var zMin;
+            var zMax;
+            //if (colName == "输沙量" || colName == "径流量" || colName == "降水量") {
+                zMin = GetMinV(jsonData, colName);
+                zMax = GetMaxV(jsonData, colName);
+                ///}
+
+            for (var i in jsonData) {
+                if (jsonData[i]["年份"] != "Av") {
+
+                    if (zMin == Number(jsonData[i][colName])) {
+                        if (colName == "降水量") {
+                            result.push({ dataLabels: { enabled: true, align: 'right', color: '#ff0000', style: { fontWeight: 'bold', fontSize: "16px" }, x: 8, y: -12, verticalAlign: 'middle', overflow: true, crop: false }, y: Number(jsonData[i][colName]), color: '#0000ff' });
+                        } else {
+                            result.push({ dataLabels: { enabled: true, align: 'right', color: '#ff0000', style: { fontWeight: 'bold', fontSize: "16px" }, x: 8, y: -12, verticalAlign: 'middle', overflow: true, crop: false }, y: Number(jsonData[i][colName]), color: '#0000ff' });
+                        }
+                    } else if (zMax == Number(jsonData[i][colName])) {
+                        if (colName == "降水量") {
+                            result.push({ dataLabels: { enabled: true, align: 'right', color: '#ff0000', style: { fontWeight: 'bold', fontSize: "16px" }, x: 8, y: -12, verticalAlign: 'middle', overflow: true, crop: false }, y: Number(jsonData[i][colName]), color: '#ff0000' });
+                        } else {
+                            result.push({ dataLabels: { enabled: true, align: 'right', color: '#ff0000', style: { fontWeight: 'bold', fontSize: "16px" }, x: 8, y: -12, verticalAlign: 'middle', overflow: true, crop: false }, y: Number(jsonData[i][colName]), color: '#ff0000' });
+                        }
+                    } else {
+                        result.push(Number(jsonData[i][colName]));
+                    }
+                    //result.push([jsonData[i]["年份"], (jsonData[i][colName] == null ? 0 : Number(jsonData[i][colName]))]);
+                }
+            }
+
+            return result;
+        }
+
+        function ShowZChart() {
+            type = "Z";
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.Z != null && jsonColors.colors.Z["@value"] != "") {
+                    chartColor = jsonColors.colors.Z["@value"];
+                }
+            }*@
+
+           //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsZ/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData != "[]" && strJsonData != null && strJsonData != "" && strJsonData!=undefined) {
+                        stnm = jsonData[0]["STNM"];
+                    }
+                    if (strBqsm != "") {
+                        $("#btnBQ").show();
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年最高水位", "水位", "水位(m)", "年最高水位");
+                }
+            });
+           
+        }
+
+        function ShowQChart() {
+            type = "Q";
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.Q != null && jsonColors.colors.Q["@value"] != "") {
+                    chartColor = jsonColors.colors.Q["@value"];
+                }
+            }*@
+           //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsQ/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData == "") {
+                        return;
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年最大流量", "流量", "流量(m³/s)", "年最大流量");
+                }
+            });
+        }
+
+        function ShowSandChart() {
+            type = "Sand";
+            $('#dlg').dialog('close');
+            $("#btnBQ").hide();
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.S != null && jsonColors.colors.S["@value"] != "") {
+                    chartColor = jsonColors.colors.S["@value"];
+                }
+            }*@
+            //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsSand/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData == "") {
+                        return;
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年最大含沙量", "含沙量", "含沙量(kg/m³)", "年最大含沙量");
+                }
+            });
+        }
+
+        function ShowSSLChart() {
+            type = "SSL";
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.SSL != null && jsonColors.colors.SSL["@value"] != "") {
+                    chartColor = jsonColors.colors.SSL["@value"];
+                }
+            }*@
+            plotLine = "#FF0000";
+            //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsSSL/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData == "") {
+                        return;
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年输沙量", "输沙量", "输沙量(10^8t)", "年输沙量");
+                }
+            });
+        }
+
+        function ShowJLChart() {
+            type = "JL";
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.JL != null && jsonColors.colors.JL["@value"] != "") {
+                    chartColor = jsonColors.colors.JL["@value"];
+                }
+            }*@
+            plotLine = "#FF0000";
+            //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsJL/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData == "") {
+                        return;
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年径流量", "径流量", "径流量(10^8m³)", "年径流量");
+                }
+            });
+        }
+
+        function ShowRainChart() {
+            type = "Rain";
+            ClearChart();
+            chartColor = "#7CB5EC";
+            @*if (jsonColors != null && jsonColors.colors != null) {
+                if (jsonColors.colors.JSL != null && jsonColors.colors.JSL["@value"] != "") {
+                    chartColor = jsonColors.colors.JSL["@value"];
+                }
+            }*@
+            plotLine = "#0000FF";
+            //获取数据
+            var strJsonData;
+            var jsonData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetYearsRain/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    strJsonData = d.rows;
+                    jsonData = eval(strJsonData);
+                    if (strJsonData == "") {
+                        return;
+                    }
+                    DrawChart("divChart", jsonData, stnm + "历年年降水量", "降水量", "降水量(mm)", "年降水量");
+                }
+            });
+        }
+        function ClearChart() {
+            $("#divChart").html("");
+        }
+        function ShowDialog() {
+
+            if (strBqsm != "") {
+                var jsonBqsm = eval("(" + strBqsm + ")");
+                var BQ = jsonBqsm.BQ; //  bqs.BQ;
+                document.getElementById("dlg").innerHTML = "<div style='width:340px;height:220px; overflow:auto;line-height:28px; font-size:14px;padding:10px; text-indent:28px;'>" + BQ.DESCRIPTION + "</div>";
+                $('#dlg').dialog('open');
+                /*for (var i = 0; i < BQ.length; i++) {
+                    if (BQ[i].STCD == stcd) {
+                        document.getElementById("dlg").innerHTML = "<div style='width:340px;height:220px; overflow:auto;line-height:28px; font-size:14px;padding:10px; text-indent:28px;'>" + BQ[i].DESCRIPTION + "</div>";
+                        $('#dlg').dialog('open');
+                        break;
+                    }
+                }*/
+            }
+        }
+
+        function onTableImgClick()
+        {
+            $('#w').window('open');
+        }
+
+        function DataToJSGrid()
+        {
+            var sData;
+            com.ajax({
+                type: 'get',
+                url: '/StationInfo/CharValue/GetAllCVData/',
+                data: { "stcd": stcd },
+                success: function (d) {
+                    sData = d;
+
+                    var tZ = sData.Table;
+                    var tQ = sData.Table1;
+                    var tS = sData.Table2;
+                    var tJLL = sData.Table3;
+                    var tSSL = sData.Table4;
+                    var tJSL = sData.Table5;
+
+                    //水位
+                    var length = tZ.length;
+                    var aryTmp = new Array();
+                    for (var i = 0; i < length; i++) {
+                        var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tZ[i].IDTM), 最高水位: ZeroToNull(trim(tZ[i].MAXZ)), 最低水位: ZeroToNull(trim(tZ[i].MINZ)), 平均水位: ZeroToNull(trim(tZ[i].AVZ)) };
+                        aryTmp.push(objTmp);
+                    }
+
+                    //流量
+                    length = tQ.length;
+                    for (var i = 0; i < length; i++) {
+                        var bFind = false;
+                        //循环是否能找到对应的年份
+                        var aryLength = aryTmp.length;
+                        for (var j = 0; j < aryLength; j++) {
+                            if (aryTmp[j]['时间'] == trim(tQ[i].IDTM)) {
+                                aryTmp[j]['最大流量'] = ZeroToNull(trim(tQ[i].MAXQ));
+                                aryTmp[j]['最小流量'] = ZeroToNull(trim(tQ[i].MINQ));
+                                aryTmp[j]['平均流量'] = ZeroToNull(trim(tQ[i].AVQ));
+                                bFind = true;
+                                break;
+                            }
+                            //alert(aryTmp[j]['时间']);
+                        }
+
+                        if (bFind == false) {
+                            var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tQ[i].IDTM), 最大流量: ZeroToNull(trim(tQ[i].MAXQ)), 最小流量: ZeroToNull(trim(tQ[i].MINQ)), 平均流量: ZeroToNull(trim(tQ[i].AVQ)) };
+                            aryTmp.push(objTmp);
+                        }
+                    }
+
+                    //含沙量
+                    length = tS.length;
+                    for (var i = 0; i < length; i++) {
+                        var bFind = false;
+                        //循环是否能找到对应的年份
+                        var aryLength = aryTmp.length;
+                        for (var j = 0; j < aryLength; j++) {
+                            if (aryTmp[j]['时间'] == trim(tS[i].IDTM)) {
+                                aryTmp[j]['最大含沙量'] = ZeroToNull(trim(tS[i].MAXS));
+                                aryTmp[j]['最小含沙量'] = ZeroToNull(trim(tS[i].MINS));
+                                bFind = true;
+                                break;
+                            }
+                        }
+
+                        if (bFind == false) {
+                            var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tS[i].IDTM), 最大含沙量: ZeroToNull(trim(tS[i].MAXS)), 最小含沙量: ZeroToNull(trim(tS[i].MINS)) };
+                            aryTmp.push(objTmp);
+                        }
+                    }
+
+                    //径流量
+                    length = tJLL.length;
+                    for (var i = 0; i < length; i++) {
+                        var bFind = false;
+                        //循环是否能找到对应的年份
+                        var aryLength = aryTmp.length;
+                        for (var j = 0; j < aryLength; j++) {
+                            if (aryTmp[j]['时间'] == trim(tJLL[i].IDTM)) {
+                                aryTmp[j]['径流量'] = ZeroToNull(trim(tJLL[i].ACCJL));
+                                bFind = true;
+                                break;
+                            }
+                        }
+
+                        if (bFind == false) {
+                            var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tJLL[i].IDTM), 径流量: ZeroToNull(trim(tJLL[i].ACCJL)) };
+                            aryTmp.push(objTmp);
+                        }
+                    }
+
+                    //输沙量
+                    length = tSSL.length;
+                    for (var i = 0; i < length; i++) {
+                        var bFind = false;
+                        //循环是否能找到对应的年份
+                        var aryLength = aryTmp.length;
+                        for (var j = 0; j < aryLength; j++) {
+                            if (aryTmp[j]['时间'] == trim(tSSL[i].IDTM)) {
+                                aryTmp[j]['输沙量'] = ZeroToNull(trim(tSSL[i].STW));
+                                bFind = true;
+                                break;
+                            }
+                        }
+
+                        if (bFind == false) {
+                            var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tSSL[i].IDTM), 输沙量: ZeroToNull(trim(tSSL[i].STW)) };
+                            aryTmp.push(objTmp);
+                        }
+                    }
+
+                    //降水量
+                    length = tJSL.length;
+                    for (var i = 0; i < length; i++) {
+                        var bFind = false;
+                        //循环是否能找到对应的年份
+                        var aryLength = aryTmp.length;
+                        for (var j = 0; j < aryLength; j++) {
+                            if (aryTmp[j]['时间'] == trim(tJSL[i].IDTM)) {
+                                aryTmp[j]['降水量'] = ZeroToNull(trim(tJSL[i].ACCP));
+                                bFind = true;
+                                break;
+                            }
+                        }
+
+                        if (bFind == false) {
+                            var objTmp = { stcd: stcd, 站点: stnm, 时间: trim(tJSL[i].IDTM), 降水量: ZeroToNull(trim(tJSL[i].ACCP)) };
+                            aryTmp.push(objTmp);
+                        }
+                    }
+
+                    InitJSGrid(aryTmp);
+                }
+            });
+
+            
+         }
+        function trim(val) {
+            if (val != null && val != "" && val != undefined)
+                return val.toString().replace(/(^\s*)|(\s*$)/g, "");
+          
+        }
+        function ZeroToNull(sValue)
+        {
+            if(sValue == "0")
+            {
+                return "";
+            }
+            else
+            {
+                return sValue
+            }
+        }
+
+        function InitJSGrid(data)
+        {
+         
+            //$('#dgGrid').datagrid({
+            //    singleSelect: true,
+            //    collapsible: true,
+            //    striped: true,
+            //    rownumbers: true,
+            //    pagination: true,
+            //    pagePosition: 'bottom',
+            //    pageSize: 20,
+            //    //url: '/RealData/River/GetRiverData',
+            //    //queryParams: { 'stcds': stcds, 'startDate': $("#sdate").val(), 'endDate': $("#edate").val() },
+            //     //data: data,
+              
+            //    //loadMsg: '数据加载中,请稍后……',
+            //    columns: [[
+            //        { field: "stcd", title: "stcd", hidden: true, align: 'center' },
+            //        { field: "站点", title: "text", width: "auto", hidden: true, align: 'center'},
+            //        { field: "时间", title: "时间", width: "16%", align: 'center'},
+            //        { field: "最高水位", title: "最高水位", width: "14%", align: 'center' },
+            //        { field: "最低水位", title: "最低水位", width: "auto", hidden: true, align: 'center' },
+            //        { field: "平均水位", title: "平均水位", width: "auto", hidden: true, align: 'center'},
+            //        { field: "最大流量", title: "最大流量", width: "14%", align: 'center'},
+            //        { field: "最小流量", title: "最小流量", width: "auto", hidden: true, align: 'center'},
+            //        { field: "平均流量", title: "平均流量", width: "auto", hidden: true, align: 'center'},
+            //        { field: "最大含沙量", title: "最大含沙量", width: "14%", align: 'center'},
+            //        { field: "最小含沙量", title: "最小含沙量", width: "auto", hidden: true, align: 'center' },
+            //        { field: "径流量", title: "径流量", width: "14%", align: 'center'},
+            //        { field: "输沙量", title: "输沙量", width: "14%", align: 'center'},
+            //        { field: "降水量", title: "降水量", width: "14%", align: 'center'}
+
+            //     ]],
+            //    onLoadSuccess: function () {
+                   
+            //    }
+            //});
+            $('#dgGrid').datagrid({ loadFilter: pagerFilter }).datagrid('loadData', data);
+        }
+        //分页data
+        function pagerFilter(data) {
+            if (typeof data.length == 'number' && typeof data.splice == 'function') {    // 判断数据是否是数组
+                data = {
+                    total: data.length,
+                    rows: data
+                }
+            }
+            var dg = $(this);
+            var opts = dg.datagrid('options');
+            var pager = dg.datagrid('getPager');
+            pager.pagination({
+                onSelectPage: function (pageNum, pageSize) {
+                    opts.pageNumber = pageNum;
+                    opts.pageSize = pageSize;
+                    pager.pagination('refresh', {
+                        pageNumber: pageNum,
+                        pageSize: pageSize
+                    });
+                    dg.datagrid('loadData', data);
+                }
+            });
+            if (!data.originalRows) {
+                data.originalRows = (data.rows);
+            }
+            var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+            var end = start + parseInt(opts.pageSize);
+            data.rows = (data.originalRows.slice(start, end));
+            return data;
+        }
+    </script>
+}
+
+

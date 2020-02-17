@@ -1,0 +1,675 @@
+﻿
+@{
+    ViewData["Title"] = "LFMapsIndex";
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>二维窗口</title>
+    <link rel="stylesheet" href="~/lib/leaflet1.5.1/leaflet.css" type="text/css" />
+    <link rel="stylesheet" href="~/lib/leaflet-plug/markercluster-1.4.1/dist/MarkerCluster.css" type="text/css" />
+    <link rel="stylesheet" href="~/lib/leaflet-plug/markercluster-1.4.1/dist/MarkerCluster.Default.css" type="text/css" />
+
+    <style>
+        .leaflet-label {
+            /*background-color:rgba(0, 0, 0, 0.6);*/
+            background-color: #3399CC;
+            background-clip: padding-box;
+            color: #fff;
+            display: block;
+            font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            padding: 1px 3px;
+            position: absolute;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 6;
+        }
+
+        .myclusterA {
+            background-color: greenyellow;
+            text-align: left;
+            font-size: 10px;
+            writing-mode: unset;
+        }
+
+        .myclusterB {
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            text-align: center;
+            font-size: 24px;
+        }
+    </style>
+
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery-1.10.2.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/leaflet1.5.1/leaflet.js"></script>
+    <script type="text/javascript" src="~/lib/leaflet-plug/ChineseTmsProviders-master/src/leaflet.ChineseTmsProviders.js"></script>
+    <script type="text/javascript" src="~/lib/leaflet-plug/markercluster-1.4.1/dist/leaflet.markercluster-src.js"></script>
+
+    <script type="text/javascript" src="~/lib/turf5.1.6/turf.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/kriging.js-master/kriging.js"></script>
+    <script type="text/javascript" src="~/lib/tfjs/tfjs.js"></script>
+</head>
+<body>
+    <div id="map" style="width:100%;height:95%;"></div>
+    <input id="Button1" type="button" value="清空图层" onclick="onClickBtnClearLayers();" />
+    <input id="Button1" type="button" value="标注聚合" onclick="onClickBtnCluster();" />
+    <input id="Button1" type="button" value="创建标注" onclick="onClickBtnCreateMark();" />
+    <input id="Button1" type="button" value="泰森多边形" onclick="onClickBtnVoronoi();" />
+    <input id="Button1" type="button" value="生成等值线" onclick="onClickBtnIsolines();" />
+    <input id="Button1" type="button" value="实际值显示隐藏" onclick="onClickBtnMarker1();" />
+    <input id="Button1" type="button" value="插值显示隐藏" onclick="onClickBtnMarker2();" />
+</body>
+<script type="text/javascript">
+    var params = {
+        canvasAlpha: 0.75,//canvas图层透明度
+        colors: ["#006837", "#1a9850", "#66bd63", "#a6d96a", "#d9ef8b", "#ffffbf",
+            "#fee08b", "#fdae61", "#f46d43", "#d73027", "#a50026"]
+    };
+
+    var normalm = L.tileLayer.chinaProvider('TianDiTu.Normal.Map', {
+        name:'basemap',
+        maxZoom: 18,
+        minZoom: 5
+    }),
+        normala = L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion', {
+            name: 'basemap',
+            maxZoom: 18,
+            minZoom: 5
+        }),
+        imgm = L.tileLayer.chinaProvider('TianDiTu.Satellite.Map', {
+            name: 'basemap',
+            maxZoom: 18,
+            minZoom: 5
+        }),
+        imga = L.tileLayer.chinaProvider('TianDiTu.Satellite.Annotion', {
+            name: 'basemap',
+            maxZoom: 18,
+            minZoom: 5
+        });
+
+    var normal = L.layerGroup([normalm, normala]),
+        image = L.layerGroup([imgm, imga]);
+
+    var baseLayers = {
+        "地图": normal,
+        "影像": image,
+    }
+
+    var overlayLayers = {
+
+    }
+
+    var map = L.map("map", {
+        center: [34.76626768096, 113.65113410245],
+        zoom: 6,
+        layers: [normal],
+        zoomControl: false
+    });
+
+    L.control.layers(baseLayers, overlayLayers).addTo(map);
+    L.control.zoom({
+        zoomInTitle: '放大',
+        zoomOutTitle: '缩小'
+    }).addTo(map);
+
+
+
+    //var markers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: false });
+    var markers = createMarkerClusterGroup('myclusterA');
+    var markersList = [];
+
+    function createMarkerClusterGroup(className, pane) {
+        var options = {
+            maxClusterRadius: 120,
+            iconCreateFunction: function (cluster) {
+                var markers = cluster.getAllChildMarkers();
+                var n = 0;
+                for (var i = 0; i < markers.length; i++) {
+                    n += markers[i].number;
+                }
+                //var m = new L.Marker();
+                //m.bindTooltip(markers[0]._tooltip._content, { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+                //return m;
+                //return L.divIcon({ html: markers[0]._tooltip._content, className: className});
+                return L.divIcon({ html: markers[0]._tooltip._content, className: className, iconSize: L.point(120, 60) });
+                //var m = L.divIcon({});
+                //m.bindTooltip(markers[0]._tooltip._content, { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+                //return m;
+            },
+            //Disable all of the defaults & specify the pane:
+            spiderfyOnMaxZoom: false,
+            showCoverageOnHover: true,
+            zoomToBoundsOnClick: false
+        };
+        if (pane) {
+            options.clusterPane = pane;
+        }
+        var mcg = L.markerClusterGroup(options);
+        return (mcg);
+    }
+
+    //创建站点
+    //InitTree();
+
+    function InitTree() {
+        $.getJSON("/StationInfo/Details/GetStationList", { "stcds": "" }, reInitTree);
+    }
+
+
+    var g_stationData;
+    function reInitTree(data) {
+        g_stationData = data;
+        for (var i = 0; i < data.length; i++) {
+            var myIcon;
+            if (data[i].STTP == 'PP') {
+                myIcon = L.icon({
+                    iconUrl: getHomeUrl() + "/images/prm/rain1.png",
+                    tooltipAnchor: [20, 10]
+                });
+            }
+            else {
+                myIcon = L.icon({
+                    iconUrl: getHomeUrl() + "/images/prm/sw.png",
+                    tooltipAnchor: [8, 5]
+                });
+            }
+            var m = new L.Marker([data[i].LTTD, data[i].LGTD], { icon: myIcon });
+            m.number = 1;
+            m.bindTooltip(data[i].STNM + ':07-29 08:00<br />水位:806.494<br />流量:335', { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+            markersList.push(m);
+            markers.addLayer(m);
+        }
+    }
+
+    markers.on('clusterclick', function (a) {
+        //alert('cluster ' + a.layer.getAllChildMarkers().length);
+        a.layer.spiderfy();
+    });
+
+    markers.on('click', function (a) {
+        //alert('marker ' + a.layer);
+    });
+
+    //清空图层
+    function onClickBtnClearLayers() {
+        map.removeLayer(markers);
+    }
+
+    onClickBtnCluster();
+
+    //标注聚合
+    function onClickBtnCluster() {
+        //markers = new L.MarkerClusterGroup({ spiderfyOnMaxZoom: false, showCoverageOnHover: true, zoomToBoundsOnClick: false });
+        //markersList = [];
+        InitTree();
+        g_layerCluster = map.addLayer(markers);
+    }
+
+    //创建标注
+    function onClickBtnCreateMark() {
+        $.getJSON("/StationInfo/Details/GetStationList", { "stcds": "" }, reOnClickBtnCreateMark);
+    }
+
+    function reOnClickBtnCreateMark(data) {
+        for (var i = 0; i < data.length; i++) {
+            var myIcon;
+            if (data[i].STTP == 'PP') {
+                myIcon = L.icon({
+                    iconUrl: getHomeUrl() + "/images/prm/rain1.png",
+                    tooltipAnchor: [20, 10]
+                });
+            }
+            else {
+                myIcon = L.icon({
+                    iconUrl: getHomeUrl() + "/images/prm/sw.png",
+                    tooltipAnchor: [8, 5]
+                });
+            }
+            var m = new L.Marker([data[i].LTTD, data[i].LGTD], { icon: myIcon });
+            m.bindTooltip(data[i].STNM, { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+            m.addTo(map);
+        }
+    }
+
+    //泰森多边形
+    function onClickBtnVoronoi() {
+        $.getJSON("/Home/LoadZYJBoundary", {}, reOnClickBtnVoronoi);
+    }
+
+    function reOnClickBtnVoronoi(d) {
+        var corAry = d.features[0].geometry.coordinates;
+        var latlngs = new Array();
+        for (var i = 0; i < corAry.length; i++) {
+            latlngs.push([corAry[i][1], corAry[i][0]]);
+        }
+        var polygon = L.polygon(latlngs, { color: 'red', fillOpacity:0}).addTo(map);
+        map.fitBounds(polygon.getBounds());
+
+        var polygon = turf.lineString(corAry);
+        var bbox = turf.bbox(polygon);
+
+        var ptAry = new Array();
+        for (var i = 0; i < g_stationData.length;i++) {
+            if (g_stationData[i].STTP == 'PP') {
+                var pt = turf.point([g_stationData[i].LGTD, g_stationData[i].LTTD]);
+                var myIcon = L.icon({
+                    iconUrl: getHomeUrl() + "/images/prm/rain1.png",
+                    tooltipAnchor: [20, 10]
+                });
+                L.marker([g_stationData[i].LTTD, g_stationData[i].LGTD], { icon: myIcon }).addTo(map);
+                ptAry.push(pt);
+            }
+
+            if (ptAry.length > 670) {
+                break;
+            }
+        }
+
+        var ptCollection = turf.featureCollection(ptAry);
+        var options = {
+            bbox: bbox
+        };
+        //var points = turf.randomPoint(100, options);
+        var voronoiPolygons = turf.voronoi(ptCollection, options);
+
+        var polygonBorder = turf.polygon([corAry]);
+        for (var i = 0; i < voronoiPolygons.features.length; i++) {
+            if (voronoiPolygons.features[i] == null) {
+                continue;
+            }
+            var coordAry = voronoiPolygons.features[i].geometry.coordinates[0];
+            var polygonTmp = turf.polygon([coordAry]);
+            var intersection = turf.intersect(polygonBorder, polygonTmp);
+            var coorTmp = intersection.geometry.coordinates[0];
+            var ptsTmp = new Array();
+            for (var j = 0; j < coorTmp.length; j++) {
+                ptsTmp.push([coorTmp[j][1], coorTmp[j][0]]);
+            }
+            L.polygon(ptsTmp).addTo(map);
+
+            if (i > 5) {
+                break;
+            }
+        }
+    }
+
+    var g_interModel;
+    var g_xMoments;
+    //插值模型
+    async function interModel(xAry, yAry) {
+        var xTensor = tf.tensor(xAry);
+        var yTensor = tf.tensor(yAry);
+        g_xMoments = tf.moments(xTensor, 0);
+        xTensor = tf.sub(xTensor, g_xMoments.mean);
+        xTensor = tf.div(xTensor, g_xMoments.variance.sqrt());
+        const input = tf.input({ shape: [2] });
+        const denseLayer1 = tf.layers.dense({ units: 2, activation: 'relu' });
+        const denseLayer2 = tf.layers.dense({ units: 5, activation: 'relu' });
+        const denseLayer3 = tf.layers.dense({ units: 8, activation: 'relu' });
+        const denseLayer4 = tf.layers.dense({ units: 1, activation: 'sigmoid' });
+        const output = denseLayer4.apply(denseLayer3.apply(denseLayer2.apply(denseLayer1.apply(input))));
+        g_interModel = tf.model({ inputs: input, outputs: output });
+        g_interModel.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+        await g_interModel.fit(xTensor, yTensor, { batchSize: 32, epochs: 300 });
+    }
+
+    function onClickBtnMarker1() {
+        g_layer1 = L.layerGroup(g_marker1Ary);
+        map.addLayer(g_layer1);
+    }
+
+    function onClickBtnMarker2() {
+        g_layer2 = L.layerGroup(g_marker2Ary);
+        map.addLayer(g_layer2);
+    }
+
+    var g_marker1Ary = new Array();
+    var g_marker2Ary = new Array();
+    var g_layer1;
+    var g_layer2;
+
+    function drawIsoline2(d) {
+        var cordAry = d.features[0].geometry.coordinates;
+        var latlngs = new Array();
+        for (var i = 0; i < cordAry.length; i++) {
+            latlngs.push([cordAry[i][1], cordAry[i][0]]);
+        }
+        var polygon = L.polygon(latlngs, { color: 'red', fillOpacity: 0 }).addTo(map);
+        map.fitBounds(polygon.getBounds());
+        var polygon = turf.lineString(cordAry);
+
+        var bbox = turf.bbox(polygon);  //边界的外包矩形
+
+        var boxPolygon = turf.bboxPolygon(bbox);
+        var latlngs2 = new Array();
+        for (var i = 0; i < boxPolygon.geometry.coordinates[0].length; i++) {
+            latlngs2.push([boxPolygon.geometry.coordinates[0][i][1], boxPolygon.geometry.coordinates[0][i][0]]);
+        }
+        var polygon = L.polygon(latlngs2, { color: 'blue', fillOpacity: 0 }).addTo(map);
+
+        //离散点进行克里金插值
+        //克里金算法需要的数据和参数设置
+        var k_t = new Array();
+        var k_x = new Array();
+        var k_y = new Array();
+        var k_model = "exponential";
+        var k_sigma2 = 0;
+        var k_alpha = 100;
+
+        //随机点
+        var points = turf.randomPoint(25, { bbox: bbox })
+        var featureAry = points.features;
+        for (let i = 0; i < featureAry.length; i++) {
+            var sValue = Math.random() * 100;
+            k_x.push(featureAry[i].geometry.coordinates[0]);
+            k_y.push(featureAry[i].geometry.coordinates[1]);
+            k_t.push(sValue);
+
+            var myIcon = L.icon({
+                iconUrl: getHomeUrl() + "/images/prm/rain1.png",
+                tooltipAnchor: [20, 10]
+            });
+            var m = L.marker([featureAry[i].geometry.coordinates[1], featureAry[i].geometry.coordinates[0]], { icon: myIcon });
+            m.bindTooltip(sValue.toString(), { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+            m.addTo(map);
+        }
+
+        var variogram = kriging.train(k_t, k_x, k_y, k_model, k_sigma2, k_alpha);
+
+        var polygons = [];
+        polygons.push([[bbox[0], bbox[1]], [bbox[0], bbox[3]],
+            [bbox[2], bbox[3]], [bbox[2], bbox[1]]]);
+        var grid = kriging.grid(polygons, variogram, (bbox[2] - bbox[0]) / 200);
+
+        //var corner1 = L.latLng(bbox[1], bbox[0]);
+        //var corner2 = L.latLng(bbox[3], bbox[2]);
+        //var bounds = L.latLngBounds(corner1, corner2);
+        ////var bounds = L.latLngBounds(latlngs2)
+        //var CanvasLayer = new L.GridLayer({
+        //    opacity: params.canvasAlpha
+        //});
+        //CanvasLayer.createTile = function (coords) {
+        //    // create a <canvas> element for drawing
+        //    var tile = L.DomUtil.create('canvas', 'leaflet-tile');
+        //    // setup tile width and height according to the options
+        //    var size = this.getTileSize();
+        //    //tile.width = 2046;
+        //    //tile.height = 1768;
+        //    tile.width = size.x;
+        //    tile.height = size.y;
+        //    // get a canvas context and draw something on it using coords.x, coords.y and coords.z
+        //    var ctx = tile.getContext('2d');
+        //    kriging.plot(tile, grid,
+        //        [bbox[0], bbox[2]], [bbox[1], bbox[3]], params.colors);
+        //    return tile;
+        //};
+
+        //CanvasLayer.addTo(map);
+
+        //绘制等值线
+        var cellWidth = 50;
+        var pointGrid = turf.pointGrid(bbox, cellWidth, { units: 'kilometers' });
+        for (var i = 0; i < pointGrid.features.length; i++) {
+            pointGrid.features[i].properties.temperature = kriging.predict(pointGrid.features[i].geometry.coordinates[0], pointGrid.features[i].geometry.coordinates[1], variogram);
+        }
+
+        var breaks = [10, 20, 30, 40, 50, 60, 70, 80, 90];
+        var lines = turf.isolines(pointGrid, breaks, { zProperty: 'temperature' });
+
+        for (var i = 0; i < lines.features.length;i++) {
+            var coodAry = lines.features[i].geometry.coordinates;
+            if (coodAry.length == 0) {
+                continue;
+            }
+            for (var j = 0; j < coodAry.length; j++) {
+                //var line = turf.lineString(coodAry[j]);
+                //var curved = turf.bezierSpline(line, { sharpness:0 });
+                latlngs = new Array();
+                for (var k = 0; k < coodAry[j].length; k++) {
+                    latlngs.push([coodAry[j][k][1], coodAry[j][k][0]]);
+                }
+                //for (var k = 0; k < curved.geometry.coordinates.length; k++) {
+                //    latlngs.push([curved.geometry.coordinates[k][1], curved.geometry.coordinates[k][0]]);
+                //}
+                var polyline = L.polyline(latlngs, { color: 'black' }).addTo(map);
+            }
+        }
+    }
+
+    async function drawIsoline(d) {
+        var corAry = d.features[0].geometry.coordinates;
+        var latlngs = new Array();
+        for (var i = 0; i < corAry.length; i++) {
+            latlngs.push([corAry[i][1], corAry[i][0]]);
+        }
+        //var polygon = L.polygon(latlngs, { color: 'red', fillOpacity: 0 }).addTo(map);
+        //map.fitBounds(polygon.getBounds());
+        var polygon = turf.lineString(corAry);
+        var bbox = turf.bbox(polygon);  //边界的外包矩形
+
+        var boxPolygon = turf.bboxPolygon(bbox);
+        latlngs = new Array();
+        for (var i = 0; i < boxPolygon.geometry.coordinates[0].length; i++) {
+            latlngs.push([boxPolygon.geometry.coordinates[0][i][1], boxPolygon.geometry.coordinates[0][i][0]]);
+        }
+        var polygon = L.polygon(latlngs, { color: 'blue', fillOpacity: 0 }).addTo(map);
+
+        var xAry = new Array();
+        var yAry = new Array();
+        for (var i = 0; i < g_stationData.length; i++) {
+            xAry.push([g_stationData[i].LGTD, g_stationData[i].LTTD]);
+            var sValue = Math.random();
+            yAry.push([sValue]);
+
+            var m = L.marker([g_stationData[i].LTTD, g_stationData[i].LGTD]);
+            m.bindTooltip((sValue * 100).toString(), { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+            g_marker1Ary.push(m);
+            //m.addTo(map);
+            if (i > 660) {
+                break;
+            }
+        }
+
+        //离散点进行克里金插值
+        //克里金算法需要的数据和参数设置
+        var k_t = new Array();
+        var k_x = new Array();
+        var k_y = new Array();
+        var k_model = "exponential";
+        var k_sigma2 = 0;
+        var k_alpha = 100;
+
+        var valAry = new Array();
+        for (var i = 0; i < g_stationData.length; i++) {
+            if (g_stationData[i].STTP == 'PP') {
+                var sValue = Math.random() * 100;
+                valAry.push([sValue]);
+                k_t.push(Math.round(sValue));
+                k_x.push(g_stationData[i].LGTD);
+                k_y.push(g_stationData[i].LTTD);
+            }
+
+            if (i > 670) {
+                break;
+            }
+        }
+
+        var momentsTensor = tf.moments(tf.tensor(valAry), 0);
+        var meanTensor = momentsTensor.mean;
+        var varianceTensor = momentsTensor.variance;
+
+        //k_alpha = meanTensor.dataSync()[0];
+        //k_sigma2 = varianceTensor.dataSync()[0];
+        //debugger;
+        //k_t = [46, 85, 77, 37, 81, 40, 66, 88, 24, 73];
+        //k_x = [114.35646340954712, 114.35811827850564, 114.36039914871559, 114.36243503996123, 114.36461414305171, 114.36487052608567, 114.36496143201022, 114.36496664991363, 114.36505017931313, 114.36535608760322];
+        //k_y = [30.54030579015989, 30.541503179107597, 30.536875637897815, 30.5414746852374, 30.53800317854195, 30.538510939068942, 30.53426873325191, 30.5400530694138, 30.536296462600998, 30.54285868603915];
+        //https://codepen.io/jianxunrao/pen/oadBPq?editors=0001
+        debugger;
+        var variogram = kriging.train(k_t, k_x, k_y, k_model, k_sigma2, k_alpha);
+
+        var polygons = [];
+        //polygons.push([[114.355456, 30.533622], [114.355456, 30.543622], [114.365456, 30.543622], [114.365456, 30.533622]]);
+        //polygons.push([[112.567459, 40.576902], [112.567459, 40.586902], [112.577459, 40.586902], [112.577459, 40.576902]]);
+        polygons.push([[bbox[0], bbox[1]], [bbox[0], bbox[3]],[bbox[2], bbox[3]], [bbox[2], bbox[1]]]);
+        var grid = kriging.grid(polygons, variogram, (bbox[2] - bbox[0]) / 200);
+        debugger;
+        var cellWidth = 100;
+        var pointGrid = turf.pointGrid(bbox, cellWidth, { units: 'kilometers' });
+
+        for (var i = 0; i < pointGrid.features.length; i++) {
+            var tpredicted = kriging.predict(pointGrid.features[i].geometry.coordinates[0], pointGrid.features[i].geometry.coordinates[1], variogram);
+            pointGrid.features[i].properties.temperature = Math.random() * 100;
+            //L.marker([pointGrid.features[i].geometry.coordinates[1], pointGrid.features[i].geometry.coordinates[0]]).addTo(map);
+        }
+
+        var breaks = [10, 30, 50, 70, 90];
+
+        var lines = turf.isolines(pointGrid, breaks, { zProperty: 'temperature' });
+        debugger;
+
+        //await interModel(xAry, yAry);
+
+        //var cellWidth = 50;
+        //var pointGrid = turf.pointGrid(bbox, cellWidth, { units: 'kilometers' });
+
+        //for (var i = 0; i < pointGrid.features.length; i++) {
+        //    var xTensor = tf.tensor([[pointGrid.features[i].geometry.coordinates[0], pointGrid.features[i].geometry.coordinates[1]]]);
+        //    xTensor = tf.sub(xTensor, g_xMoments.mean);
+        //    xTensor = tf.div(xTensor, g_xMoments.variance.sqrt());
+        //    var tpredicted = g_interModel.predict(xTensor).dataSync()[0];
+        //    pointGrid.features[i].properties.temperature = tpredicted * 100;
+        //    var m = L.marker([pointGrid.features[i].geometry.coordinates[1], pointGrid.features[i].geometry.coordinates[0]]);
+        //    m.bindTooltip((tpredicted * 100).toString(), { permanent: true, direction: 'right', className: 'leaflet-label' }).openTooltip();
+        //    g_marker2Ary.push(m);
+        //    //m.addTo(map);
+        //}
+
+        //var breaks = [10,20,30,40,50,60,70,80,90];
+
+        //var lines = turf.isolines(pointGrid, breaks, { zProperty: 'temperature' });
+
+        //for (var i = 0; i < lines.features.length;i++) {
+        //    var coodAry = lines.features[i].geometry.coordinates;
+        //    if (coodAry.length == 0) {
+        //        continue;
+        //    }
+        //    for (var j = 0; j < coodAry.length; j++) {
+        //        latlngs = new Array();
+        //        for (var k = 0; k < coodAry[j].length; k++) {
+        //            latlngs.push([coodAry[j][k][1], coodAry[j][k][0]]);
+        //        }
+        //        var polyline = L.polyline(latlngs, { color: 'red' }).addTo(map);
+        //    }
+        //}
+    }
+
+    //生成等值线
+    function onClickBtnIsolines() {
+        $.getJSON("/Home/LoadZYJBoundary", {}, reOnClickBtnIsolines);
+    }
+
+    function reOnClickBtnIsolines(d) {
+        drawIsoline2(d);
+        //离散点进行克里金插值
+        //克里金算法需要的数据和参数设置
+        //var k_t = new Array();
+        //var k_x = new Array();
+        //var k_y = new Array();
+        //var k_model = "exponential";
+        //var k_sigma2 = 0;
+        //var k_alpha = 100;
+        //for (var i = 0; i < g_stationData.length; i++) {
+        //        if (g_stationData[i].STTP == 'PP') {
+        //            k_t.push(Math.random() * 100);
+        //            k_x.push(g_stationData[i].LGTD);
+        //            k_y.push(g_stationData[i].LTTD);
+        //    }
+
+        //    if (i > 670) {
+        //        break;
+        //    }
+        //}
+        //var variogram = kriging.train(k_t, k_y, k_x, k_model, k_sigma2, k_alpha);
+
+        //var polygons = [];
+        //polygons.push([[bbox[0], bbox[1]], [bbox[0], bbox[3]],[bbox[2], bbox[3]], [bbox[2], bbox[1]]]);
+        //var grid = kriging.grid(polygons, variogram, (bbox[2] - bbox[0]) / 20);
+        //debugger;
+        //var cellWidth = 100;
+        //var pointGrid = turf.pointGrid(bbox, cellWidth, { units: 'kilometers' });
+
+        //for (var i = 0; i < pointGrid.features.length; i++) {
+        //    var tpredicted = kriging.predict(pointGrid.features[i].geometry.coordinates[0], pointGrid.features[i].geometry.coordinates[1], variogram);
+        //    pointGrid.features[i].properties.temperature = Math.random() * 100;
+        //    //L.marker([pointGrid.features[i].geometry.coordinates[1], pointGrid.features[i].geometry.coordinates[0]]).addTo(map);
+        //}
+
+        //var breaks = [10, 30, 50, 70, 90];
+
+        //var lines = turf.isolines(pointGrid, breaks, { zProperty: 'temperature' });
+
+        //debugger;
+        //var ptAry = new Array();
+        //for (var i = 0; i < g_stationData.length; i++) {
+        //    if (g_stationData[i].STTP == 'PP') {
+        //        var pt = turf.point([g_stationData[i].LGTD, g_stationData[i].LTTD]);
+
+        //        var myIcon = L.icon({
+        //            iconUrl: getHomeUrl() + "/images/prm/rain1.png",
+        //            tooltipAnchor: [20, 10]
+        //        });
+        //        L.marker([g_stationData[i].LTTD, g_stationData[i].LGTD], { icon: myIcon }).addTo(map);
+
+        //        ptAry.push(pt);
+        //    }
+
+        //    if (ptAry.length > 100) {
+        //        break;
+        //    }
+        //}
+
+        //var ptCollection = turf.featureCollection(ptAry);
+        //for (var i = 0; i < ptCollection.features.length; i++) {
+        //    ptCollection.features[i].properties.temperature = Math.random() * 10;
+        //}
+
+        //var breaks = [1, 3,  5,  7,  9];
+
+        //var lines = turf.isolines(ptCollection, breaks, { zProperty: 'temperature' });
+
+        //var extent = [0, 30, 20, 50];
+        //var cellWidth = 100;
+        //var pointGrid = turf.pointGrid(extent, cellWidth, { units: 'miles' });
+
+        //for (var i = 0; i < pointGrid.features.length; i++) {
+        //    pointGrid.features[i].properties.temperature = Math.random() * 10;
+        //}
+        //var breaks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        //var lines = turf.isolines(pointGrid, breaks, { zProperty: 'temperature' });
+        
+
+    }
+
+    function getHomeUrl() {
+        var strFullPath = window.document.location.href;
+        var strPath = window.document.location.pathname;
+        var pos = strFullPath.indexOf(strPath);
+        var prePath = strFullPath.substring(0, pos);
+        var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+
+        return prePath;
+    }
+</script>
+</html>
+

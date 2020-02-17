@@ -1,0 +1,42 @@
+2019-09-02 16:51:52,229 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/  
+2019-09-02 16:51:52,336 [10] INFO  - Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationHandler
+ Cookies was not authenticated. Failure message: Unprotect ticket failed
+2019-09-02 16:51:52,626 [10] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-09-02 16:51:52,643 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Login", controller = "Access"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller EWF.Application.Web.Controllers.AccessController (EWF.Application.Web).
+2019-09-02 16:51:52,802 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) - Validation state: Valid
+2019-09-02 16:52:09,566 [10] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor
+ Executing ObjectResult, writing value of type 'EWF.Util.JsonErrorResponse'.
+2019-09-02 16:52:09,995 [10] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) in 17350.0634ms
+2019-09-02 16:52:09,996 [10] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-09-02 16:52:10,000 [10] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 17774.6238ms 500 application/json; charset=utf-8
+2019-09-02 16:52:10,534 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/favicon.ico  
+2019-09-02 16:52:10,602 [11] INFO  - Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware
+ Sending file. Request path: '/favicon.ico'. Physical path: 'D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\wwwroot\favicon.ico'
+2019-09-02 16:52:10,603 [11] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 69.3189ms 200 image/x-icon
+2019-09-02 16:52:28,022 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/  
+2019-09-02 16:52:28,023 [6] INFO  - Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationHandler
+ Cookies was not authenticated. Failure message: Unprotect ticket failed
+2019-09-02 16:52:28,023 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executing endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-09-02 16:52:28,024 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Route matched with {action = "Login", controller = "Access"}. Executing controller action with signature Microsoft.AspNetCore.Mvc.IActionResult Login() on controller EWF.Application.Web.Controllers.AccessController (EWF.Application.Web).
+2019-09-02 16:52:28,024 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executing action method EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) - Validation state: Valid
+2019-09-02 16:52:42,603 [6] INFO  - Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor
+ Executing ObjectResult, writing value of type 'EWF.Util.JsonErrorResponse'.
+2019-09-02 16:52:42,604 [6] INFO  - Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker
+ Executed action EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web) in 14580.7249ms
+2019-09-02 16:52:42,604 [6] INFO  - Microsoft.AspNetCore.Routing.EndpointMiddleware
+ Executed endpoint 'EWF.Application.Web.Controllers.AccessController.Login (EWF.Application.Web)'
+2019-09-02 16:52:42,604 [6] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 14583.1356ms 500 application/json; charset=utf-8

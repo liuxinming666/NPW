@@ -1,0 +1,637 @@
+﻿@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewData["Title"] = "历史多站水情对比";
+	var sdate = System.DateTime.Now.AddDays(-15).ToString("yyyy-MM-dd HH:mm");
+	var edate = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+}
+
+@section CSS {
+	<style>
+		.panel-body {
+			font-size: 14px;
+		}
+
+		.panel-title {
+			font-size: 10px;
+			/*height:0;*/
+		}
+
+		.panel-header {
+			/*background-color: #DAE3E0;*/
+			/*background: #DAE3E0;*/
+			/*background:url("../../Content/images/panelheaderbg.png") repeat-x;*/
+			filter: "";
+		}
+
+		.panel-tool {
+			height: 26px;
+		}
+
+		.datagrid-row-alt {
+			background: #dce8f3;
+		}
+
+		.datagrid-row-selected {
+			background: #0081c2;
+		}
+
+
+		.datagrid-header .datagrid-cell span {
+			font-size: 14px;
+		}
+
+		.datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {
+			font-size: 14px;
+		}
+
+		.combobox-item, .combobox-group, .combobox-stick {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-prompt {
+			font-size: 14px;
+		}
+
+		.textbox .textbox-text {
+			font-size: 14px;
+		}
+
+		.tabs-title {
+			font-size: 14px;
+		}
+		.Wdate {
+		width:160px;}
+	</style>
+}
+
+@section Scripts {
+	<script src="~/js/core/HydgBuis.js"></script>
+	<script type="text/javascript">
+		var g_colorsAry = ['#f00', '#00f', '#B1BA0D'];
+		var g_dashStyleArray = ['Solid', 'ShortDash', 'ShortDot', 'Dot', 'LongDash', 'DashDot'];
+		var g_symbolArray = ['circle', 'square', 'diamond', 'triangle', 'triangle-down'];
+		var g_chartTilte = '';
+		var g_swCom = '';
+		var g_chart;
+		var year_fx, year_comparative;
+		var bZP, bQP, bSP;
+
+		window.onload = function () {
+			Highcharts.setOptions({
+				lang: {
+					contextButtonTitle: "图表导出菜单",
+					downloadJPEG: "下载JPEG图片",
+					downloadPDF: "下载PDF文件",
+					downloadPNG: "下载PNG文件",
+					downloadSVG: "下载SVG文件",
+					loading: "加载中",
+					noData: "没有数据",
+					printChart: "打印图表",
+					resetZoom: "恢复缩放",
+					resetZoomTitle: "恢复图表",
+					thousandsSep: ""
+				}
+			});
+
+			//初始化控件
+			bindAreaDataGrid();
+		}
+		function bindAreaDataGrid() {
+			$('#areastcd').combogrid({
+				panelWidth: 500,
+				multiple: true,
+				idField: 'CODE',
+				textField: 'KEYNAME',
+				url: "/RealData/River/GetStaByKeywords/",
+				queryParams: { "sttp": "'ZZ','ZQ'", "q": "" },
+				columns: [[
+					{ field: 'ck', checkbox: true },
+					{ field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+					{ field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+					{ field: 'TYPE', width: '30%', title: '站类', align: 'center', formatter: changesttp }
+
+				]],
+				onLoadSuccess: function (dd) {
+					$("#zqsType1").prop("disabled", false);
+					if ($('#areastcd').combogrid('getValues').length > 1) {
+						$("#zqsType1").prop("disabled", true);
+						$("#zqsType1").prop("checked", false);
+						$("#zqsType1").parent().css("color", "#E7EAED");
+					}
+					if ($('#areastcd').combogrid('getValues').length <= 0) {
+						$('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+					}
+					doSearch();
+				},
+				onSelect: function (dd) {
+					if ($('#areastcd').combogrid('getValues').length === 1) {
+						$("#zqsType1").prop("disabled", false);
+						$("#zqsType1").parent().css("color", "#333");
+					} else {
+						$("#zqsType1").prop("disabled", true);
+						$("#zqsType1").prop("checked", false);
+						$("#zqsType1").parent().css("color","#E7EAED");
+					}
+				},
+				onUnselect: function (dd) {
+					if ($('#areastcd').combogrid('getValues').length === 1) {
+						$("#zqsType1").prop("disabled", false);
+						$("#zqsType1").parent().css("color", "#333");
+					} else {
+						$("#zqsType1").prop("disabled", true);
+						$("#zqsType1").prop("checked", false);
+						$("#zqsType1").parent().css("color", "#E7EAED");
+					}
+				},
+
+			});
+		}
+		function doSearchSta(value, name) {
+			var ele = $("#areastcd");
+			var grid = ele.combogrid('grid');
+
+			$.getJSON("/RealData/River/GetStaByKeywords/", { "sttp": "'ZZ','ZQ'", "q": value }, function (jsondata) {
+				grid.datagrid("loadData", jsondata);
+			});
+		}
+
+		function doSearch() {
+			var arrSTCD = $('#areastcd').combogrid('getValues');
+			var arrSTNM = $('#areastcd').combogrid('getText').split(',');
+
+			var arr = [];
+			for (var i = 0; i < arrSTCD.length; i++) {
+				if ($.inArray(arrSTCD[i], arr) == -1) {
+					arr.push(arrSTCD[i]);
+				}
+			}
+			arrSTCD = arr;
+
+			var stcds = arrSTCD.join(",");
+			var sdate = $('#sdate').val();
+			var edate = $('#edate').val();
+
+			bZP = $("#zqsType1").prop("checked");
+			bQP = $("#zqsType2").prop("checked");
+			bSP = $("#zqsType3").prop("checked");
+
+			g_chartTilte = $('#areastcd').combogrid('getText');
+			if (bQP === true) {
+				g_chartTilte = g_chartTilte + "流量、";
+			}
+			if (bSP === true) {
+				g_chartTilte = g_chartTilte + "含沙量、";
+			}
+			if (bZP === true) {
+				g_chartTilte = g_chartTilte + "水位、";
+				g_swCom = "水位(m)";
+			}
+			else {
+				g_swCom = "";
+			}
+			g_chartTilte = g_chartTilte.substring(0, g_chartTilte.length - 1) + "过程对照";
+
+			var para = {
+				stcds: stcds,
+				stime: sdate,
+				etime: edate,
+				bQP: bQP,
+				bSP: bSP,
+				bZP: bZP
+			};
+
+
+			com.ajax({
+				type: 'get',
+				url: "/HistoryInfo/River/GetMultiZQSData",
+				data: para,
+				success: function (result) {
+					if (!!result.state) {
+						if (result.state === "error") {
+							alert(result.message);
+							return;
+						}
+					}
+
+					var tt = {
+						QP: result.zqlist,
+						ZP: result.zqlist,
+						SP: result.slist,
+					};
+					reInitChart(tt, arrSTCD, arrSTNM);
+
+					//加载列表数据
+					initTable(result, result.zqlist, result.slist);
+
+				}
+			});
+		}
+
+		function initTable(rowsData, zqlist, slist) {
+			//整合水位、流量、含沙量
+			$.each(zqlist, function (index, item) {
+				
+				var sArray = $.grep(slist, function (n, i) {
+					if (item.STCD === n.STCD && item.TM === n.TM) {
+						return true;
+					} else {
+						return false;
+					}
+				}, false);
+				if (sArray.length > 0) {
+					item.S = sArray[0].S;
+				} else {
+					item.S = null;
+				}
+			});
+			
+			//计算径流量
+			$.each(rowsData.rows, function (index, item) {
+				var zqsArray = $.grep(zqlist, function (n, i) {
+					return item.STCD === n.STCD;
+				}, false);
+				
+
+				var resultObj = hydg.SedDscg(zqsArray);
+
+				item.WRNF = resultObj.r_RunOffValue;
+				item.STW = resultObj.r_SedDscg;
+			});
+			
+			var option = {
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: false,
+				data: rowsData,
+				columns: [[
+					{ field: 'STNM', title: '站点', width: '6%', align: 'center' },
+					{
+						field: 'STM', title: '开始时间', width: '8%', align: 'center',
+					},
+					{
+						field: 'ETM', title: '结束时间', width: '8%', align: 'center'
+					},
+					{ field: 'MAXZ', title: "最高水位", width: '8%', align: 'center' },
+					{ field: 'MAXZ_TM', title: "最高水位出现时间", width: '12%', align: 'center' },
+					{ field: 'MAXQ', title: "最大流量", width: '8%', align: 'center' },
+					{ field: 'MAXQ_TM', title: "最大流量出现时间", width: '12%', align: 'center' },
+					{ field: 'MAXS', title: "最大含沙量", width: '8%', align: 'center' },
+					{ field: 'MAXS_TM', title: "最大含沙量出现时间", width: '12%', align: 'center' },
+					{
+						field: 'WRNF', title: "径流量（百万m³）", width: '10%', align: 'center', formatter: function (value) {
+							if (!value)
+								return "";
+							if (parseFloat(value) > 0)
+								return value;
+							return "";
+						}
+					},
+					{
+						field: 'STW', title: "输沙量（万t）", width: '8%', align: 'center', formatter: function (value) {
+							if (!value)
+								return "";
+							if (parseFloat(value) > 0)
+								return value;
+							return "";
+						}
+					}
+				]]
+			};
+
+
+			$('#dgGrid').datagrid(option);
+		}
+
+		//初始化过程线
+		function reInitChart(result, stcdAry, stnmAry) {
+			g_stcdAry = stcdAry;
+			var dataQP = null;
+			var dataSP = null;
+			var dataZP = null;
+
+			if (!!bQP) {
+				dataQP = result.QP;
+			}
+			if (!!bSP) {
+				dataSP = result.SP;
+			}
+			if (!!bZP) {
+				dataZP = result.ZP
+			}
+
+			var serAry = new Array();   //数据数组
+			var length = stcdAry.length;
+			for (var i = 0; i < length; i++) {
+				var nLegendIndex = i;
+				//流量过程
+				if (dataQP != null && dataQP.length > 0) {
+					var qpTmpAry = new Array();     //流量过程数组
+					var scTmpAry = new Array();     //实测流量过程数组
+					for (var j = 0; j < dataQP.length; j++) {
+						if (stcdAry[i] != dataQP[j].STCD)    //一个站点一个站点的过滤
+						{
+							continue;
+						}
+						var dateObj = dataQP[j].TM;
+
+						var aryTmp = new Array();
+						aryTmp.push(com.ToUTC(dateObj));
+						aryTmp.push(Number(dataQP[j].Q));
+
+						if (dataQP[j].MSQMT === '2' || dataQP[j].MSQMT === '3' || dataQP[j].MSQMT === '5') {
+							var aryScTmp = new Array();
+							aryScTmp.push(com.ToUTC(dateObj));
+							aryScTmp.push(Number(dataQP[j].Q));
+
+							scTmpAry.push(aryScTmp);
+						}
+
+						qpTmpAry.push(aryTmp);
+					}
+					//当前站series数组
+					var objQData = {
+						name: stnmAry[i] + "-流量",
+						description: '流量',
+						type: 'line',
+						dashStyle: g_dashStyleArray[i],
+						data: qpTmpAry,
+						xAxis: 0,
+						yAxis: 0,
+						color: g_colorsAry[1],
+						legendIndex: nLegendIndex
+					};
+					serAry.push(objQData);
+
+
+					nLegendIndex = nLegendIndex + length;
+					var ptMarkerObj = { symbol: g_symbolArray[i], radius: 6 };
+					var objScData = {
+						name: stnmAry[i] + '-流量实测',
+						description: '流量实测',
+						type: 'scatter',
+						data: scTmpAry,
+						xAxis: 0,
+						yAxis: 0,
+						color: g_colorsAry[1],
+						marker: ptMarkerObj,
+						legendIndex: nLegendIndex
+					};
+
+					serAry.push(objScData);
+				}
+
+				//含沙量过程
+				if (dataSP != null && dataSP.length > 0) {
+					var spTmpAry = new Array();     //含沙量过程数组
+					for (var j = 0; j < dataSP.length; j++) {
+						if (stcdAry[i] != dataSP[j].STCD) {
+							continue;
+						}
+						var dateObj = dataSP[j].TM;
+
+						var aryTmp = new Array();
+						aryTmp.push(com.ToUTC(dateObj));
+						aryTmp.push(Number(dataSP[j].S));
+
+						spTmpAry.push(aryTmp);
+					}
+					//当前站series数组
+					nLegendIndex = nLegendIndex + length;
+
+					var ptMarkerObj = { enabled: true, symbol: 'triangle' };
+					var objSData = {
+						name: stnmAry[i] + '含沙量',
+						description: '含沙量',
+						type: 'line',
+						dashStyle: g_dashStyleArray[i],
+						data: spTmpAry,
+						xAxis: 0,
+						yAxis: 1,
+						color: g_colorsAry[2],
+						marker: ptMarkerObj,
+						legendIndex: nLegendIndex
+					};
+
+					serAry.push(objSData);
+				}
+
+				//水位过程
+				if (dataZP != null && dataZP.length > 0) {
+					var zpTmpAry = new Array();     //水位过程数组
+					for (var j = 0; j < dataZP.length; j++) {
+						if (stcdAry[i] != dataZP[j].STCD) {
+							continue;
+						}
+						var dateObj = dataZP[j].TM;
+
+						var aryTmp = new Array();
+						aryTmp.push(com.ToUTC(dateObj));
+						aryTmp.push(Number(dataZP[j].Z));
+
+						zpTmpAry.push(aryTmp);
+					}
+					//当前站series数组
+					nLegendIndex = nLegendIndex + length;
+					var ptMarkerObj = { enabled: true, symbol: 'triangle-down' };
+					var objZData = {
+						name: stnmAry[i] + '水位',
+						description: '水位',
+						type: 'line',
+						dashStyle: g_dashStyleArray[i],
+						data: zpTmpAry,
+						xAxis: 0,
+						yAxis: 2,
+						color: g_colorsAry[0],
+						marker: ptMarkerObj,
+						legendIndex: nLegendIndex
+					};
+					
+					serAry.push(objZData);
+				}
+			}
+
+			g_serAry = serAry;
+
+			SetChartData(serAry);
+		}
+
+		function SetChartData(serAry) {
+
+			var options = {
+				chart: {
+					zoomType: 'x',
+					width: document.body.clientWidth - 80,
+					height: document.body.clientHeight - 100
+				},
+				credits: {
+					enabled: false
+				},
+				title: {
+					text: g_chartTilte,
+					style: {
+						color: 'black'
+					}
+				},
+				legend: {
+					y: 20,
+					//verticalAlign: 'top',
+					itemWidth: 200,
+					width: g_stcdAry.length * 200,
+					itemStyle: {
+						fontWeight: 'normal'
+					}
+				},
+				plotOptions: {
+					line: {
+						marker: {
+							enabled: false
+						}
+					}
+				},
+				xAxis: {
+					type: 'datetime',
+					tickPixelInterval: 70,
+					title: {
+						align: 'low'
+					},
+					labels: {
+						formatter: function () {
+							return Highcharts.dateFormat('%m-%d %H', this.value);
+						}
+					}
+				},
+				yAxis: [
+					{
+						title: {
+							text: '流量(m³/s)',
+							style: { // 此处可设置样式
+								
+							}
+						}
+					},
+					{
+						title: {
+							text: '含沙量(kg/m³)'
+						},
+						opposite: true
+					},
+					{
+						title: {
+							text: g_swCom
+						},
+						opposite: true
+					}
+				],
+				tooltip: {
+					headerFormat: '<b>{series.name}</b><br />',
+					formatter: function () {
+						var x = Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x);
+						var y;
+						switch (this.series.options.description) {
+							case '流量':
+								y = this.y + ' m³/s';
+								return "<span style='border:0px solid'><b>流量</b><br />时间:" + x + "<br />流量:" + y + "</span>";
+								break;
+							case '流量测':
+								y = this.y + ' m³/s';
+								return "<span style='border:0px solid'><b>实测流量</b><br />时间:" + x + "<br />实测流量:" + y + "</span>";
+								break;
+							case '含沙量':
+								y = this.y + ' kg/m³';
+								return "<span style='border:0px solid'><b>含沙量</b><br />时间:" + x + "<br />含沙量:" + y + "</span>";
+								break;
+							case '水位':
+								y = this.y + ' m';
+								return "<span style='border:0px solid'><b>水位</b><br />时间:" + x + "<br />水位:" + y + "</span>";
+								break;
+							default:
+								return "<span style='border:0px solid'>" + " " + "</span>";
+								break;
+						}
+					}
+				},
+				series: serAry
+			};
+
+			g_chart = Highcharts.chart('divChart', options);
+		}
+	</script>
+
+	<script type="text/javascript">
+		window.onresize = function () {
+			$('#tab').tabs('resize', {
+				width: document.body.clientWidth,
+				height: document.body.clientHeight
+			});
+
+			if (g_chart != null) {
+				g_chart.setSize(
+					document.body.clientWidth - 20,
+					document.body.clientHeight - 80,
+					false
+				);
+			}
+
+		}
+		function LeftCollapse() {
+			$("#divChartContainer").width($(document).width() - 50);
+			ReflowChart();
+		}
+		function LeftExpand() {
+			$("#divChartContainer").width($(document).width() - 450);
+			ReflowChart();
+		}
+		function ReflowChart() {
+			var HChart = $("#divChart").highcharts();
+			HChart.reflow();
+		}
+	</script>
+}
+
+<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="height:45px">
+	<table style="height:100%;">
+		<tr>
+			<td>测站：</td>
+			<td>
+				<input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+				<div id="tb11">
+					<input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+				</div>
+			</td>
+			<td>分析时段:</td>
+			<td style="width:350px;">
+				<div class="date-select">
+					<input type="text" id="sdate" name="sdate" class="Wdate" value="@sdate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm'})" />-
+
+					<input type="text" id="edate" name="edate" class="Wdate" value="@edate" onclick="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm'})" />
+				</div>
+			</td>
+
+			<td>对比要素:</td>
+			<td>
+				<label for="zqsType1">
+					<input id="zqsType1" type="checkbox" class="easyui-checkbox" name="zqsType" value="Z" />水位
+				</label>
+				<label for="zqsType2">
+					<input id="zqsType2" type="checkbox" class="easyui-checkbox" name="zqsType" value="Q" checked="checked" />流量
+				</label>
+				<label for="zqsType3">
+					<input id="zqsType3" type="checkbox" class="easyui-checkbox" name="zqsType" value="S" />
+					含沙量
+				</label>
+			</td>
+			<td><a id="btnSearch" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="doSearch()">查询</a></td>
+			<td></td>
+			<td><a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'" >导出</a></td>
+		</tr>
+	</table>
+</div>
+
+<div id="divC" data-options="region:'center',split:true,border:false,title:''">
+	<div id="divChart">
+	</div>
+
+	<table id="dgGrid"></table>
+</div>

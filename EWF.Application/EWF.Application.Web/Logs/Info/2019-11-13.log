@@ -1,0 +1,4 @@
+2019-11-13 15:00:43,405 [4] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request starting HTTP/1.1 GET http://localhost:16287/lib/  
+2019-11-13 15:00:44,055 [4] INFO  - Microsoft.AspNetCore.Hosting.Internal.WebHost
+ Request finished in 609.9437ms 0 

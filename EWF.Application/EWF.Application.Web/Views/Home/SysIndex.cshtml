@@ -1,0 +1,1122 @@
+﻿@{
+    ViewData["Title"] = "SysIndex";    
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>基层局首页分块</title>
+    <link href="~/css/jcj_bjq/css/reset.css" rel="stylesheet" />
+    <link href="~/css/jcj_bjq/css/index_four.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/icon.css" />
+    @*<link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui.css" />*@
+    <link rel="stylesheet" type="text/css" href="~/lib/jquery-easyui-1.5.2/themes/bootstrap/easyui_bo.css" />
+
+    <style type="text/css">
+        .bo_add1 {
+            cursor: pointer;
+        }
+
+        #swzstcd, #videostcd1 {
+            position: absolute;
+            z-index: 1;
+            right: 1.5%;
+            top: 2.5%;
+        }
+
+            #videostcd1 .combo {
+                position: relative;
+                top: -6px;
+            }
+
+        .bo_tabs1 {
+            position: relative;
+        }
+
+        .bo_tabs2 {
+            position: relative;
+        }
+
+        .datagrid-htable {
+            /*width: 100%;*/
+        }
+
+        .combo-panel {
+            overflow-y: hidden;
+        }
+
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%
+        }
+
+        .table_card {
+            width: 100%;
+            margin: 0 auto;
+            margin-top: 0px
+        }
+
+            .table_card .tab {
+                height: 26px;
+                font-size: 14px;
+                border-bottom: 1px #e1e1e1 solid
+            }
+
+                .table_card .tab li {
+                    float: left;
+                    height: 26px;
+                    line-height: 26px;
+                    padding: 0 25px;
+                    margin-right: 0px;
+                    background: #f0f0f0;
+                    border-top: 1px #e1e1e1 solid;
+                    border-left: 1px #e1e1e1 solid;
+                    border-right: 1px #e1e1e1 solid;
+                }
+
+                    .table_card .tab li:hover {
+                        height: 20px;
+                        background: #fff;
+                        color: #333;
+                        cursor: pointer
+                    }
+
+            .table_card .activ {
+                height: 20px !important;
+                background: #fff !important;
+                color: #333
+            }
+
+            .table_card .tabCon {
+                background: #fff;
+                height: 100%;
+                width: 100%;
+                padding: 0px;
+                border-bottom: 1px #e1e1e1 solid;
+                border-left: 1px #e1e1e1 solid;
+                border-right: 1px #e1e1e1 solid;
+            }
+
+                .table_card .tabCon div {
+                    display: none
+                }
+
+                .table_card .tabCon .on {
+                    display: block
+                }
+    </style>
+
+</head>
+<body style="overflow:none;">
+    <ul class="if_con">
+        <li>
+            <div id="" class="easyui-tabs if_tabs1" style="width:100%;height:100%;">
+                <div title="河道水情">
+                    <table id="tab_River" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+                <div title="水库水情">
+                    <table id="tab_Rsvr" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+                <div title="昨日降水">
+                    <table id="tab_RainNew" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+                <div title="24小时降水">
+                    <table id="tab_Rain" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+                <div title="在线水位">
+                    <table id="tab_Z" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+                <div title="降雨统计">
+                    <table id="tab_RainStatic" class="easyui-datagrid" title="" data-options="region:'center',striped:true,rownumbers:true,pagination:false,singleSelect:true"></table>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div id="ybmain" class="easyui-tabs if_tabs1" style="width:100%;height:100%;">
+                <div title="昨日降水">
+                    <section class="if_imgcon">
+                        <img src="~/images/yb/zr.gif" ondblclick="bigImage(1)" class="pic_1"/>
+                    </section>
+                </div>
+                <div title="24小时降水">
+                    <section class="if_imgcon">
+                        <img src="~/images/yb/24.gif" ondblclick="bigImage(2)" class="pic_2"/>
+                    </section>
+                </div>
+                <div title="24小时预报">
+                    <section id="yb24" class="if_imgcon">
+                        <img id="ybimg24" style="border:0;" src="~/images/yb/yb24.jpg" ondblclick="bigImage(3)" class="pic_3"/>
+                    </section>
+                </div>
+                <div title="48小时预报">
+                    <section class="if_imgcon">
+                        <img id="ybimg48" style="border:0;" src="~/images/yb/yb48.jpg" ondblclick="bigImage(4)" class="pic_4" />
+                    </section>
+                </div>
+                <div title="72小时预报">
+                    <section class="if_imgcon">
+                        <img id="ybimg72" style="border:0;" src="~/images/yb/yb72.jpg" ondblclick="bigImage(5)" class="pic_5"/>
+                    </section>
+                </div>
+            </div>
+        </li>
+        <li id="pybimg">
+            <div id="" class="easyui-tabs if_tabs1 bo_tabs2" style="width:100%;height:100%;">
+                <p id="videostcd1" class="">
+                    <a onclick="bindVideo()" class="bo_add1">
+                        <img style="margin-left:5px;" id="addvideo" src="~/images/add.png">
+                    </a>
+                </p>
+                <div title="设定的视频站点">
+                </div>
+            </div>
+            @*<p class="if_title1">
+                    @if (ViewBag.VideoList.Count > 0)
+                    {
+                        foreach (var item in ViewBag.VideoList)
+                        {
+                            <a onclick="ChangeVideo('@item');" style="cursor:pointer">@item</a>
+                        }
+                    }
+                </p>
+                <table style="height:100%; width:100%;">
+                    <tr style=" height:95%; width:100%;">
+                        <td>
+                            <iframe id="frmVideo" style="width:100%;height:100%" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>
+                        </td>
+                    </tr>
+                </table>*@
+        </li>
+        <li id="pline">
+            <div id="" class="easyui-tabs if_tabs1 bo_tabs1" style="width:100%;height:100%;">
+                <p id="swzstcd" class="">
+                    <a onclick="addStcd()" class="bo_add1">
+                        <img style="margin-left:5px;" id="addstcd" src="~/images/add.png">
+                    </a>
+                </p>
+                <div title="设定的水文站">
+                </div>
+            </div>
+
+
+        </li>
+    </ul>
+
+    <div id="dlg" class="easyui-dialog" style="width:500px;height:340px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+        <form id="fm" method="post">
+            <div data-options="region:'center'" style="padding:10px;">
+                <table cellpadding="5">
+                    <tr>
+                        <td style="text-align:right">站点：</td>
+                        <td>
+                            <input id="stcds" name="stcds" type="hidden" />
+                            <input id="areastcd" class="easyui-combogrid" style="width:200px" required toolbar="#tb11" />
+                            <div id="tb11">
+                                <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        <div id="dlg-buttons">
+            <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="confirm()">确定</a>
+            <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+        </div>
+    </div>
+
+    <div id="dlgVideo" class="easyui-dialog" style="width:500px;height:340px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons1">
+        <form id="fmVideo" method="post">
+            <div data-options="region:'center'" style="padding:10px;">
+                <table cellpadding="5">
+                    <tr>
+                        <td style="text-align:right">关注视频点：</td>
+                        <td>
+                            <input id="VIDEONAME1" name="VIDEONAME1" type="hidden" />
+                            <input id="VIDEONAME" name="VIDEONAME" class="easyui-combotree" style="width:250px" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+        <div id="dlg-buttons1">
+            <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveVideoData()">确定</a>
+            <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlgVideo').dialog('close')">取消</a>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="~/js/core/utils.js"></script>
+    <script type="text/javascript" src="~/js/core/common.js"></script>
+    <script type="text/javascript" src="~/lib/moment/moment.js"></script>
+    <script type="text/javascript" src="~/lib/moment/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="~/lib/Highcharts-5.0.11/highcharts.js"></script>
+    <script type="text/javascript" src="~/lib/Highcharts-5.0.11/exporting.js"></script>
+    <script type="text/javascript" src="~/lib/export/exportExcel.js"></script>
+    <script type="text/javascript" src="~/lib/print/JQPrint.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/extends/datagrid-scrollview.js"></script>
+    <script type="text/javascript" src="~/lib/jquery-easyui-1.5.2/extends/datagrid-detailview.js"></script>
+    <script type="text/javascript" src="~/js/core/framework-ui.js"></script>
+
+    <script type="text/javascript">        
+		var stcdCom = '@ViewBag.Stcd';
+        @*var videoLength = '@videoLength';*@
+        var videoStcd = "";
+        function addStcd() {
+            bindAreaDataGrid();
+            $('#fm').form('clear');
+            $('#dlg').dialog('open').dialog('setTitle', '选择水文站点信息');
+        }
+        function confirm() {
+            //关闭所有tab重新根据选择加载数据
+            var tablist = $('.bo_tabs1').tabs('tabs');
+            for (var i = tablist.length - 1; i >= 0; i--) {
+                $('.bo_tabs1').tabs('close', i);
+            }
+
+            //往系统配置表中更新数据，标签上还需要显示这几个站名，点击出现过程线
+            var arrStcd = $('#areastcd').combogrid('getValues');
+            var stcds = arrStcd.join(",");
+            if (stcds.length > 0) {
+                stcds = (stcds.substring(stcds.length - 1) == ',') ? stcds.substring(0, stcds.length - 1) : stcds;
+            }
+            stcdCom = stcds;
+            $('#stcds').val(stcds);
+            url = '/SysManage/SysConfig/updateSysConfigStcdByStnm';
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function (param) {
+                    param.stype = 1;
+                    param.stnm = "";
+                    //param.stcds = stcds;
+                    param.sysid = @ViewBag.Sysid;
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlg').dialog('close');
+                    var stnms = $('#areastcd').combogrid('getText');
+                    if (stnms.length > 0) {
+                        stnms = (stnms.substring(stnms.length - 1) == ',') ? stnms.substring(0, stnms.length - 1) : stnms;
+                    }
+                    if (stnms.length > 0) {
+                        for (var i = 0; i < stnms.split(',').length; i++) {
+                            var stnm = stnms.split(',')[i];
+                            var div = 'divLine_' + i;
+                            $('.bo_tabs1').tabs('add', {
+                                title: stnm,
+                                content: '<div id=' + div + ' style="width:100%;height:89%;"></div>',
+                                closable: true
+                            })
+                            lineTab(i, stnm);
+                            //默认选中第一个
+                            $('.bo_tabs1').tabs('select', stnms.split(',')[0]);
+                        }
+                    }
+                    else {
+                        $('.bo_tabs1').tabs('add', {
+                            title: '暂无关注的水文站',
+                            closable: false
+                        })
+                    }
+                }
+            });
+        }
+        //关注的水文站关闭事件，第四板块
+        $('.bo_tabs1').tabs({
+            onBeforeClose: function (title, index) {
+                //更新系统配置表，将此配置去掉
+                if (title != "设定的水文站" && title !="暂无关注的水文站") {
+                    $.ajax({
+                        url: "/SysManage/SysConfig/updateSysConfigStcdByStnm",
+                        data: {'stype':0, 'stnm': title, 'sysid': '@ViewBag.Sysid' },
+                        dataType: "text",
+                        success: function (data) {
+
+                        }
+                    })
+                }
+            }
+        });
+        window.onload = function () {
+            bindAreaDataGrid();
+            bindVidoeName();
+            debugger;
+            $.ajax({
+                url: "/RealData/River/GetLatestRiverData",
+                //data: { stcd: stcd, region: region },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    debugger;
+                    $('#tab_River').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            {
+                                field: 'STNM', title: '站名', width: '15%', align: 'center'
+                                /*, formatter: function (v, row) {
+                                    return "<a onclick='flyToEntity(" + row.STCD + ")'>" + v + "</a>";
+                                }*/
+                            },
+                            { field: 'TM', title: '时间', width: '15%', align: 'center', formatter: com.formatDDHHMM },
+                            {
+                                field: 'Z', title: '水位', width: '15%', halign: 'center', align: 'right', formatter: function (v, row) {
+                                    var str = "";
+                                    switch (row.WPTN) {
+                                        case '4':
+                                            str = "<font color='green'>↓</font>";
+                                            break;
+                                        case '5':
+                                            str = "<font color='red'>↑</font>";
+                                            break;
+                                        case '6':
+                                            str = "-";
+                                            break;
+                                        default:
+                                            str = row.WPTN;
+                                            break;
+                                    }
+                                    return v + str;//toDecimal(v, 2) + str;
+                                }
+                            },
+                            {
+                                field: 'Q', title: '流量', width: '15%', align: 'right', formatter: function (v) {
+                                    return v;//SaveThreeN(v, 3);
+                                }
+                            },
+                            { field: 'S', title: '含沙量', width: '14%', halign: 'center', align: 'right' },
+                            {
+                                field: 'REMARK', title: '备注', width: '26%', align: 'center', formatter: function (v, row, index) {
+                                    var hf = "";
+                                    if (row.FLWCHRCD1 == '6') {
+                                        hf= "<font color='red'>洪峰</font>";
+                                    }
+                                    return v + hf;
+                                }
+                            }
+                        ]],
+                        onLoadSuccess: function () {
+                        },
+                        rowStyler: function (index, row) {
+                            if (row.REMARK != '' && row.REMARK != null) {
+                                return 'color:red';//'background-color:red;'#fc9fc0;
+                            }
+                        },
+                        onDblClickRow: function (index, row) {
+                            //0表示实时水情，时间过滤八点的
+                            onClickRiver(row.STCD, row.TM, row.STNM, 0);
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                url: "/RealData/River/GetLatestRiverData",
+                //data: { stcd: stcd, region: region },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#tab_Z').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            {
+                                field: 'STNM', title: '站名', width: '25%', align: 'center'
+                            },
+                            { field: 'TM', title: '时间', width: '25%', align: 'center', formatter: com.formatDDHHMM },
+                            {
+                                field: 'Z', title: '水位', width: '25%', halign: 'center', align: 'right'
+                            },
+                            {
+                                field: 'Q', title: '流量', width: '25%', halign: 'center', align: 'right'
+                            }
+                        ]],
+                        onDblClickRow: function (index, row) {
+                            //1表示在线水位
+                            onClickRiver(row.STCD, row.TM, row.STNM, 1);
+                        }
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "/RealData/Rsvr/GetLatestRsvrData",
+                //data: { stcd: stcd, region: region },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#tab_Rsvr').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        //loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            {
+                                field: 'STNM', title: '站名', width: '20%', align: 'center'
+                                /*, formatter: function (v, row) {
+                                    return "<a onclick='flyToEntity(" + row.STCD + ")'>" + v + "</a>";
+                                }*/
+                            },
+                            { field: 'TM', title: '时间', width: '20%', align: 'center', formatter: com.formatDDHHMM },
+                            {
+                                field: 'RZ', title: '水位', width: '15%', halign: 'center', align: 'right', formatter: function (v, row) {
+                                    var str = "";
+                                    switch (row.RWPTN) {
+                                        case '4':
+                                            str = "<font color='green'>↓</font>";
+                                            break;
+                                        case '5':
+                                            str = "<font color='red'>↑</font>";
+                                            break;
+                                        case '6':
+                                            str = "-";
+                                            break;
+                                        default:
+                                            str = row.RWPTN;
+                                            break;
+                                    }
+                                    return v + str;//toDecimal(v, 2) + str;
+                                }
+                            },
+                            {
+                                field: 'W', title: '蓄量', width: '15%', align: 'right', formatter: function (v) {
+                                    return v;//SaveThreeN(v, 3);
+                                }
+                            },
+                            { field: 'REMARK', title: '备注', width: '30%', align: 'center' }
+                        ]],
+                        onLoadSuccess: function () {
+                        },
+                        rowStyler: function (index, row) {
+                            if (row.REMARK != '' && row.REMARK != null) {
+                                return 'color:red';//'background-color:red;';
+                            }
+                        },
+                        onDblClickRow: function (index, row) {
+                            onClickRsvr(row.STCD, row.TM, row.STNM);
+                        }
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "/RealData/Rain/GetLatestRainNewData",
+                data: { 'stype': 1 },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#tab_RainNew').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        //loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            { field: 'RVNM', title: '河名', width: '20%', align: 'center' },
+                            {
+                                field: 'STNM', title: '站名', width: '30%', align: 'center'
+                                /*, formatter: function (v, row) {
+                                    return "<a onclick='flyToEntity(" + row.STCD + ")'>" + v + "</a>";
+                                }*/
+                            },
+                            { field: 'ETM', title: '时间', width: '30%', align: 'center', formatter: com.formatDDHHMM },
+                            { field: 'value', title: '降雨量', width: '20%', halign: 'center', align: 'right' }
+                        ]],
+                        onLoadSuccess: function () {
+                        },
+                        onDblClickRow: function (index, row) {
+                            //1表示昨日降雨
+                            onClickRain(row.STCD, row.ETM, row.STNM, "1");
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                url: "/RealData/Rain/GetLatestRainNewData",
+                data: { 'stype': 0 },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#tab_Rain').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        //loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            { field: 'RVNM', title: '河名', width: '20%', align: 'center' },
+                            {
+                            field: 'STNM', title: '站名', width: '20%', align: 'center'
+                                /*, formatter: function (v, row) {
+                                      field: 'STNM', title: '站名', width: '20%', align: 'center', formatter: function (v, row) {
+                                      return "<a onclick='flyToEntity(" + row.STCD + ")'>" + v + "</a>";
+                                }*/
+                            },
+                            { field: 'STM', title: '开始时间', width: '20%', align: 'center', formatter: com.formatDDHHMM },
+                            { field: 'ETM', title: '结束时间', width: '20%', align: 'center', formatter: com.formatDDHHMM },
+                            {
+                                field: 'value', title: '降雨量', width: '20%', halign: 'center', align: 'right', formatter: function (v) {
+                                    return toDecimal(v, 1);//SaveThreeN(v, 3);
+                                }
+                            }
+                        ]],
+                        onLoadSuccess: function () {
+                        },
+                        onDblClickRow: function (index, row) {
+                            //0表示24小时降雨
+                            onClickRain(row.STCD, row.ETM, row.STNM, "0");
+                        }
+                    });
+                }
+            });
+            //给标签赋值传值
+            $.ajax({
+                url: "/SysManage/SysConfig/GetStnmBySysconfig",
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    var nowtab = $('.bo_tabs1').tabs('getSelected');
+                    var indexntab = $('.bo_tabs1').tabs('getTabIndex', nowtab);
+                    $('.bo_tabs1').tabs('close', indexntab);
+                    if (data.rows.length > 0) {
+                        for (var i = 0; i < data.rows.length; i++) {
+                            var stnm = data.rows[i].STNM;
+                            var div = 'divLine_' + i;
+                            $('.bo_tabs1').tabs('add', {
+                                title: data.rows[i].STNM,
+                                content: '<div id=' + div + ' style="width:100%;height:89%;"></div>',
+                                closable: true
+                            })
+                            $('.bo_tabs1').tabs('select', data.rows[0].STNM);
+                            lineTab(i, stnm);
+                        }
+                    }
+                    else {
+                        $('.bo_tabs1').tabs('add', {
+                            title: '暂无关注的水文站',
+                            closable: false
+                        })
+                    }
+                }
+            });
+
+            $.ajax({
+                url: "/RealData/Rain/GetLatestRainStaticData",
+                //data: { 'stype': 1 },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#tab_RainStatic').datagrid({
+                        singleSelect: true,
+                        collapsible: true,
+                        striped: true,
+                        rownumbers: false,
+                        data: data,
+                        //loadMsg: '数据加载中,请稍后……',
+                        columns: [[
+                            { field: 'TM', title: '时间', hidden: 'true' },
+                            { field: 'SLEVEL', title: '降雨量级别(mm)', width: '50%', align: 'center' },
+                            {
+                                field: 'SCOUNT', title: '数量(个)', width: '50%', align: 'center', formatter: function (v, row) {
+                                    return "<a onclick='showRainDetail(\"" + row.TM + "\",\"" + row.SLEVEL+"\")'>" + v + "</a>";
+                                }
+                            }
+                        ]],
+                        onLoadSuccess: function () {
+                        }
+                    });
+                }
+            });          
+                    
+
+            $.ajax({
+                url: "/Home/GetWeatherImage",
+                data: {"sType":"yb"},
+                //dataType: "json",
+                success: function (data, status, xhr) {
+                    $('#ybimg24').height($('#ybmain').height() - 35);
+                    //$("#ybimg24").attr("src", data.split('|')[0]);
+                    $("#ybimg48").height($("#ybimg24").height());
+                    //$("#ybimg48").attr("src", data.split('|')[1]);
+                    $("#ybimg72").height($("#ybimg24").height());
+                    //$("#ybimg72").attr("src", data.split('|')[2]);
+                }
+            });            
+        }
+        //降雨统计点击数量列弹出测站明细
+        function showRainDetail(tm,slevel) {
+            $.modalOpen({
+                id: "Details",
+                title: "降雨量明细",
+                url: "/RealData/Rain/RainStaticDetail?tm=" + tm + "&slevel=" + slevel,
+                width: "980px",
+                height: "600px",
+                btn: null
+            });
+        }
+
+        function lineTab(i, stnm)
+        {
+            $.ajax({
+                url: "/RealData/River/GetRiverLine",
+                data: { 'stnm': stnm },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    DrawLine('divLine_' + i, data, stnm);
+                }
+            });
+        }
+
+        function DrawLine(div, d, title) {
+            var isMinLableShow = false;
+            var isMaxLableShow = false;
+            $('#' + div + '').height($('#pline').height() - 33);
+            var dheight = $('#' + div + '').height();
+            var option = {
+                chart: {
+                    zoomType: 'x',
+                    marginRight: 100,
+                    height: dheight
+                },
+                title: {
+                    //text: $('#staList').combogrid('getText') + '水位流量过程'
+                    text: title + '水位流量过程线'//decodeURI($.getUrlParam("stnm")) + '水位流量过程线'
+                },
+                credits: {
+                    enabled: false
+                },
+                subtitle: {
+                    text: ''//'@ViewData["startDate"]' + "至" + '@ViewData["endDate"]'
+                },
+                plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: false
+                        },
+                        turboThreshold: 50000//性能阈值，如果传入的数据非[xx,xx]和数字时，会限制渲染默认1000条
+                    },
+                    line: {
+                        cropThreshold: 50000
+                    }
+                },
+                xAxis: {
+                    type: "datetime",
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%m-%d %H', this.value);
+                        }
+                    },
+                    //startOnTick: true,
+                    //endOnTick: true,
+                    //tickPixelInterval: 200,
+                    crosshair: {
+                        color: 'green'
+                    },
+                    //min: com.ToUTC($("#sdate").val()),
+                    //max: com.ToUTC($("#edate").val()),
+                    tickmarkPlacement: 'on'
+                },
+                yAxis: [{
+                    title: {
+                        text: '水位(m)'
+
+                    },
+                    lineWidth: 2,
+                    lineColor: '#000',
+                    labels: {
+                        formatter: function () {
+                            return changevalue(this.value, 2);
+                        }
+                    }
+                },
+                {
+                    title: {
+                        text: '流量(m³/s)'
+                    },
+                    lineWidth: 2,
+                    lineColor: '#000',
+                    min: 0,
+                    labels: {
+                        formatter: function () {
+                            return SaveThreeN(this.value, 3);//Number(this.value).keepValidNum(3);
+                        }
+                    },
+                    opposite: true
+                }
+                ],
+                tooltip: {
+                    valueSuffix: '',
+                    headerFormat: '<span style="font-size:16px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0" nowrap>{series.name}: </td>' +
+                        '<td style="padding:0" nowrap><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    followPointer: true,
+                    shared: true,
+                    useHTML: true,
+                    xDateFormat: '%Y-%m-%d %H:%M'
+                },
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    borderWidth: 0
+                },
+                series: GetSearies(d)
+            };
+
+            //var HChart = new Highcharts.Chart('divLine', option);
+            var HChart = new Highcharts.Chart(div, option);
+        }
+
+        function GetSearies(d) {
+            var arrSeries = [];
+            var objSeriesZ = {
+                name: '水位',
+                color: '#f00',
+                data: [],
+                lineWidth: 1
+            }
+            var objSeriesQ = {
+                name: '流量',
+                data: [],
+                color: '#00f',
+                yAxis: 1,
+                lineWidth: 1
+            }
+
+            var objSeriesWRZ = {
+                name: '警戒水位',
+                data: [],
+                color: '#f00',
+                visible: false,
+                lineWidth: 1,
+                dashStyle:'Dash'
+            }
+            $.each(d.rows.reverse(), function (i, item) {
+            //$.each(d, function (i, item) {
+                if (item["Z"]) {
+
+                    if (minZTM == com.formatTimemm(item["TM"]) || maxZTM == com.formatTimemm(item["TM"])) {
+                        objSeriesZ.data.push({
+                            x: com.ToUTC(item["TM"]), y: Number(item["Z"]), dataLabels: { enabled: true, color: '#f00' }, marker: {
+                                enabled: true,
+                                radius: 5
+                            }
+                        });
+                    } else {
+                        objSeriesZ.data.push([com.ToUTC(item["TM"]), Number(item["Z"])]);
+                    }
+
+                }
+
+                if (item["Q"]) {
+                    if (minQTM == com.formatTimemm(item["TM"]) || maxQTM == com.formatTimemm(item["TM"])) {
+                        objSeriesQ.data.push({
+                            x: com.ToUTC(item["TM"]), y: item["Q"], dataLabels: { enabled: true, color: '#f00' }, marker: {
+                                enabled: true,
+                                radius: 5,
+                                fillColor: '#f00',
+                                symbol: 'circle'
+                            }
+                        });
+                    } else {
+                        objSeriesQ.data.push([com.ToUTC(item["TM"]), item["Q"]]);
+                    }
+                    //if (item["MSQMT"] == "2" || item["MSQMT"] == "3" || item["MSQMT"] == "5") {
+                    //    objSeriesSCD.data.push([com.ToUTC(item["TM"]), item["Q"]]);
+                    //}
+                }
+
+                if (item["WRZ"]) {
+                    if (i == d.length - 1) {
+
+                        objSeriesWRZ.data.push({
+                            x: com.ToUTC(item["TM"]), y: item["WRZ"],
+                            dataLabels: {
+                                enabled: true,
+                                align: 'left',
+                                style: {
+                                    fontWeight: 'bold',
+                                    color: 'red'
+                                },
+                                format: '警戒水位:{y}',
+                                x: -125,
+                                verticalAlign: 'bottom',
+                                overflow: true,
+                                crop: false
+                            }
+                        });
+                    } else {
+                        objSeriesWRZ.data.push([com.ToUTC(item["TM"]), item["WRZ"]]);
+                    }
+
+                }
+
+            });
+            arrSeries.push(objSeriesZ);
+            arrSeries.push(objSeriesQ);
+            arrSeries.push(objSeriesWRZ);
+            //arrSeries.push(objSeriesSCD);
+            return arrSeries;
+        }
+        var minZTM;
+        var maxZTM;
+        var minQTM;
+        var maxQTM
+        function ComputeTable(d) {
+            minZV = Number.MAX_VALUE;
+            maxZV = Number.MIN_VALUE;
+            var minQV = Number.MAX_VALUE;
+            var maxQV = Number.MIN_VALUE;
+
+            $.each(d.reverse(), function (i, item) {
+                if (item["Z"]) {
+                    if (Number(item["Z"]) > maxZV) {
+                        maxZV = Number(item["Z"]);
+                        maxZTM = utils.formatDate(item["TM"], 'yyyy-MM-dd hh:mm');
+                    }
+                    if (Number(item["Z"]) < minZV) {
+                        minZV = Number(item["Z"]);
+                        minZTM = utils.formatDate(item["TM"], 'yyyy-MM-dd hh:mm');
+                    }
+                }
+
+                if (item["Q"]) {
+                    if (Number(item["Q"]) > maxQV) {
+                        maxQV = item["Q"];
+                        maxQTM = utils.formatDate(item["TM"], 'yyyy-MM-dd hh:mm');
+                    }
+
+                    if (Number(item["Q"]) < minQV) {
+                        minQV = item["Q"];
+                        minQTM = utils.formatDate(item["TM"], 'yyyy-MM-dd hh:mm');
+                    }
+                }
+
+            });
+        }
+        //function ReflowChart() {
+        //    var HChart = $("#divLine").highcharts();
+        //    HChart.reflow();
+        //}
+
+        function bindAreaDataGrid() {
+            $.ajax({
+                url: "/SysManage/SysConfig/getConfigStcd",
+                dataType: "text",
+                success: function (re) {
+                    stcdCom = re;
+                }
+            })
+            var sttps = "'ZQ'";
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": sttps },
+                columns: [[
+                    { field: 'ck', width:'5%', checkbox: true },
+                    { field: 'CODE', width: '30%', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '30%', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '30%', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    var values = [];
+                    var s = stcdCom.split(',');
+                    if (s.length > 0) {
+                        for (var i = 0; i < s.length; i++) {
+                            values.push(s[i]);
+                        }
+                    }
+                    $('#areastcd').combogrid('setValues', values);
+                }
+            });
+        }
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+            var sttps = "'ZQ'";
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": sttps }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+
+        function ChangeVideo(nType) {
+            document.getElementById("frmVideo").src = "@ViewBag.VideoUrl/video/?vid=" + nType + "";
+        }
+
+        function onClickRiver(stcd, sdate, stnm, stype) {
+            $.modalOpenMax({
+                id: "Details",
+                title: stnm + "水位流量过程线信息",
+                url: "/RealData/River/ChartRiver?stcd=" + stcd + "&edate=" + sdate + "&stype=" + stype,
+                width: "1200px",
+                height: "800px",
+                btn: null
+            });
+        }
+        function onClickRsvr(stcd, sdate, stnm) {
+            $.modalOpenMax({
+                id: "Details",
+                title: stnm + "水位蓄量过程线信息",
+                url: "/RealData/Rsvr/ChartRsvr?stcd=" + stcd + "&edate=" + sdate,
+                width: "1200px",
+                height: "800px",
+                btn: null
+            });
+        }
+        function onClickRain(stcd, sdate, stnm, stype) {
+            $.modalOpenMax({
+                id: "Details",
+                title: stnm + "降雨量柱状图",
+                url: "/RealData/Rain/RainChart?stcd=" + stcd + "&edate=" + sdate + "&stype=" + stype,
+                width: "1200px",
+                height: "800px",
+                btn: null
+            });
+        }
+        function bindVideo() {
+            $('#VIDEONAME').combotree({
+                url: '/SysManage/SysConfig/GetVideoManageData',
+                checkbox: true,
+                multiple: true,
+                onlyLeafCheck: true
+            });
+            $('#fmVideo').form('clear');
+            $('#dlgVideo').dialog('open').dialog('setTitle', '选择关注的视频站点信息');
+        }
+
+        function saveVideoData() {
+            //关闭所有tab重新根据选择加载数据
+            var tablist = $('.bo_tabs2').tabs('tabs');
+            for (var i = tablist.length - 1; i >= 0; i--) {
+                $('.bo_tabs2').tabs('close', i);
+            }
+            //往系统配置表中更新数据
+            var videoname = $('#VIDEONAME').val();
+            $('#VIDEONAME1').val(videoname);
+            url = '/SysManage/SysConfig/updateSysConfigVideo';
+            $('#fmVideo').form('submit', {
+                url: url,
+                onSubmit: function (param) {
+                    param.stype = 1;
+                    param.videoname = videoname;
+                    param.sysid = @ViewBag.Sysid;
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlgVideo').dialog('close');
+                    if (videoname.length > 0) {
+                        for (var i = 0; i < videoname.split(',').length; i++) {
+                            var stnm = videoname.split(',')[i].split('|')[1];
+                            var stcd = videoname.split(',')[i].split('|')[0];
+                            var div = 'divVideo_' + i;
+                            var frameid = 'frmVideo_' + i;
+                            $('.bo_tabs2').tabs('add', {
+                                selected: false,
+                                title: stnm,
+                                content: '<div id=' + div + ' class=' + stcd + ' style="width:100%;height:99%;"><iframe id=' + frameid + ' style="width:100%;height:100%" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe></div>',
+                                closable: true
+                            })
+                        }                        
+                        //默认选中第一个
+                        $('.bo_tabs2').tabs('select', videoname.split(',')[0].split('|')[1]);
+                        document.getElementById("frmVideo_0").src = "@ViewBag.VideoUrl/video/?vid=" + videoname.split(',')[0].split('|')[1] + "";
+                    }
+                    else {
+                        $('.bo_tabs2').tabs('add', {
+                            title: '暂无关注的视频站点',
+                            closable: false
+                        })
+                    }
+                }
+            });
+        }
+
+        function bindVidoeName() {
+            var nowtab = $('.bo_tabs2').tabs('getSelected');
+            var indexntab = $('.bo_tabs2').tabs('getTabIndex', nowtab);
+            $('.bo_tabs2').tabs('close', indexntab);
+            var videoname = '@Html.Raw(ViewBag.video)';
+            if (videoname.length > 0) {
+                for (var i = 0; i < videoname.split(',').length; i++) {
+                    var stnm = videoname.split(',')[i].split('|')[1];
+                    var stcd = videoname.split(',')[i].split('|')[0];
+                    var div = 'divVideo_' + i;
+                    var frameid = 'frmVideo_' + i;
+                    $('.bo_tabs2').tabs('add', {
+                        selected: false,
+                        title: stnm,
+                        content: '<div id=' + div + ' class=' + stcd + ' style="width:100%;height:99%;"><iframe id=' + frameid + ' style="width:100%;height:100%" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe></div>',
+                        closable: true
+                    })
+                }
+                //默认选中第一个
+                $('.bo_tabs2').tabs('select', videoname.split(',')[0].split('|')[1]);
+                document.getElementById("frmVideo_0").src = "@ViewBag.VideoUrl/video/?vid=" + videoname.split(',')[0].split('|')[1] + "";
+
+            }
+            else {
+                $('.bo_tabs2').tabs('add', {
+                    title: '暂无关注的视频站点',
+                    selected: true
+                })
+            }
+        }
+        //视频切换事件
+        $('.bo_tabs2').tabs({
+            onSelect: function (title, index) {
+                if (title != "设定的视频站点") {
+                    document.getElementById("frmVideo_" + index).src = "@ViewBag.VideoUrl/video/?vid=" + title + "";
+                }     
+            }
+        });
+        //第二板块双击弹出全屏大图
+        function bigImage(i) {
+            var src = $('.pic_' + i).attr("src");
+            $.modalOpenMax({
+                id: "Details",
+                title: '降水预报',
+                url: "/RealData/WeatherCloudy/WeatherImage?src=" + src,
+                width: "1200px",
+                height: "800px",
+                btn: null
+            });
+        }
+        //关注的视频站点关闭事件，第三板块
+        $('.bo_tabs2').tabs({
+            onBeforeClose: function (title, index) {
+                //更新系统配置表，将此配置去掉
+                var stcd = $('#divVideo_' + index).attr('class');
+                var videoname = stcd + '|' + title;
+                if (title != "设定的视频站点" && title !="暂无关注的视频站点") {
+                    $.ajax({
+                        url: "/SysManage/SysConfig/updateSysConfigVideo",
+                        data: { 'stype': 0, 'videoname': videoname, 'sysid': '@ViewBag.Sysid' },
+                        dataType: "text",
+                        success: function (data) {
+
+                        }
+                    })
+                }
+            }
+        });    
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,15 @@
+﻿body{
+ 		/*background: url(mapbg.png) center center no-repeat;*/
+ 		background-image: url(bg2.png);
+ 		background-position: center center;
+ 		background-repeat: no-repeat;
+ 		background-size: 300px 300px;
+ 	}
+ 	/*.WordSection1>p:nth-child(odd){
+ 		background-color: #e4f1ff;
+ 	}*/
+ 	.WordSection1 p{
+ 		/*line-height: 2!important;*/
+ 		margin-bottom: 10px;
+ 		border-bottom: 1px solid #c0deff;
+ 	}

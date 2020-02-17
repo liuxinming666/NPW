@@ -1,0 +1,240 @@
+﻿@{
+    ViewBag.Title = "菜单管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts{
+    <style type="text/css">
+        #iconlist li {
+            float: left;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var state = "";
+        var formatterEnable = function (value, row) { return '<img src="/images/' + ((value || '').toString() == "true" ? "checkmark.gif" : "checknomark.gif") + '"/>'; };
+        var formatterParent = function (value, row) { return row.ParentName };
+        var formatterButton = function (value, row) { return (row.URL && row.URL != '#') ? '<a href="#" onclick="setButton(\'' + row.MenuCode + '\')"><span class="icon icon-set2">&nbsp;</span>[设置按钮]</a>' : ''; };
+        function loadfilter(d) {
+            d = utils.copyProperty(d.rows || d, ["MenuCode", "IconClass"], ["_id", "iconCls"], false);
+            var dd = utils.toTreeData(d, '_id', 'ParentCode', "children");
+            return dd;
+        }
+        //var formatterOper = function (value, row) {
+
+        //    var mody = "<a href='#' onclick=editMenu(" + JSON.stringify(row) + ")>修改</a>";
+        //    var add = "<a href='#' onclick=deleteMenu(" + JSON.stringify(row) + ")>删除</a>";
+        //    return mody + " " + add;
+        //}
+        var formatterOper = function (value, row, index) {
+            //console.log(JSON.stringify(row));
+            var mody = "<a href='#' onclick='editMenu(" + JSON.stringify(row) + ")'>修改</a>";
+            var add = "<a href='#' onclick='deleteMenu(" + JSON.stringify(row) + ")'>删除</a>";
+            return mody + " " + add;
+        }
+        function editMenu(row) {
+            $('#fm').form('clear');
+            state = "Edit";
+
+            var menuCode = row.MenuCode;
+            document.getElementById('ckEnable').checked = row.IsEnable;
+            document.getElementById('ckVisible').checked = row.IsVisible;
+            $("#txtId").val(row.Id);
+            $("#txtMenuCode").textbox("setValue", menuCode);
+            //$('#txtMenuCode').textbox('textbox').attr('readonly', true);
+            $("#txtMenuName").textbox("setValue", row.MenuName);
+            $("#txtLink").textbox("setValue", row.URL);
+            $("#txtSort").textbox("setValue", row.MenuSeq);
+            //$("#selDescription").val(row.Description);
+            $("#selDescription").combobox('setValue', row.Description);
+            //$("#ckEnable").attr("checked");
+            var treeData = JSON.parse(JSON.stringify($("#gridlist").treegrid('getData')).replace(/_id/g, "id").replace(/MenuName/g, "text"));
+
+            $("#selParentMenu").combotree({ value: row.ParentCode, data: treeData });
+
+            $('#selIcon').combo({
+                required: true,
+                value: row.IconClass,
+                editable: false,
+                panelHeight: 150
+            });
+            $('#sp').appendTo($('#selIcon').combo('panel'));
+            $('#sp li').click(function () {
+                var v = $(this).find("span").attr('class');
+                var s = $(this).find("span").attr('class').replace("icon ", "");
+                $('#selIcon').combo('setValue', v).combo('setText', s).combo('hidePanel');
+            });
+
+            $('#dlg').dialog('open').dialog('setTitle', '修改菜单信息');
+        }
+
+        $(function () {
+
+            $("#a_add").click(function () {
+                $('#fm').form('clear');
+                $('#txtMenuCode').textbox('textbox').attr('readonly', false);
+                state = "Add";
+                $('#selIcon').combo({
+                    required: true,
+                    editable: false,
+                    panelHeight: 150
+                });
+                var treeData = JSON.parse(JSON.stringify($("#gridlist").treegrid('getData')).replace(/_id/g, "id").replace(/MenuName/g, "text"));
+                document.getElementById('ckEnable').checked = true;
+                document.getElementById('ckVisible').checked = true;
+                $("#selParentMenu").combotree({ data: treeData });
+
+                $('#sp').appendTo($('#selIcon').combo('panel'));
+                $('#sp li').click(function () {
+                    var v = $(this).find("span").attr('class').replace("icon ", "");
+                    var s = $(this).find("span").attr('class').replace("icon ", "");
+                    $('#selIcon').combo('setValue', v).combo('setText', s).combo('hidePanel');
+                });
+                $('#dlg').dialog('open').dialog('setTitle', '添加菜单信息');
+            });
+            $.get("/css/Pages/icon.html", null, function (d) {
+                $('#sp').html(d);
+            });
+        });
+        function deleteMenu(row) {
+            $.messager.confirm('删除菜单', "确定要删除【" + row.MenuName + "】菜单吗?", function (r) {
+                if (r) {
+                    $.get("/SysManage/Menu/DeleteMenu", { Id: row.Id }, function (d) {
+                        //alert(d);
+                        $('#gridlist').treegrid('reload');
+                    });
+                }
+            });
+        }
+
+        function saveData() {
+            //var t = $("#selParentMenu").combotree("tree");
+            //var n = t.tree('getSelected');
+            //alert(n.id);
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/Menu/AddMenu';
+                    break;
+                case "Edit":
+                    url = '/SysManage/Menu/EditMenu';
+                    break;
+            }
+            $("#fm").form("submit", {
+                onSubmit: function () {
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;
+                },
+                url: url,
+                success: function (data) {
+                    $('#dlg').dialog('close');
+                    alert(data);
+                    $('#gridlist').treegrid('reload');
+                }
+
+            });
+        }
+    </script>
+}
+@*<div class="div_condition" data-options="region:'north',split:false,title:'',border:false" style="background-color:#f3f2f2;">
+        <div id="tool" style="line-height:40px;height:100%;">
+            <a id="a_refresh" href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+            <a id="a_add" href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+        </div>
+    </div>*@
+<div data-options="region:'center',split:false,title:'',border:false">
+    <table id="gridlist" class="easyui-treegrid" title="" style="width:100%;height:100%;" data-options="idField: '_id',treeField: 'MenuName',collapsible:true,url:'/SysManage/Menu/GetMenuAll',loadFilter:loadfilter,method:'get',toolbar:'#tb'">
+        <thead>
+            <tr>
+                <th field="_id" hidden="true"></th>
+                <th field="Id" hidden="true"></th>
+                <th field="MenuName" align="left" halign="center" width="150">菜单名称   </th>
+                <th field="MenuCode" align="left" halign="center" width="80">编码   </th>
+                <th field="ParentCode" align="left" halign="center" width="150" formatter="formatterParent">上级菜单   </th>
+                <th field="IconClass" align="left" halign="center" width="180">图标     </th>
+                <th field="URL" align="left" halign="center" width="180" editor="text">链接地址   </th>
+                <th field="Description" align="center" halign="center" width="180" editor="text">打开方式   </th>
+                <th field="IsVisible" align="center" halign="center" width="60" formatter="formatterEnable">是否可见</th>
+                <th field="IsEnable" align="center" halign="center" width="60" formatter="formatterEnable">是否启用</th>
+                <th field="MenuSeq" align="right" halign="center" width="50">排序</th>
+                <th field="operate" align="center" halign="center" width="80" formatter="formatterOper">操作</th>
+            </tr>
+        </thead>
+    </table>
+
+</div>
+<div id="tb" style="padding:5px;height:auto">
+    @*<a id="a_refresh" href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>*@
+    <a id="a_add" href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增">新增</a>
+</div>
+<div id="dlg" class="easyui-dialog" style="width:550px;height:450px;padding:10px 20px;display:none;" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="txtId" name="txtId" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">菜单编码：</td>
+                    <td>
+                        <input id="txtMenuCode" name="txtMenuCode" type="text" class="easyui-textbox" style="width:300px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">菜单名称：</td>
+                    <td>
+                        <input id="txtMenuName" name="txtMenuName" type="text" class="easyui-textbox" style="width:300px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">上级菜单：</td>
+                    <td>
+                        <select id="selParentMenu" name="selParentMenu" style="width:300px;"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;"><span style=" letter-spacing:28px;">图</span>标：</td>
+                    <td>
+                        <select id="selIcon" name="selIcon" style="width:300px;"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">链接地址：</td>
+                    <td>
+                        <input id="txtLink" name="txtLink" type="text" class="easyui-textbox" style="width:300px"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">打开方式：</td>
+                    <td>
+                        <select id="selDescription" name="Description" class="easyui-combobox" style="width:300px;">
+                            <option value="" selected="selected">-默认-</option>
+                            <option value="#">无操作-菜单路径</option>
+                            <option value="blank">打开新窗口</option>
+                            <option value="menu">左侧菜单</option>
+                            <option value="menuiframe">左侧菜单IFRAME</option>
+                            <option value="mainiframe">内容IFRAME</option>
+                            <option value="mainiframeMap">内容IFRAME_Map</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;"><span style=" letter-spacing:28px;">序</span>号：</td>
+                    <td>
+                        <input id="txtSort" name="txtSort" type="text" class="easyui-textbox" style="width:300px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;"><input type="checkbox" id="ckEnable" name="ckEnable" />启用1</td>
+                    <td>
+                        <input type="checkbox" name="ckVisible" id="ckVisible" />可见
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+<div id="sp">
+
+</div>

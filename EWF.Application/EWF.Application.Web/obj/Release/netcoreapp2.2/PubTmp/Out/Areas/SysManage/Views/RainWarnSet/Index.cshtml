@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewData["Title"] = "雨量预警设置";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section CSS{
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript">
+        var state = "";
+        $(function () {
+            bindGrid("");
+        })
+
+        function bindGrid(name) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: false,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/RainWarnSet/GetRainWarnSetData/',
+                //queryParams: { 'stnm': name },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'RTYPE', title: '分类', width: '15%', align: 'center'},
+                    { field: 'THRESHOLD_3', title: '暴雨(大于累计雨量，单位mm)', width: '25%', align: 'center' },
+                    { field: 'THRESHOLD_2', title: '大暴雨(大于累计雨量，单位mm)', width: '25%', align: 'center' },
+                    { field: 'THRESHOLD_1', title: '特大暴雨(大于累计雨量，单位mm)', width: '25%', align: 'center' },
+                    { field: 'operate', title: '操作', width: '10%', align: 'center', formatter: formatOper }
+                ]]
+            });
+        }
+
+        function formatOper(val, row, index) {
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            return edit;
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            $("#RTYPE").textbox("setValue", row.RTYPE);
+            $("#THRESHOLD_3").textbox("setValue", row.THRESHOLD_3);
+            $("#THRESHOLD_2").textbox("setValue", row.THRESHOLD_2);
+            $("#THRESHOLD_1").textbox("setValue", row.THRESHOLD_1);
+            $('#dlg').dialog('open').dialog('setTitle', '修改雨量预警信息');
+        }
+
+        function saveData() {
+            $("#fm").form("submit", {
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                url: '/SysManage/RainWarnSet/EditRainWarnSet',
+                success: function (data) {
+                    $('#dlg').dialog('close');
+                    alert(data);
+                    $('#dgGrid').datagrid('reload');
+                }
+
+            });
+        }
+
+        function doSearch() {
+            var name = $('#name').val();
+            bindGrid(name);
+        }
+
+        function accept() {
+            
+        }
+
+
+    </script>
+}
+@*<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                站名：<input id="name" name="name" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+        </tr>
+    </table>
+</div>*@
+
+    <div id="day" style="display:none;margin-top:3px;" data-options="region:'center',split:false,title:'',border:false">
+        <table id="dgGrid" style="width:100%;height:100%;"></table>
+    </div>
+
+<div id="dlg" class="easyui-dialog" style="width:480px;height:350px;padding:10px 20px;display:none;" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">分类：</td>
+                    <td>
+                        <input id="RTYPE" name="RTYPE" type="text" class="easyui-textbox" style="width:300px" readonly />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">暴雨：</td>
+                    <td>
+                        <input id="THRESHOLD_3" name="THRESHOLD_3" type="text" class="easyui-textbox" style="width:300px" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">大暴雨：</td>
+                    <td>
+                        <input id="THRESHOLD_2" name="THRESHOLD_2" style="width:300px;" type="text" class="easyui-textbox" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right;">特大暴雨：</td>
+                    <td>
+                        <input id="THRESHOLD_1" name="THRESHOLD_1" style="width:300px;" type="text" class="easyui-textbox" required />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+
+

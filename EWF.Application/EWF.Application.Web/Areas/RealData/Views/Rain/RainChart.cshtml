@@ -1,0 +1,464 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutH6.cshtml";
+    ViewData["Title"] = "首页降雨量柱状图";
+
+}
+
+@section CSS {
+    <style>
+        #divChartContainer .panel {
+            margin: 0 35px;
+        }
+
+        .panel-body {
+            font-size: 14px;
+        }
+
+        .panel-title {
+            font-size: 10px;
+        }
+
+        .panel-header {
+            filter: "";
+        }
+
+        .panel-tool {
+            height: 26px;
+        }
+
+        .datagrid-row-alt {
+            background: #dce8f3;
+        }
+
+        .datagrid-row-selected {
+            background: #0081c2;
+        }
+
+
+        .datagrid-header .datagrid-cell span {
+            font-size: 14px;
+        }
+
+        .datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber {
+            font-size: 14px;
+        }
+
+        .combobox-item, .combobox-group, .combobox-stick {
+            font-size: 14px;
+        }
+
+        .textbox .textbox-prompt {
+            font-size: 14px;
+        }
+
+        .textbox .textbox-text {
+            font-size: 14px;
+        }
+
+        .tabs-title {
+            font-size: 14px;
+        }
+    </style>
+}
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        var g_stcd;//测站
+        var g_startDate;//查询开始时间
+        var g_endDate;//查询结束时间
+        var stype;
+
+        window.onload = function () {
+			doSearch();
+		};
+
+
+
+		function doSearch() {
+            g_stcd = '@ViewData["stcd"]';
+            g_endDate = '@ViewData["edate"]';
+            stype = '@ViewData["stype"]';
+
+            com.ajax({
+                type: 'get',
+                url: '/RealData/Rain/GetRainChartData',
+                data: {
+                    stcd: g_stcd,
+                    endDate: g_endDate,
+                    stype: stype
+                },
+                success: function (result) {
+                    console.log(result.total);
+                    g_startDate = result.rows[result.total - 1].TM;
+                    ShowTable(result);
+                    DrawZLine(result.rows);
+
+                }
+            });
+		}
+
+
+		function initDayChart(dataArray,subTitle) {
+			var nameArray = [];
+			var yValueArray1 = [];
+			var yValue1 = 0;
+			var maxValue1 = 0;
+
+			var temp = "";
+			$.each(dataArray, function (n, row) {
+				if (temp != row.STNM) {
+					nameArray.push(row.STNM);
+					temp = row.STNM;
+				}
+			});
+
+			$.each(nameArray, function (index, name) {
+
+				var arr = $.grep(dataArray, function (i, n) {
+					return i.STNM === name;
+				});
+				var yValue1 = 0;
+
+				$.each(arr, function (i, item) {
+					yValue1 += parseFloat(item.ACCP);
+				});
+
+				yValueArray1.push(parseFloat(yValue1.toFixed(2)));
+
+				maxValue1 = getmax(yValue1 * 1.1, 1);
+			});
+
+			var option = {
+				credits: {
+					enabled: false // 禁用版权信息
+				},
+				chart: {
+					zoomType: 'xy'
+				},
+				title: {
+					text: '时段累计雨量'
+				},
+				subtitle: {
+					text: subTitle
+				},
+				xAxis: [{
+					categories: nameArray,
+                    crosshair: true,
+                    tickPixelInterval: 150
+				}],
+				yAxis: [{ // Primary yAxis
+					labels: {
+						format: '{value}',
+						style: {
+							color: Highcharts.getOptions().colors[1]
+						}
+					},
+					title: {
+						text: '降水量(mm)',
+						style: {
+							color: Highcharts.getOptions().colors[1]
+						}
+					}
+				}],
+				tooltip: {
+					shared: true
+				},
+				legend: {
+					layout: 'horizontal',
+					align: 'right',
+					x: -150,
+					verticalAlign: 'top',
+					y: 50,
+					floating: true,
+					backgroundColor: '#FCFFC5',
+					borderColor: '#C98657',
+					borderWidth: 1
+				},
+				series: [{
+					name: '降水量',
+					type: 'column',
+					data: yValueArray1,
+					tooltip: {
+						valueSuffix: ''
+					}
+				}]
+			};
+
+
+			$('#divChart').highcharts(option);
+		}
+		function initDayTable(rowsData) {
+			var grid = $('#dgGrid').datagrid({
+				singleSelect: true,
+				collapsible: true,
+				striped: true,
+				rownumbers: true,
+				pagination: false,
+				//data: rowsData,
+				//loadMsg: '数据加载中,请稍后……',
+				columns: [[
+					{ field: 'STNM', title: '站名', width: '25%', align: 'center' },
+					{
+						field: 'IDTM', title: '时间', width: '25%', align: 'left', formatter: function (value) {
+							var date = new Date(value);
+							var y = date.getFullYear();
+							var m = date.getMonth() + 1;
+							var d = date.getDate();
+							return m + '-' + d;
+						}
+					},
+					{ field: 'ACCP', title: '日降水', width: '24%', align: 'center' },
+					{ field: 'SUMACCP', title: '累计降水', width: '25%', align: 'center' }
+				]]
+			});
+
+			grid.datagrid({ data: rowsData });
+		}
+
+
+        function ShowTable(jsonData) {
+            $('#dgGrid').datagrid({
+                title: "",
+                striped: true,
+                singleSelect: true,
+                collapsible: true,
+                rownumbers: true,
+                nowrap: false,
+                emptyMsg: "<div style='font-weight:bold;margin-top:20px;font-size:20px;color:red'>查无数据</div>",
+                //view: scrollview,
+                columns: [[
+                    { field: 'STNM', title: '站名', width: '20%', align: 'center' },
+                    { field: 'STCD', title: '站码', hidden: 'true' },
+                    { field: 'TM', title: '时间', width: '60%', align: 'center' },
+                    { field: 'DRP', title: '雨量', width: '20%', halign: 'center', align: 'right' }
+                ]],
+                pageSize: 20,
+                remoteSort: false,
+                loadMsg: '',
+                data: jsonData
+                //columns: GetColumns()
+            });
+        }
+        var colors = ['#035294', '#0a60a8', '#0d6cba', '#1979c9', '#1783dd', '#068dec', '#0466b9', '#3da8fa', '#59b4fa', '#75bff8', '#9ed2fa', '#badcf7'];
+        //画水位过程线
+        function DrawZLine(dataArray, stnm) {
+
+            Highcharts.setOptions({
+                lang: {
+                    contextButtonTitle: "图表导出菜单",
+                    downloadJPEG: "下载JPEG图片",
+                    downloadPDF: "下载PDF文件",
+                    downloadPNG: "下载PNG文件",
+                    downloadSVG: "下载SVG文件",
+                    loading: "加载中",
+                    noData: "没有数据",
+                    printChart: "打印图表",
+                    resetZoom: "恢复缩放",
+                    resetZoomTitle: "恢复图表",
+                    thousandsSep: "",
+                    months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+                }
+            });
+
+            var tmArray = [];
+            var yValueArray = [];
+            var xyArray = [];
+            var name;
+
+            $(dataArray.reverse()).each(function (index, item) {
+                tmArray.push(utils.formatDate(item.TM, 'MM-dd'));
+                yValueArray.push(item.DRP);
+                xyArray.push([com.ToUTC(item.TM), item.DRP]);
+                if (index == 0)
+                    name = item.STNM;
+            });
+            debugger;
+            console.log(tmArray);
+            console.log(yValueArray);
+
+
+            var option = {
+                credits: {
+                    enabled: false // 禁用版权信息
+                },
+                //colors: colors,
+                chart: {
+                    type: 'column',
+                    zoomType: 'x'
+                },
+                title: {
+                    text: name+'雨量柱状图'
+                },
+                subtitle: {
+                    text: g_startDate + '至' + g_endDate
+                },
+                xAxis: {
+                    type: 'datetime',
+                    //dateTimeLabelFormats: {
+                    //    //millisecond: '%H:%M:%S.%L',
+                    //    //second: '%H:%M:%S',
+                    //    //minute: '%H:%M',
+                    //    //hour: '%H:%M',
+                    //    day: '%m-%d',
+                    //    month: "%Y-%m",
+                    //    year:"%Y-%m"
+                    //},
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%m-%d %H', this.value);
+                        }
+                    },
+                    tickPixelInterval: 70
+                    //tickAmount: 1
+
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: '降雨量(mm)',
+                    },
+                    stackLabels: {  // 堆叠数据标签
+                        enabled: true,
+                        style: {
+                            fontWeight: 'bold',
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                        }
+                    }
+                },
+                legend: {
+                    align: 'right',
+                    x: -30,
+                    verticalAlign: 'top',
+                    y: 25,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                    borderColor: '#CCC',
+                    borderWidth: 1,
+                    shadow: false
+                },
+                tooltip: {
+                    shared: true,
+                    useHTML: true,
+                    //formatter: function () {
+                    //    return Highcharts.dateFormat('%Y/%m/%d %H:%M', this.x) + '<br/>雨量(mm):' + this.y.toFixed(1);
+                    //} ,
+                    //valueDecimals: 1
+                    xDateFormat: '%Y-%m-%d %H:%M',
+                    valueSuffix: ' mm'
+                    //dateTimeLabelFormats: {
+                    //    millisecond: '%H:%M:%S.%L',
+                    //    second: '%H:%M:%S',
+                    //    minute: '%H:%M',
+                    //    hour: '%H:%M',
+                    //    day: '%m-%d',
+                    //    month: "%Y-%m",
+                    //    year:"%Y-%m"
+                    //}
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'null',
+                        dataLabels: {
+                            enabled: false,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                textOutline: '1px 1px black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: name,
+                    marker: {
+                        symbol: 'diamond'
+                    },
+                    data: xyArray
+                }]
+            }
+
+            $('#divChart').highcharts(option);
+        }
+
+
+
+
+    </script>
+    <script type="text/javascript">
+		function getSubTitle(datasrc) {
+			if (datasrc === "history") return "数据来自历史库整编数据";
+			if (datasrc === "real") return "数据来自实时库，由系统计算统计";
+		}
+		function getmax(vmax, vmin) {
+			if (vmax == 0) {
+				return 5;
+			}
+			var maxvalue = vmax;
+			var minvalue = vmin;
+			if (vmax <= vmin) {
+				vmax = vmin + 1;
+			}
+			var dy = vmax - vmin;
+			var dt = 1;
+			while (dy <= 1) {
+				dy = dy * 10;
+				dt = dt * 0.1;
+			}
+			while (dy > 10) {
+				dy = dy * 0.1;
+				dt = dt * 10;
+			}
+			while (dy > 8) {
+				dy = dy * 0.5;
+				dt = dt * 2;
+			}
+			while (dy < 3) {
+				dy = dy * 2;
+				dt = dt * 0.5;
+			}
+			var temy = Math.round(vmax / dt); //取整
+			if (temy >= vmax / dt) { maxvalue = temy * dt; }
+			else { maxvalue = (temy + 1) * dt; }
+			temy = Math.round(vmin / dt); //取整
+			if (temy <= vmin / dt) {
+				minvalue = temy * dt;
+			}
+			else {
+				minvalue = (temy - 1) * dt;
+			}
+			return maxvalue;
+		}
+		function LeftCollapse() {
+			$("#divChartContainer").width($(document).width() - 50);
+			ReflowChart();
+		}
+		function LeftExpand() {
+			$("#divChartContainer").width($(document).width() - 450);
+			ReflowChart();
+		}
+		function ReflowChart() {
+			var HChart = $("#divChart").highcharts();
+			HChart.reflow();
+		}
+    </script>
+}
+
+
+<div id="gridContainer" data-options="region:'west',split:true,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:450px;">
+    <table id="dgGrid" style="height:100%;width:100%;"></table>
+</div>
+
+<div id="divC" data-options="region:'center',split:true,border:false,title:' '">
+    <div style="width:100%;height:100%;overflow-x:hidden;" id="divChartContainer">
+        <div id="divChart" style="width:100%;height:100%;">
+        </div>
+
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,560 @@
+﻿@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    @*<link rel="stylesheet" href="~/js/wdtree/tree.css" />*@
+    <link href="~/css/fonts/framework-font.css" rel="stylesheet" type="text/css" />
+}
+@section Scripts{
+    <script type="text/javascript" src="~/js/wdtree/tree.js"></script>
+    <script type="text/javascript">
+        var state = "";
+        var addvcd = "";
+        var Type = '@ViewBag.type';
+        var Addvcd = '@ViewBag.addvcd';
+        $(function () {
+            $("#TYPE").combobox({
+                onChange: function (n, o) {
+                    changeType();
+                }
+            });
+            bindGrid("");
+            //客户端分页
+            var url = '/SysManage/User/GetUserInfoData/?username=' + $('#username').val() + '&addvcd=' + '@ViewBag.addvcd' + '&type=' + '@ViewBag.type';
+            $('#dgGrid').datagrid({ loadFilter: pagerFilter }).datagrid('loadData', url);
+        })
+        function pagerFilter(data) {
+            //if (typeof data.length == 'number' && typeof data.splice == 'function') {	// is array
+            if (typeof data.length == 'number') {	// is array
+                data = {
+                    total: data.length,
+                    rows: data
+                }
+            }
+            var dg = $(this);
+            var opts = dg.datagrid('options');
+            var pager = dg.datagrid('getPager');
+            pager.pagination({
+                onSelectPage: function (pageNum, pageSize) {
+                    opts.pageNumber = pageNum;
+                    opts.pageSize = pageSize;
+                    pager.pagination('refresh', {
+                        pageNumber: pageNum,
+                        pageSize: pageSize
+                    });
+                    dg.datagrid('loadData', data);
+                }
+            });
+            if (!data.originalRows) {
+                data.originalRows = (data.rows);
+            }
+            var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+            var end = start + parseInt(opts.pageSize);
+            data.rows = (data.originalRows.slice(start, end));
+            return data;
+        }
+        function bindGrid(username) {
+            $('#dgGrid').datagrid({
+                singleSelect: true,
+                collapsible: true,
+                striped: true,
+                rownumbers: true,
+                pagination: true,
+                pagePosition: 'bottom',
+                pageSize: 20,
+                url: '/SysManage/User/GetUserInfoData/',
+                queryParams: { 'username': username, 'addvcd':'@ViewBag.addvcd','type':'@ViewBag.type' },
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'USERID', title: '用户编码', align: 'center', hidden: true },
+                    { field: 'UACCOUNT', title: '登录账户', width: '10%', align: 'center' },
+                    { field: 'REALNAME', title: '真实名称', width: '10%', align: 'center' },
+                    { field: 'GENDER', title: '性别', width: '10%', align: 'center' },
+                    {
+                        field: 'UNITNAME', title: '单位名称', width: '20%', align: 'center'
+                    },
+                    { field: 'DEPTNAME', title: '部门名称', width: '20%', align: 'center' },
+                    { field: 'operate', title: '操作', width: '30%', align: 'center', formatter: formatOper }
+                ]],
+                onLoadSuccess: function () {
+                    mergeCellsByField("dgGrid", "UACCOUNT");
+                }
+            });
+        }
+        function formatOper(val, row, index) {
+            var detail = "<a href='#' onclick='detailData(" + JSON.stringify(row) + ")'>详细</a>";
+            var edit = "<a href='#' onclick='editData(" + JSON.stringify(row) + ")'>修改</a>";
+            var del = '<a href="#" onclick="deleteData(' + index + ')">删除</a>';
+            var reSetPw = '<a href="#" onclick="ResetPw(' + index + ')">重置密码</a>';
+            var setrole = '<a href="#" onclick="setRole(' + index + ')">授权</a>';
+            return reSetPw + " " + edit + " " + del + " " + setrole + " " + detail;
+        }
+        function addData() {
+            bindUnit("");
+            addvcd = "";
+            //bindCity(addvcd, 1);
+            $('#fm').form('clear');
+            $('#UPWD').textbox('textbox').attr('readonly', false);
+            $("#ISENABLED").combobox('setValue', 1);
+            $("#ISDUTY").combobox('setValue', 1);
+            $("#GENDER").combobox('setValue', '男');
+            $("#TYPE").combobox('setValue', '1');
+            state = "Add";
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '添加用户信息');
+        }
+        function editData(row) {
+            $('#fm').form('clear');
+            state = "Edit";
+            bindUnit(row.DEPARTMENTID);
+            addvcd = row.ADDVCD;
+            //bindCity(addvcd, row.TYPE);
+            $('#USERID').val(row.USERID);
+            $('#UACCOUNT').textbox('setValue', row.UACCOUNT);
+            $('#REALNAME').textbox('setValue', row.REALNAME);
+            $('#UPWD').textbox('setValue', row.UPWD);
+            $('#UPWD').textbox('textbox').attr('readonly', true);
+            $('#GENDER').textbox('setValue', row.GENDER);
+            $('#SPELL').textbox('setValue', row.SPELL);
+            $('#TELEPHONE').textbox('setValue', row.TELEPHONE);
+            $('#MOBILE').textbox('setValue', row.MOBILE);
+            $('#EMAIL').textbox('setValue', row.EMAIL);
+            $('#ISDUTY').combobox('setValue', row.ISDUTY);
+            $("#ISENABLED").combobox('setValue', row.ISENABLED);
+            $("#TYPE").combobox('setValue', row.TYPE);
+            $("#UNITID").combobox('setValue', row.UNITID);
+            $("#DEPARTMENTID").combobox('setValue', row.DEPARTMENTID);
+            //$("#ADDVCD").combobox('setValue', row.ADDVCD);
+            document.getElementById("dlg-buttons").style.visibility = "visible";
+            $('#dlg').dialog('open').dialog('setTitle', '修改用户信息');
+        }
+        function detailData(row) {
+            $('#fm').form('clear');
+            bindUnit(row.DEPARTMENTID);
+            addvcd = row.ADDVCD;
+            //bindCity(row.ADDVCD, row.TYPE);
+            $('#USERID').val(row.USERID);
+            $('#UACCOUNT').textbox('setValue', row.UACCOUNT);
+            $('#REALNAME').textbox('setValue', row.REALNAME);
+            $('#UPWD').textbox('setValue', row.UPWD);
+            $('#GENDER').textbox('setValue', row.GENDER);
+            $('#SPELL').textbox('setValue', row.SPELL);
+            $('#TELEPHONE').textbox('setValue', row.TELEPHONE);
+            $('#MOBILE').textbox('setValue', row.MOBILE);
+            $('#EMAIL').textbox('setValue', row.EMAIL);
+            $('#ISDUTY').combobox('setValue', row.ISDUTY);
+            $("#ISENABLED").combobox('setValue', row.ISENABLED);
+            $("#TYPE").combobox('setValue', row.TYPE);
+            $("#UNITID").combobox('setValue', row.UNITID);
+            $("#DEPARTMENTID").combobox('setValue', row.DEPARTMENTID);
+            $('#dlg').dialog('open').dialog('setTitle', '查看用户信息');
+            document.getElementById("dlg-buttons").style.visibility = "hidden";//隐藏
+        }
+        function ResetPw(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要重置此密码吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/User/ResetUserPwInfo', { userid: row.USERID }, function (ren) {
+                            if (ren.indexOf('成功') > -1) {
+                                alert("重置密码成功");
+                                $('#dgGrid').datagrid('reload'); // reload the user data
+                            }
+                            else
+                                alert("重置密码失败");
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function deleteData(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('确认', '确定要删除此记录吗?', function (r) {
+                    if (r) {
+                        $.post('/SysManage/User/DeleteUserInfo', { Id: row.USERID }, function (ren) {
+                            if (ren.indexOf('成功') > -1)
+                                $('#dgGrid').datagrid('reload'); // reload the user data
+                            else
+                                $.messager.alert('提示', ren, 'info');
+                        });
+                    }
+                });
+            } else {
+                $.messager.alert('提示', '请先选择记录', 'info');
+            }
+        }
+        function setRole(index) {
+            $('#dgGrid').datagrid('selectRow', index);
+            var row = $('#dgGrid').datagrid('getSelected');
+            $('#userid').val(row.USERID);
+            bindRoleGrid(row.USERID);
+            document.getElementById('aa').innerText = row.UACCOUNT;
+            $('#dlgRole').dialog('open').dialog('setTitle', '授权');
+        }
+        function bindRoleGrid(userid) {
+            $("#table").html("");
+            $("#table").append('<table id="gridlist" style="width:430px;height:310px;"></table>');
+            $('#gridlist').treegrid({
+                singleSelect: false,
+                checkOnSelect: false,
+                selectOnCheck: false,
+                //collapsible: true,
+                idField: 'ID',
+                treeField: 'RoleName',
+                url: '/SysManage/User/GetRoleAll',
+                //loadMsg: '数据加载中,请稍后……',
+                columns: [[
+                    { field: 'ID', hidden: true },
+                    { field: 'ischeck', hidden: true },
+                    { field: 'ck', checkbox: true, width: '10%' },
+                    { field: 'RoleName', title: '角色名称', width: '50%', align: 'center' },
+                    { field: 'RoleCode', title: '角色编码', width: '40%', align: 'center' }
+                ]],
+                onLoadSuccess: function () {
+                    com.ajax({
+                        type: 'get',
+                        url: '/SysManage/User/GetUserRoleCode',
+                        data: { 'userid': userid },
+                        success: function (d) {
+                            $.each(d, function (index, row) {
+                                $('#gridlist').treegrid('checkRow', row.OBJECTID);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        function saveUserRole() {
+            var str = "";
+            var rows = $("#gridlist").treegrid("getChecked");
+            for (var i = 0; i < rows.length; i++) {
+                str += rows[i].ID + ",";
+            }
+            str = str.substr(0, str.length - 1);
+            $('#roleids').val(str);
+            $('#fm1').form('submit', {
+                url: '/SysManage/User/SaveSetRole',
+                onSubmit: function () {
+                    return $(this).form('enableValidation').form('validate');
+                },
+                success: function (result) {
+                    $('#dlgRole').dialog('close'); 	// close the dialog
+                    alert(result);
+                    $('#dgGrid').datagrid('reload');
+                }
+            });
+        }
+        function doSearch() {
+            var username = $('#username').val();
+            bindGrid(username);
+        }
+        function saveData() {
+            var url = "";
+            switch (state) {
+                case "Add":
+                    url = '/SysManage/User/AddUserInfo';
+                    break;
+                case "Edit":
+                    url = '/SysManage/User/EditUserInfo';
+                    break;
+            }
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    var isValidate = $(this).form('enableValidation').form('validate');
+                    return isValidate;//$(this).form('validate');
+                },
+                success: function (result) {
+                    $('#dlg').dialog('close'); 	// close the dialog
+                    alert(result);
+                    $('#dgGrid').datagrid('reload');
+                }
+            });
+        }
+        function bindUnit(deptid) {
+            $('#UNITID').combobox({
+                url: '/SysManage/User/GetUnitData',
+                method: 'get',
+                valueField: 'UNITID',//绑定字段ID
+                textField: 'FULLNAME',//绑定字段Name
+                panelHeight: 'auto',//自适应
+                multiple: false,
+                onLoadSuccess: function (data) {
+                    bindDept($('#UNITID').combobox('getValue'), deptid);
+                },
+                onChange: function (data) {
+                    bindDept($('#UNITID').combobox('getValue'), deptid);
+                }
+            })
+        }
+        function bindDept(unitid,deptid) {
+            $('#DEPARTMENTID').combobox({
+                url: '/SysManage/User/GetDepartmentData',
+                method: 'get',
+                valueField: 'DEPARTMENTID',//绑定字段ID
+                textField: 'FULLNAME',//绑定字段Name
+                panelHeight: 'auto',//自适应
+                multiple: false,
+                queryParams: { "unitid": unitid },
+                onLoadSuccess: function (data) {
+                    $('#DEPARTMENTID').combobox('setValue', deptid);
+                }
+            })
+        }
+        function bindCity(addvcd,type) {
+            //var type = $('#TYPE').val();
+            $('#CITY').combobox({
+                url: '/SysManage/User/GetCity',
+                method: 'get',
+                valueField: 'ADDVCD',//绑定字段ID
+                textField: 'ADDVNM',//绑定字段Name
+                panelHeight: 'auto',//自适应
+                multiple: false,
+                queryParams: { "type": type },
+                onLoadSuccess: function (data) {
+                    if (!!addvcd) {
+                        if (addvcd.substr(4, 2) == "00") {
+                            $("#CITY").combobox('setValue', addvcd);
+                            bindXian($('#CITY').combobox('getValue'), type, "");
+                        }
+                        else {
+                            var city = addvcd.substr(0, 4) + "00";
+                            $("#CITY").combobox('setValue', city);
+                            bindXian($('#CITY').combobox('getValue'), type, addvcd);
+                        }
+                    }                    
+                },                
+                onChange: function (data) {
+                    bindXian($('#CITY').combobox('getValue'),type, addvcd);
+                },
+            })
+        }
+        function bindXian(cityid,type,addvcd) {
+            $('#XIAN').combobox({
+                url: '/SysManage/User/GetXian',
+                method: 'get',
+                valueField: 'ADDVCD',//绑定字段ID
+                textField: 'ADDVNM',//绑定字段Name
+                panelHeight: 'auto',//自适应
+                multiple: false,
+                queryParams: { "cityid": cityid, "type": type },
+                onLoadSuccess: function (data) {
+                    if (!!addvcd) {
+                        if (addvcd.substr(4, 2) == "00") {
+                            $("#XIAN").combobox('setValue', "");
+                        }
+                        else {
+                            $("#XIAN").combobox('setValue', addvcd);
+                        }
+                    } 
+                }
+            })
+        }
+        function changeType() {
+            if (!!Type) {
+                $("#TYPE").combobox('setValue', Type);
+                var type = $('#TYPE').val();
+                if (type == "2") {
+                    $('#city1').show();
+                    $('#xian1').hide();
+                    $('#ly').hide();
+                    $('#city').hide();
+                    $('#xian').hide();
+                }
+                else {
+                    $('#city').show();
+                    $('#xian').show();
+                    $('#ly').show();
+                    $('#city1').hide();
+                    $('#xian1').hide();
+                }
+                //bindCity(addvcd, type);
+                bindCity(Addvcd, type);
+            }
+            else {
+                var type = $('#TYPE').val();
+                if (type == "2") {
+                    $('#city1').show();
+                    $('#xian1').hide();
+                    $('#ly').hide();
+                    $('#city').hide();
+                    $('#xian').hide();
+                }
+                else {
+                    $('#city').show();
+                    $('#xian').show();
+                    $('#ly').show();
+                    $('#city1').hide();
+                    $('#xian1').hide();
+                }
+                //bindCity(addvcd, type);
+                bindCity(Addvcd, type);
+            }
+        }
+    </script>
+
+
+}
+<div class="div_condition" style="display:none" data-options="region:'north',split:false,title:'',border:false">
+    <table style="height:100%;width:100%">
+        <tr>
+            <td>
+                用户名：<input id="username" name="username" style="width:160px" type="text" class="easyui-textbox" />&nbsp;&nbsp;
+                <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+            </td>
+            <td style="text-align:right"><a id="btn_add" href="#" class="easyui-linkbutton" onclick="addData()" data-options="iconCls:'icon-add'">添加</a></td>
+        </tr>
+    </table>
+</div>
+
+<div id="day" style="display:none" data-options="region:'center',split:false,title:'',border:false">
+    <table id="dgGrid" style="width:100%;height:100%"></table>
+</div>
+
+<div id="dlg" class="easyui-dialog" style="width:680px;height:450px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons">
+    <form id="fm" method="post">
+        <input id="USERID" name="USERID" type="hidden" />
+        <div data-options="region:'center'" style="padding:10px;">
+            <table cellpadding="5">
+                <tr>
+                    <td style="text-align:right">用户账户：</td>
+                    <td>
+                        <input id="UACCOUNT" name="UACCOUNT" type="text" class="easyui-textbox" style="width:200px" required />
+                    </td>
+                    <td style="text-align:right">真实姓名：</td>
+                    <td>
+                        <input id="REALNAME" name="REALNAME" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">登录密码：</td>
+                    <td>
+                        <input id="UPWD" name="UPWD" type="password" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">性别：</td>
+                    <td>
+                        <select id="GENDER" name="GENDER" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">所在单位：</td>
+                    <td>
+                        <select id="UNITID" name="UNITID" type="text" class="easyui-combobox" style="width:200px">
+                        </select>
+                    </td>
+                    <td style="text-align:right">所在部门：</td>
+                    <td>
+                        <select id="DEPARTMENTID" name="DEPARTMENTID" type="text" class="easyui-combobox" style="width:200px">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">姓名拼音：</td>
+                    <td>
+                        <input id="SPELL" name="SPELL" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">电子邮件：</td>
+                    <td>
+                        <input id="EMAIL" name="EMAIL" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">办公电话：</td>
+                    <td>
+                        <input id="TELEPHONE" name="TELEPHONE" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                    <td style="text-align:right">移动电话：</td>
+                    <td>
+                        <input id="MOBILE" name="MOBILE" type="text" class="easyui-textbox" style="width:200px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">是否值班：</td>
+                    <td>
+                        <select id="ISDUTY" name="ISDUTY" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="1">值班</option>
+                            <option value="0">不值班</option>
+                        </select>
+                    </td>
+                    <td style="text-align:right">是否启用：</td>
+                    <td>
+                        <select id="ISENABLED" name="ISENABLED" type="text" class="easyui-combobox" style="width:200px">
+                            <option value="1">启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">分区：</td>
+                    <td>
+                        <select id="TYPE" name="TYPE" type="text" class="easyui-combobox" style="width:200px" >
+                            <option value="1">行政区划</option>
+                            <option value="2">流域分区</option>
+                        </select>
+                    </td>
+                    <td id="city" style="text-align:right">所属市：</td>
+                    <td id="city1" style="text-align:right;display:none;">所属流域：</td>
+                    <td>
+                        <select id="CITY" name="CITY" type="text" class="easyui-combobox" style="width:200px">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td id="xian" style="text-align:right">所属县：</td>
+                    <td id="xian1" style="text-align:right;display:none;">二级流域：</td>
+                    <td id="ly">
+                        <select id="XIAN" name="XIAN" type="text" class="easyui-combobox" style="width:200px">
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </form>
+    <div id="dlg-buttons">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveData()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">取消</a>
+    </div>
+</div>
+
+<div id="dlgRole" class="easyui-dialog" style="width:480px;height:430px;padding:10px 20px;display:none" closed="true" buttons="#dlg-buttons1">
+    <form id="fm1" method="post" style="width:420px;height:330px">
+        <div>
+            <span id="aa" class="icon32 icon-group32" style="padding-left: 48px; font-weight: bold; font-size: 14px;color: #666;">
+            </span>
+            <input id="userid" name="USERID" type="hidden" />
+            <input id="roleids" name="roleids" type="hidden" />
+        </div>
+        <div id="table">
+            <table id="gridlist" style="width:430px;height:310px;"></table>
+        </div>
+        @*<div style="margin-top: 5px; margin-left: 10px; margin-right: 10px;">
+            <input id="userid" name="USERID" type="hidden" />
+            <input id="roleids" name="roleids" type="hidden" />
+            <div style="padding-top: 20px; margin-right: 30px;">
+                <div id="roleTree"></div>
+            </div>
+        </div>*@
+    </form>
+    <div id="dlg-buttons1">
+        <a href="#" class="easyui-linkbutton" iconcls="icon-ok" onclick="saveUserRole()">保存</a>
+        <a href="#" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript: $('#dlgRole').dialog('close')">取消</a>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

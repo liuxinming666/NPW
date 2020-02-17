@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.5.3" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.4.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EWF.Repository\EWF.Entity\EWF.Entity.csproj" />
+    <ProjectReference Include="..\..\EWF.Repository\EWF.IRepository\EWF.IRepository.csproj" />
+    <ProjectReference Include="..\..\EWF.Repository\EWF.Repository\EWF.Repository.csproj" />
+    <ProjectReference Include="..\EWF.IServices\EWF.IServices.csproj" />
+    <ProjectReference Include="..\EWF.ViewModels\EWF.ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
+  </ItemGroup>
+
+</Project>

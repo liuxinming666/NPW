@@ -1,0 +1,149 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "测站信息";
+}
+
+@section CSS {
+    <style type="text/css">
+        .documentItem {
+            height: 52px;
+            line-height: 52px;
+            border: solid 1px #066DAB;
+            margin: 2px;
+            vertical-align: middle;
+            overflow: hidden;
+            border-radius: 4px;
+            -o-border-radius: 4px;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            clear: both;
+        }
+
+        .documentItemTitle {
+            height: 30px;
+            line-height: 30px;
+            color: #0066CC;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemTitleSelect {
+            height: 30px;
+            line-height: 30px;
+            color: red;
+            font-family: "微软雅黑";
+            font-size: 16px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .documentItemSummary {
+            height: 20px;
+            line-height: 20px;
+            font-family: "微软雅黑";
+            font-size: 12px;
+            padding-left: 5px;
+            padding-right: 5px;
+            overflow: hidden;
+        }
+
+        .divTabCss {
+            font-family: "微软雅黑";
+            color: #45A9FF;
+        }
+        .panel-body {
+            overflow-y: hidden;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        var g_stcd = "";        
+        $(function () {
+            InitTabChart();
+        });
+
+        //初始化水文图表选项卡
+        function InitTabChart() {
+            var sUrlTmp = "/StationInfo/Details/WaterChart?stcd=" + $.getUrlParam("stcd");
+            //var sUrlTmp = "/StationInfo/Details/WaterChart?stcd=" + g_stcd;
+            document.getElementById('frmChart').src = sUrlTmp;
+        }
+         //初始化测站概况选项卡
+        function InitTabSite() {
+            var sUrlTmp = "/StationInfo/Survey/Index?stcd=" + $.getUrlParam("stcd");
+            document.getElementById('frmSiteInfo').src = sUrlTmp;
+        }
+        //历史特征值选项卡
+        function InitTabCV() {
+            var sUrlTmp = "/StationInfo/CharValue/Index?stcd=" + $.getUrlParam("stcd");
+            document.getElementById('CharContent').src = sUrlTmp;
+        }
+         //测报方案及任务书
+        function InitTabDocument() {
+            var sUrlTmp = "/StationInfo/Scheme/Index?stcd=" + $.getUrlParam("stcd");
+            document.getElementById('CHFARWSContent').src = sUrlTmp;
+        }
+        //设施设备
+        function InitTabFacEq() {
+            var sUrlTmp = "/StationInfo/FacEq/Index?stcd=" + $.getUrlParam("stcd");
+            document.getElementById('SBContent').src = sUrlTmp;
+        }
+        //测站展示
+        function InitTabShow() {
+            var sUrlTmp = "/StationInfo/Show/Index?stcd=" + $.getUrlParam("stcd");
+            document.getElementById('ShowContent').src = sUrlTmp;
+        }
+        function OnTabSelect(title, index) {
+            switch (title) {
+                case "历史特征值":
+                    InitTabCV();
+                    break;
+                case "水文图表":
+                    InitTabChart();
+                    break;
+                case "测站展示":
+                    InitTabShow();
+                    break;
+                case "测站概况":
+                    InitTabSite();
+                    break;
+                case "测报方案及任务书":
+                    InitTabDocument();
+                    break;
+                case "设施设备":
+                    InitTabFacEq();
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+}
+    <div class="easyui-tabs" style="width:100%;height:100%;" data-options="selected:1,
+         onSelect:function (title,index){OnTabSelect(title,index);}">
+        <div title="测站概况" style="padding:10px">
+            <iframe id="frmSiteInfo" frameborder="0" scrolling="no" height="99%" width="100%"></iframe>
+        </div>
+        <div title="水文图表" style="padding:10px;">
+            <iframe id="frmChart" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+        </div>
+        <div title="历史特征值" style="padding:10px">
+            <iframe id="CharContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+        </div>
+        <div title="测报方案及任务书" style="padding:10px">
+            <iframe id="CHFARWSContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+        </div>
+        <div title="设施设备" style="padding:10px">
+            <iframe id="SBContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+        </div>
+        <div title="测站展示" data-options="tabWidth:110" style="padding:10px">
+            <iframe id="ShowContent" frameborder="0" scrolling="no" height="100%" width="100%"></iframe>
+        </div>
+    </div>

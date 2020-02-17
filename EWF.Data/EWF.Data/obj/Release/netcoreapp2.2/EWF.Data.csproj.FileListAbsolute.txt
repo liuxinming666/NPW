@@ -1,0 +1,16 @@
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\EWF.Data.deps.json
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\EWF.Data.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\EWF.Data.pdb
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\EWF.Util.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Abstractions.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Core.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\EWF.Util.pdb
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Abstractions.xml
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\bin\Release\netcoreapp2.2\Microsoft.AspNetCore.Mvc.Core.xml
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.csprojAssemblyReference.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.csproj.CoreCompileInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.AssemblyInfoInputs.cache
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.AssemblyInfo.cs
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.csproj.CopyComplete
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.dll
+D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data\obj\Release\netcoreapp2.2\EWF.Data.pdb

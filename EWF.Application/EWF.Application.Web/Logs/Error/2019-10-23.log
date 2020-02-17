@@ -1,0 +1,154 @@
+2019-10-23 11:25:10,482 [69] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Data.Dapper.Database.Insert[TKey,T](T entity) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 116
+   at EWF.Data.Repository.RepositoryBase`1.Insert[Tkey](T entity) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Repository\Repository\RepositoryBase.T.cs:line 48
+   at EWF.Services.LoginService.LoginCheck(String username, String userpwd, String userip, String host, String path, DataTable& dtCheckUser, String& roleid) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\LoginService.cs:line 118
+   at EWF.Application.Web.Controllers.AccessController.SignInAsync(String username, String userpwd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\AccessController.cs:line 66
+   at lambda_method(Closure , Object )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+
+2019-10-23 11:25:20,914 [65] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Repository.SysConfigRepository.GetSysConfigByAddvcd(String addvcd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\SysManage\SysConfigRepository.cs:line 55
+   at EWF.Services.SysConfigService.GetSysConfigByAddvcd(String addvcd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\SysManage\SysConfigService.cs:line 53
+   at EWF.Application.Web.Controllers.HomeController.Index() in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\HomeController.cs:line 103
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+
+2019-10-23 11:25:26,431 [69] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Data.Dapper.Database.FindTable(String strSql, DbParameter[] dbParameter) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 513
+   at EWF.Data.Dapper.Database.FindTable(String strSql) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 509
+   at EWF.Repository.SYS_LOGINERROERepository.GetLoginErrorCount(String userip, String username, DateTime tm) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\SysManage\SYS_LOGINERROERepository.cs:line 36
+   at EWF.Services.LoginService.LoginCheck(String username, String userpwd, String userip, String host, String path, DataTable& dtCheckUser, String& roleid) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\LoginService.cs:line 55
+   at EWF.Application.Web.Controllers.AccessController.SignInAsync(String username, String userpwd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\AccessController.cs:line 66
+   at lambda_method(Closure , Object )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+
+2019-10-23 14:38:19,128 [49] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Data.Dapper.Database.Get[T](Object id) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 248
+   at EWF.Data.Repository.RepositoryBase`1.Get(Object id) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Repository\Repository\RepositoryBase.T.cs:line 92
+   at EWF.Services.LoginService.LoginCheck(String username, String userpwd, String userip, String host, String path, DataTable& dtCheckUser, String& roleid) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\LoginService.cs:line 124
+   at EWF.Application.Web.Controllers.AccessController.SignInAsync(String username, String userpwd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\AccessController.cs:line 66
+   at lambda_method(Closure , Object )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+
+2019-10-23 14:38:36,042 [52] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Data.Dapper.Database.FindTable(String strSql, DbParameter[] dbParameter) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 513
+   at EWF.Data.Dapper.Database.FindTable(String strSql) in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 509
+   at EWF.Repository.SYS_LOGINERROERepository.GetLoginErrorCount(String userip, String username, DateTime tm) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\SysManage\SYS_LOGINERROERepository.cs:line 36
+   at EWF.Services.LoginService.LoginCheck(String username, String userpwd, String userip, String host, String path, DataTable& dtCheckUser, String& roleid) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\LoginService.cs:line 55
+   at EWF.Application.Web.Controllers.AccessController.SignInAsync(String username, String userpwd) in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\AccessController.cs:line 66
+   at lambda_method(Closure , Object )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutorAwaitable.Awaiter.GetResult()
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at System.Threading.Tasks.ValueTask`1.get_Result()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+
+2019-10-23 14:38:38,684 [49] ERROR - EWF.Util.Log.LoggerHelper
+ 信息: Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.
+堆栈:    at System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal& connection)
+   at System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions)
+   at System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry)
+   at System.Data.SqlClient.SqlConnection.Open()
+   at EWF.Data.Dapper.Database.get_Connection() in D:\Prject\NPW\branches\Demo\trunk\EWF.Data\EWF.Data.Dapper\Database.cs:line 67
+   at EWF.Repository.SYS_BACKUSERRepository.GetBackUser(String ip) in D:\Prject\NPW\branches\Demo\trunk\EWF.Repository\EWF.Repository\SysManage\SYS_BACKUSERRepository.cs:line 38
+   at EWF.Services.LoginService.GetBackUser(String ip) in D:\Prject\NPW\branches\Demo\trunk\EWF.Services\EWF.Services\LoginService.cs:line 36
+   at EWF.Application.Web.Controllers.AccessController.Login() in D:\Prject\NPW\branches\Demo\trunk\EWF.Application\EWF.Application.Web\Controllers\AccessController.cs:line 44
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()
+   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextExceptionFilterAsync()
+内部: 
+源: System.Data.SqlClient
+--------------------------------------------
+

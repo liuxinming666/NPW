@@ -1,0 +1,402 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "出图";
+}
+
+@section CSS {
+    <style type="text/css">
+
+        .pvtTable, th, td {
+            background-color: white;
+            border: 1px solid blue;
+        }
+
+        .pvtColLabel,
+        .pvtRowLabel {
+            background-color: gray;
+            color: white;
+        }
+
+        .pvtTotalLabel,
+        .pvtGrandTotal,
+        .pvtTotal {
+            background-color: green;
+            color: white;
+            border: 1px solid green;
+        }
+
+        .pvtTable > tbody > tr:nth-child(2n+1) > td {
+            background-color: #ccdf88;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/lib/tfjs/tfjs.js"></script>
+    <script src="~/js/echarts/dist/echarts.min.js"></script>
+    <script src="~/js/stat/dist/stat.js"></script>
+    <script type="text/javascript" src="~/lib/tableExport/libs/FileSaver/FileSaver.min.js"></script>
+    <script type="text/javascript" src="~/lib/tableExport/tableExport.js"></script>
+    <script type="text/javascript">
+        var g_stcd;
+        var g_stnm;
+        var g_aryLineData = new Array();
+        var g_aryInsertData = new Array();  //曲线插值后的数据，按水位0.1m递增插值
+        var g_aryZ = new Array();
+        var g_aryQ = new Array();
+
+        //定义优化器
+        const numIterations = 300;
+        const learningRate = 0.1;
+        const optimizer = tf.train.adam(learningRate);
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('divZqrlChart'));
+
+        $(function () {
+            g_stcd = unescape(($.getUrlParam("stcd")).replace(/%25/g, '%'));
+            g_stnm = unescape(($.getUrlParam("stnm")).replace(/%25/g, '%'));
+
+            var lineData = unescape(($.getUrlParam("lineData")).replace(/%25/g, '%'));
+            var aryTmp = lineData.split(',');
+            var length = aryTmp.length / 2;
+            for (var i = 0; i < length; i++) {
+                g_aryZ.push(parseFloat(aryTmp[2 * i + 1]));
+                g_aryQ.push(parseFloat(aryTmp[2 * i]));
+                g_aryLineData.push([parseFloat(aryTmp[2 * i]), parseFloat(aryTmp[2 * i + 1])]);
+            }
+
+            var serAry = new Array();   //数据数组
+            //var objLine = {
+            //    name: '水位流量关系曲线',
+            //    id: 'relaLine',
+            //    type: 'line',
+            //    data: g_aryLineData,
+            //    symbolSize: 10,
+            //    showSymbol: true,
+            //    smooth: true,
+            //};
+            var objLine = {
+                name: '水位流量关系曲线',
+                id: 'spline',
+                type: 'line',
+                data: g_aryLineData,
+                marker: {
+                    enabled: false
+                }
+            };
+            serAry.push(objLine);
+
+            SetZqrlSimChartData(serAry);
+            //SetZqrlSimChartData_EChart(serAry);
+        });
+
+        //hightChart
+        function SetZqrlSimChartData(serAry) {
+            //当前时间设置为副标题
+            var now = moment();
+            ////计算Y轴的最大值和最小值，并计算出间隔
+            var zMax = ecStat.statistics.max(g_aryZ);
+            var zMin = ecStat.statistics.min(g_aryZ);
+            var qMax = ecStat.statistics.max(g_aryQ);
+            var qMin = ecStat.statistics.min(g_aryQ);
+            var splitNumber = ((zMax.toFixed(2) - zMin.toFixed(2)) / 0.1).toFixed(0);
+            var qMinorTickInterval = ((qMax - qMin) / splitNumber).toFixed(0);
+
+            qMinorTickInterval = (qMinorTickInterval.substr(0, 1)) * Math.pow(10, qMinorTickInterval.length - 1);
+            var qMinTickInterval = qMinorTickInterval * 5;
+            Highcharts.setOptions({
+                lang: {
+                    contextButtonTitle: "图表导出菜单",
+                    downloadJPEG: "下载JPEG图片",
+                    downloadPDF: "下载PDF文件",
+                    downloadPNG: "下载PNG文件",
+                    downloadSVG: "下载SVG文件",
+                    loading: "加载中",
+                    noData: "没有数据",
+                    printChart: "打印图表",
+                    resetZoom: "恢复缩放",
+                    resetZoomTitle: "恢复图表",
+                    thousandsSep: ""
+                }
+            });
+
+            var chart = Highcharts.chart('divZqrlChart', {
+                chart: {
+                    //zoomType: 'xy'
+                    //width: $(window).width() - 20,
+                    //height: $(window).width() - 110
+                },
+                credits: {
+                    enabled: false
+                },
+                title: {
+                    text: '<b>' + g_stnm + '水位流量关系曲线' + '</b>'
+                },
+                subtitle: {
+                    text: '<b>' + now.format('YYYY-MM-DD') + '</b>'
+                },
+                exporting: {
+                    buttons: {
+                        contextButton: {
+                            menuItems: [{
+                                text: '导出图片',
+                                onclick: function () {
+                                    this.exportChart();
+                                },
+                                separator: false
+                            },
+                            {
+                                text: '导数数据',
+                                onclick: function () {
+                                    exportExcel();
+                                },
+                                separator: false
+                            }]
+                        }
+                    },
+                    sourceHeight: $(document).height(),
+                    sourceWidth: $(document).width()
+                },
+                xAxis: {
+                    title: {
+                        text: '流量(m³/s)',
+                        align: 'high'
+                    },
+                    gridLineWidth: 1
+                    //min: qMin,
+                    //max: qMax,
+                    //minTickInterval: 300,//parseFloat(qMinTickInterval),
+                    //minorTickInterval: 60 //parseFloat(qMinorTickInterval)
+                },
+                yAxis: {
+                    title: {
+                        text: '水位(m)',
+                        align: 'high'
+                    },
+                    minTickInterval: 0.5,
+                    minorTickInterval: 0.1//,
+                    //min: zMin,
+                    //max: zMax
+                },
+                //plotOptions: {
+                //    spline: {
+                //        marker: {
+                //            enabled: false
+                //        }
+                //    }
+                //},
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    enabled: true,
+                    //headerFormat: '<b>{series.name}</b><br />',
+                    formatter: function () {
+                        var x = this.x.toFixed(2) + 'm³/s';
+                        var y = this.y.toFixed(2) + 'm';
+                        if (this.series.name != 'tmpPoint') {
+                            return "<span style='border:0px solid'>" + "流量:" + x + "<br>水位:" + y + "</span>";
+                        }
+                        else {
+                            return "";
+                        }
+                    }//,
+                    //crosshairs: [true, true],  // 同时启用竖直及水平准星线
+                    //crosshairs: [{
+                    //    width: 1,
+                    //    color: "#006cee",
+                    //    dashStyle: 'longdashdot',
+                    //    zIndex: 100
+                    //}, {
+                    //    width: 1,
+                    //    color: "#006cee",
+                    //    dashStyle: 'longdashdot',
+                    //    zIndex: 100
+                    //}]
+                },
+                series: serAry
+            });
+
+            var tickInterval = chart.xAxis[0].tickInterval;
+            chart.update({
+                xAxis: [
+                    {
+                        minTickInterval: parseFloat(tickInterval),
+                        minorTickInterval: parseFloat(tickInterval / 5)
+                    }
+                ]
+            });
+        }
+
+        function generateInsertData() {
+            var length = g_aryLineData.length - 1;
+
+            g_aryInsertData = new Array();
+            g_aryInsertData.push(g_aryLineData[0]);
+            var newZ = g_aryLineData[0][1] + 0.1;
+            var newQ;
+
+            for (var i = 0; i < length; i++) {
+                var Z1 = g_aryLineData[i][1];
+                var Q1 = g_aryLineData[i][0];
+                var Z2 = g_aryLineData[i + 1][1];
+                var Q2 = g_aryLineData[i + 1][0];
+
+                while (true) {
+                    if (newZ > Z2) {
+                        break;
+                    }
+                    else {
+                        newQ = (((Q2 - Q1) / (Z2 - Z1)) * (newZ - Z1)) + Q1;
+                        g_aryInsertData.push([parseFloat(newQ), parseFloat(newZ)]);
+                        newZ = newZ + 0.1;
+                    }
+                }
+            }
+
+            if (newZ != g_aryLineData[length][1]) {
+                var Z1 = g_aryLineData[length - 1][1];
+                var Q1 = g_aryLineData[length - 1][0];
+                var Z2 = g_aryLineData[length][1];
+                var Q2 = g_aryLineData[length][0];
+                newQ = (((Q2 - Q1) / (Z2 - Z1)) * (newZ - Z1)) + Q1;
+                g_aryInsertData.push([parseFloat(newQ), parseFloat(newZ)]);
+            }
+        }
+
+        //生成table
+        function generateTable() {
+            var sContent = "";
+            var length = g_aryInsertData.length;
+            for (var i = 0; i < length; i++) {
+                var index = i + 1;
+                sContent = sContent + '<tr>';
+                sContent = sContent + '<td class="pvtRowLabel">' + index + '</td>';
+                sContent = sContent + '<td class="pvtVal row0 col0">' + (g_aryInsertData[i][1]).toFixed(2) + '</td>';
+                sContent = sContent + '<td class="pvtVal row0 col0">' + (g_aryInsertData[i][0]).toFixed(2) + '</td>';
+                sContent = sContent + '</tr>';
+            }
+            $("#tbContent").html(sContent);
+        }
+
+        //table导出excel
+        function tableToExcel() {
+            $('.pvtTable').tableExport({
+                type: 'excel',
+                mso: {
+                    styles: ['background-color',
+                        'border-top-color', 'border-left-color', 'border-right-color', 'border-bottom-color',
+                        'border-top-width', 'border-left-width', 'border-right-width', 'border-bottom-width',
+                        'border-top-style', 'border-left-style', 'border-right-style', 'border-bottom-style',
+                        'color']
+                }
+            });
+        }
+
+        //导出EXCEL
+        function exportExcel() {
+            generateInsertData();
+            generateTable();
+            tableToExcel();
+        }
+
+        function SetZqrlSimChartData_EChart(serAry) {
+            //当前时间设置为副标题
+            var now = moment();
+            ////计算Y轴的最大值和最小值，并计算出间隔
+            var zMax = ecStat.statistics.max(g_aryZ);
+            var zMin = ecStat.statistics.min(g_aryZ);
+            splitNumber = ((zMax.toFixed(2) - zMin.toFixed(2)) / 0.1).toFixed(0);
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: g_stnm + '水位流量关系曲线',
+                    left: 'center',
+                    top: 'top',
+                    //textAlign: 'left',
+                    subtext: now.format('YYYY-MM-DD'),
+                    subtextStyle: {
+                        width: '100%'
+                    }
+                },
+                tooltip: {
+                    triggerOn: 'mousemove',
+                    formatter: function (params) {
+                        return '流量: ' + params.data[0].toFixed(2) + '<br>水位: ' + params.data[1].toFixed(2);
+                    }
+                },
+                //legend: {
+                //    orient: 'vertical',  //垂直显示
+                //    y: 'center',    //延Y轴居中
+                //    x: 'right' //居右显示
+                //},
+                grid: {
+                    show: false
+                },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        show: true
+                    }
+                ],
+                xAxis: {
+                    type: 'value',
+                    name: '流量(m³/s)',
+                    nameLocation: 'end',
+                    scale: true
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '水位(m)',
+                    nameLocation: 'end',
+                    nameGap: 30,
+                    scale: true,
+                    //minInterval: 0.1,
+                    //maxInterval: 1,
+                    interval: 0.1
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                series: serAry
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+
+            $("#divLineContainer").width($(document).width());
+            $("#divLineContainer").height($(document).height());
+            myChart.resize();
+
+            //modifyChartAttri();
+        }
+
+        //修改表格属性
+        function modifyChartAttri() {
+            var option = myChart.getOption();
+        }
+    </script>
+}
+
+<div style="width:100%;overflow:hidden;height:100%;" id="divLineContainer">
+    <div id="divZqrlChart" style="height:100%; width:100%;"></div>
+</div>
+<div style="height:0px;">
+    <table class="pvtTable">
+        <thead>
+            <tr>
+                <th class="pvtColLabel">序号</th>
+                <th class="pvtColLabel">水位(m)</th>
+                <th class="pvtColLabel">流量(m³/s)</th>
+            </tr>
+        </thead>
+        <tbody id="tbContent"></tbody>
+    </table>
+</div>
+

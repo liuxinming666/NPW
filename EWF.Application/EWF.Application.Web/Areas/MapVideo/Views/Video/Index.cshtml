@@ -1,0 +1,131 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "视频监控";
+}
+@section CSS{
+    <style type="text/css">
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: #F2F2F2;
+        }
+
+        #fm {
+            margin: 0;
+            padding: 10px 30px;
+        }
+
+        .ftitle {
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            padding: 5px 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .fitem {
+            margin-bottom: 5px;
+        }
+
+            .fitem label {
+                display: inline-block;
+                width: 60px;
+                text-align: right;
+            }
+    </style>
+}
+<div style="border-top: 1px solid #A9A9A9; width: 100%; position: absolute; left: 0;
+    top: 0; height: 200px;">
+    <table height="100%" cellspacing="0" cellpadding="0" width="100%" align="center">
+        <tbody>
+            <tr>
+                <td style="width: 100%; vertical-align: top;">
+                    <div id="MapLayerDiv" style="text-align: left">
+                        <table style="padding-right: 0px; padding-left: 0px; padding-bottom: 0px; width: 100%;
+                            padding-top: 0px; height: 100%" border="0" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    <td id="MapLayTd" valign="top"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="margin-top: 20px; text-align: center">
+        <a href="#" class="btn btn-default" iconcls="icon-search" onclick="BtnQuery()">查 询</a>
+    </div>
+</div>
+<!-- 调用 api 用的 -->
+@section Scripts{
+    <script src="~/lib/jquery-plugin/Mztreeview/scripts/jsframework.js" type="text/javascript"></script>
+    
+    <script language="javascript" type="text/javascript">
+        $(function () {
+            //清空三维场景中创建的实体对象
+            var mapWnd = parent.frames['mainMap'];
+            mapWnd.removeAllen("Video");
+
+            //初始树
+            InitTree();
+            //首次进来加载所有视频站点
+            FirstQuery();
+        });
+        var TreeName = 'myMarkTree';
+        Using("System.Web.UI.WebControls.MzTreeView");
+        var myMarkTree = new MzTreeView();
+        function InitTree() {
+            var xmldata = '@Html.Raw(ViewData["strTree"])';
+            myMarkTree.loadXmlDataString(xmldata);
+            myMarkTree.autoSort = false;
+            myMarkTree.useCheckbox = true;
+
+            var MapLayTd = document.getElementById('MapLayTd');
+            MapLayTd.innerHTML = myMarkTree.render();
+            myMarkTree.expandLevel(1);
+        }
+        function FirstQuery() {//进入默认加载
+            var nodes = myMarkTree.nodes;
+            //添加视频点,创建视频监控站点
+            $.ajax({
+                url: "/RealData/Video/GetVideoList",
+                data: { ids: "" },
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    parent.frames["mainMap"].createVideoLable(data);
+                }
+            });
+        }       
+        function BtnQuery() {
+            var nodes = myMarkTree.nodes;
+            var ckbnode = '', n = 0;
+            for (var i in nodes) {
+                if (nodes[i].checked) {
+                    ckbnode += nodes[i].id + ",";
+                    n++;
+                }
+            }
+            if (n > 0)
+                ckbnode = ckbnode.substring(0, ckbnode.length - 1);
+            //添加视频点
+            parent.frames["mainMap"].removeAllen("Video");
+            //创建视频监控站点
+            $.ajax({
+                url: "/MapVideo/Video/GetVideoList",
+                data: { ids:ckbnode},
+                dataType: "json",
+                success: function (data, status, xhr) {
+                    parent.frames["mainMap"].createVideoLable(data);
+                }
+            });
+        }
+        function flytovideo(id) {
+            parent.frames["mainMap"].flyToEntity1(id);
+        }
+    </script>
+}
+

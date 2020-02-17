@@ -1,0 +1,316 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "多站流量对比";
+}
+
+<div class="easyui-layout" data-options="fit:true">
+    <div class="div_condition" data-options="region:'north',split:false,title:'',border:false">
+        <table style="height:100%;">
+            <tr>
+                <td>选择测站:</td>
+                <td>
+                    <input id="areastcd" class="easyui-combogrid" style="width:150px" toolbar="#tb11" />
+                    <div id="tb11">
+                        <input class="easyui-searchbox" style="width:200px;" data-options="prompt:'输入站码或站名简拼',searcher:doSearchSta" />
+                    </div>
+                </td>
+                <td>开始日期:</td>
+                <td><input id="startdate" class="Wdate" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm'})" /></td>
+                <td>结束日期:</td>
+                <td><input id="enddate" class="Wdate" onfocus="WdatePicker({ dateFmt: 'yyyy-MM-dd HH:mm' })" /></td>
+                <td>
+                    <a id="btn" href="#" class="easyui-linkbutton" onclick="doSearch()" data-options="iconCls:'icon-search'">查询</a>
+                    @*<a id="btnExport" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-export'">导出</a>*@
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div data-options="region:'west',split:true,title:' ',border:false,onCollapse:LeftCollapse,onExpand:LeftExpand" style="width:410px;">
+        <table id="dgGrid" style="height:100%;width:100%;"></table>
+    </div>
+    <div data-options="region:'center',split:false,title:'',border:false">
+        <div style="width:100%;height:100%;overflow:hidden;" id="divLineContainer">
+
+            <div style="height: 100%;width:100%;" id="divLine">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script type="text/javascript">
+        $(function () {
+            initDateComponent();
+        });
+        //初始化条件
+        function initDateComponent() {
+
+            $("#enddate").val(moment().format("YYYY-MM-DD HH:mm"));
+            $("#startdate").val(moment().add(-10, 'days').format("YYYY-MM-DD HH:mm"));
+            bindAreaDataGrid();
+        }
+        /**
+         * 绑定测站选择下拉框
+         * add by SUN
+         * Date:2019-06-11 16:00
+         * */
+        function bindAreaDataGrid() {
+            var isFirst = true;
+            $('#areastcd').combogrid({
+                panelWidth: 380,
+                multiple: true,
+                idField: 'CODE',
+                textField: 'KEYNAME',
+                url: "/RealData/River/GetStaByKeywords/",
+                queryParams: { "q": "", "sttp": "'ZZ','ZQ'" },
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'CODE', width: '100px', hidden: false, title: '站点', align: 'center' },
+                    { field: 'KEYNAME', width: '100px', title: '站名', align: 'center' },
+                    { field: 'TYPE', width: '120px', title: '站类', align: 'center', formatter: changesttp }
+
+                ]],
+                onLoadSuccess: function (dd) {
+                    
+                    if (isFirst) {
+                        isFirst = false;
+                        if ($('#areastcd').combogrid('getValues').length <= 0) {
+                            $('#areastcd').combogrid('setValue', dd.rows[0].CODE);
+                        }
+                        doSearch();
+
+                    }
+
+
+                }
+
+            });
+        }
+
+        /**
+         * 输入简拼，点击查询按钮执行查询站点时触发
+         * add  by SUN
+         * Date:2019-06-11 16:00
+         * param value:简拼码
+         * param name
+         */
+        function doSearchSta(value, name) {
+            var ele = $("#areastcd");
+            var grid = ele.combogrid('grid');
+
+            $.getJSON("/RealData/River/GetStaByKeywords/", { "q": value, "sttp": "'ZZ','ZQ'" }, function (jsondata) {
+
+                grid.datagrid("loadData", jsondata);
+            });
+        }
+        //存储选中站码列表
+        var arrSTCD = [];
+        //存储站名列表
+        var arrSTNM = [];
+        /**
+         * 执行查询
+         * add by SUN
+         * Date:2019-06-11 17:00
+         * */
+        function doSearch() {
+
+            arrSTCD = $('#areastcd').combogrid('getValues');
+            arrSTNM = $('#areastcd').combogrid('getText').split(',');
+            var arr = [];
+            for (var i = 0; i < arrSTCD.length; i++) {
+                if ($.inArray(arrSTCD[i], arr) == -1) {
+                    arr.push(arrSTCD[i]);
+                }
+            }
+            arrSTCD = arr;
+            var stcds = arrSTCD.join(",");
+            var sdate = $("#startdate").val();
+            var edate = $("#enddate").val();
+            com.ajax({
+                type: 'get',
+                url: '/RealData/River/GetQContraData/',
+                data: { 'stcds': stcds, 'startDate': sdate, 'endDate': edate },
+                success: function (d) {
+
+                    ShowTable(eval(d));
+                    DrawLine(eval(d));
+                }
+            });
+        }
+        /**
+         * 展示表
+         * add by SUN
+         * Date:2019-06-11 17:00
+         * param jsonData：数据json格式
+         */
+        function ShowTable(jsonData) {
+            $('#dgGrid').datagrid({
+                title: "",
+                striped: true,
+                singleSelect: true,
+                collapsible: true,
+                rownumbers: true,
+                nowrap: false,
+                emptyMsg: "<div style='font-weight:bold;margin-top:20px;font-size:20px;color:red'>查无数据</div>",
+                //view: scrollview,
+                frozenColumns: [[
+                    { field: 'TM', title: '时间', width: '160', rowspan: 1, align: 'center', formatter: com.formatTimemm }
+                ]],
+                pageSize: 20,
+                remoteSort: false,
+                loadMsg: '',
+                data: jsonData,
+                columns: GetColumns()
+            });
+        }
+        /**
+         * 动态列绑定
+         * add by SUN
+         * Date:2019-06-11 17:00*/
+        function GetColumns() {
+
+            var cols = [];
+            var objCol = [];
+            $.each(arrSTCD, function (i, item) {
+                objCol.push({ field: item, title: arrSTNM[i], width: '100', rowspan: 1, align: 'right', formatter: changeQvalue });
+            })
+            cols.push(objCol);
+            return cols;
+        }
+
+        //绘制水位流量过程线
+        function DrawLine(d, title) {
+            var isMinLableShow = false;
+            var isMaxLableShow = false;
+
+            var HChart = new Highcharts.Chart('divLine', {
+                chart: {
+                    zoomType: 'x'
+                },
+                title: { 
+                    text: '多站流量对比'
+                },
+                credits: {
+                    enabled: false
+                },
+                subtitle: {
+                    text: $("#startdate").val() + "至" + $("#enddate").val()
+                },
+                plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: false
+                        },
+                        turboThreshold: 50000//性能阈值，如果传入的数据非[xx,xx]和数字时，会限制渲染默认1000条
+                    },
+                    line: {
+                        cropThreshold: 50000
+                    }
+                },
+                xAxis: {
+                    type: "datetime",
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat('%m-%d %H', this.value);
+                        },
+                        autoRotation: false
+                    },
+                    crosshair: {
+                        color: 'green'
+                    }
+                },
+                yAxis: [{
+                    title: {
+                        text: '流量（m³/s）'
+
+                    },
+                    lineWidth: 2,
+                    lineColor: '#000',
+                    labels: {
+                        formatter: function () {
+                            return SaveThreeN(this.value, 3);
+                        }
+                    }
+                }
+                ],
+                tooltip: {
+                    valueSuffix: '',
+                    headerFormat: '<span style="font-size:16px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0" nowrap>{series.name}: </td>' +
+                        '<td style="padding:0" nowrap><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    followPointer: true,
+                    shared: true,
+                    useHTML: true,
+                    xDateFormat: '%Y-%m-%d %H:%M'
+                },
+                legend: {
+                    align: 'center',
+                    verticalAlign: 'bottom',
+                    borderWidth: 0
+                },
+                series: GetSearies(d)
+            });
+        }
+
+        function GetSearies(d) {
+            var obj = {};
+            var arrSeries = [];
+
+            $.each(arrSTCD, function (i, item) {
+                var objSeriesHP = {
+                    name: arrSTNM[i],
+
+                    data: [],
+                    lineWidth: 1
+                }
+                obj[item] = objSeriesHP;
+                arrSeries.push(objSeriesHP);
+
+            });
+
+
+            $.each(d, function (i, item) {
+                var beginDate = ""; 
+                for (var key in item) {
+                    if (key != "TM") {
+                        if (item[key]) {
+                            obj[key].data.push([com.ToUTC(item["TM"]), Number(item[key])]);
+                        }
+                        /*else {
+                            
+                            obj[key].data.push([com.ToUTC(item["TM"]), null]);
+                        }*/
+                    }
+                    
+                }
+
+            });
+
+            return arrSeries;
+        }
+
+        /**
+         * 左收缩
+         * add by SUN
+         * Date:2019-06-11 16:00
+         * */
+        function LeftCollapse() {
+            $("#divLineContainer").width($(document).width() - 50);
+            ReflowChart();
+        }
+
+        /**
+         * 左展开
+         * add by SUN
+         * Date:2019-06-11 16:00
+         * */
+        function LeftExpand() {
+
+            $("#divLineContainer").width($(document).width() - 430);
+            ReflowChart();
+        }
+    </script>
+}
